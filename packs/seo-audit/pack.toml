@@ -1,0 +1,55 @@
+# RenderReport SEO Audit Pack
+# Templates and components for SEO audit reports
+
+[pack]
+name = "seo-audit"
+version = "0.1.0"
+description = "SEO audit report templates with specialized components"
+authors = ["Casoon <info@casoon.de>"]
+license = "MIT"
+repository = "https://github.com/casoon/renderreport-packs"
+keywords = ["report", "seo", "audit", "lighthouse"]
+
+[compatibility]
+min_engine_version = "0.1.0"
+
+[templates.seo-report]
+file = "seo_report.typ"
+description = "Full SEO audit report with all sections"
+default_theme = "light"
+
+[templates.seo-summary]
+file = "seo_summary.typ"
+description = "Executive summary for SEO audits"
+
+[themes.light]
+file = "light.toml"
+description = "Light theme with SEO-specific colors"
+default = true
+
+[components.lighthouse-scores]
+file = "lighthouse_scores.typ"
+description = "Google Lighthouse score display (Performance, SEO, etc.)"
+
+[components.url-analysis]
+file = "url_analysis.typ"
+description = "URL structure analysis display"
+
+[components.meta-analysis]
+file = "meta_analysis.typ"
+description = "Meta tags analysis table"
+
+[components.heading-structure]
+file = "heading_structure.typ"
+description = "H1-H6 heading structure visualization"
+
+[components.core-web-vitals]
+file = "core_web_vitals.typ"
+description = "Core Web Vitals metrics display"
+
+capabilities = [
+    "charts",
+    "tables",
+    "images",
+    "screenshots",
+]

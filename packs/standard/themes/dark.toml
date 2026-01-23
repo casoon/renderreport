@@ -1,0 +1,55 @@
+# Dark Theme
+# Dark color scheme for screen viewing
+
+id = "dark"
+name = "Dark Theme"
+description = "Dark theme optimized for screen viewing"
+
+[tokens]
+# Colors
+"color.primary" = "#3b82f6"
+"color.secondary" = "#94a3b8"
+"color.text" = "#f1f5f9"
+"color.text-muted" = "#94a3b8"
+"color.background" = "#0f172a"
+"color.surface" = "#1e293b"
+"color.border" = "#334155"
+"color.ok" = "#4ade80"
+"color.warn" = "#fbbf24"
+"color.bad" = "#f87171"
+
+# Typography (same as light)
+"font.body" = "Inter"
+"font.heading" = "Inter"
+"font.mono" = "JetBrains Mono"
+"font.size.base" = "11pt"
+"font.size.sm" = "9pt"
+"font.size.lg" = "14pt"
+"font.size.xl" = "18pt"
+"font.size.2xl" = "24pt"
+
+# Spacing (same as light)
+"spacing.1" = "4pt"
+"spacing.2" = "8pt"
+"spacing.3" = "12pt"
+"spacing.4" = "16pt"
+"spacing.5" = "24pt"
+"spacing.6" = "32pt"
+
+# Table
+"table.header-bg" = "#1e293b"
+"table.row-alt-bg" = "#0f172a"
+"table.border" = "#334155"
+"table.border-width" = "0.5pt"
+
+# Page
+"page.margin" = "2.5cm"
+"page.margin-top" = "3cm"
+"page.margin-bottom" = "2.5cm"
+"page.header-height" = "1.5cm"
+"page.footer-height" = "1cm"
+
+# Components
+"component.score-card.radius" = "8pt"
+"component.finding.radius" = "4pt"
+"component.callout.radius" = "4pt"

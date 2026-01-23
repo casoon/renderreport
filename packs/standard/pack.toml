@@ -1,0 +1,75 @@
+# RenderReport Standard Pack
+# Default components, layouts, and themes
+
+[pack]
+name = "standard"
+version = "0.1.0"
+description = "Standard template pack with default components, layouts, and themes"
+authors = ["Casoon <info@casoon.de>"]
+license = "MIT"
+repository = "https://github.com/casoon/renderreport-packs"
+keywords = ["report", "standard", "default"]
+
+[compatibility]
+min_engine_version = "0.1.0"
+
+[templates.default]
+file = "default.typ"
+description = "Default report layout"
+default_theme = "light"
+
+[templates.minimal]
+file = "minimal.typ"
+description = "Minimal report layout without header/footer"
+
+[themes.light]
+file = "light.toml"
+description = "Light theme (default)"
+default = true
+
+[themes.dark]
+file = "dark.toml"
+description = "Dark theme for screen viewing"
+
+[themes.print]
+file = "print.toml"
+description = "High-contrast theme optimized for printing"
+
+[components.score-card]
+file = "score_card.typ"
+description = "Score card with progress visualization"
+
+[components.finding]
+file = "finding.typ"
+description = "Audit finding with severity indicator"
+
+[components.audit-table]
+file = "audit_table.typ"
+description = "Data table for audit results"
+
+[components.summary-box]
+file = "summary_box.typ"
+description = "Executive summary widget"
+
+[components.callout]
+file = "callout.typ"
+description = "Information callout box"
+
+[components.section]
+file = "section.typ"
+description = "Document section with heading"
+
+[components.image]
+file = "image.typ"
+description = "Image with caption"
+
+[components.chart]
+file = "chart.typ"
+description = "Simple bar/pie chart"
+
+capabilities = [
+    "charts",
+    "tables",
+    "images",
+    "code-blocks",
+]

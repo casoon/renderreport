@@ -1,0 +1,55 @@
+# Light Theme (Default)
+# Standard light color scheme for reports
+
+id = "light"
+name = "Light Theme"
+description = "Default light theme for screen and print"
+
+[tokens]
+# Colors
+"color.primary" = "#2563eb"
+"color.secondary" = "#64748b"
+"color.text" = "#1e293b"
+"color.text-muted" = "#64748b"
+"color.background" = "#ffffff"
+"color.surface" = "#f8fafc"
+"color.border" = "#e2e8f0"
+"color.ok" = "#22c55e"
+"color.warn" = "#f59e0b"
+"color.bad" = "#ef4444"
+
+# Typography
+"font.body" = "Inter"
+"font.heading" = "Inter"
+"font.mono" = "JetBrains Mono"
+"font.size.base" = "11pt"
+"font.size.sm" = "9pt"
+"font.size.lg" = "14pt"
+"font.size.xl" = "18pt"
+"font.size.2xl" = "24pt"
+
+# Spacing
+"spacing.1" = "4pt"
+"spacing.2" = "8pt"
+"spacing.3" = "12pt"
+"spacing.4" = "16pt"
+"spacing.5" = "24pt"
+"spacing.6" = "32pt"
+
+# Table
+"table.header-bg" = "#f1f5f9"
+"table.row-alt-bg" = "#f8fafc"
+"table.border" = "#e2e8f0"
+"table.border-width" = "0.5pt"
+
+# Page
+"page.margin" = "2.5cm"
+"page.margin-top" = "3cm"
+"page.margin-bottom" = "2.5cm"
+"page.header-height" = "1.5cm"
+"page.footer-height" = "1cm"
+
+# Components
+"component.score-card.radius" = "8pt"
+"component.finding.radius" = "4pt"
+"component.callout.radius" = "4pt"

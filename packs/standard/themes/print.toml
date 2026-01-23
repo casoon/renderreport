@@ -1,0 +1,55 @@
+# Print Theme
+# High-contrast theme optimized for printing
+
+id = "print"
+name = "Print Theme"
+description = "High-contrast theme optimized for printing"
+
+[tokens]
+# Colors (high contrast for print)
+"color.primary" = "#1e40af"
+"color.secondary" = "#475569"
+"color.text" = "#000000"
+"color.text-muted" = "#475569"
+"color.background" = "#ffffff"
+"color.surface" = "#f8fafc"
+"color.border" = "#cbd5e1"
+"color.ok" = "#166534"
+"color.warn" = "#b45309"
+"color.bad" = "#b91c1c"
+
+# Typography (print-optimized)
+"font.body" = "Georgia"
+"font.heading" = "Georgia"
+"font.mono" = "Courier"
+"font.size.base" = "10pt"
+"font.size.sm" = "8pt"
+"font.size.lg" = "12pt"
+"font.size.xl" = "16pt"
+"font.size.2xl" = "20pt"
+
+# Spacing (tighter for print)
+"spacing.1" = "3pt"
+"spacing.2" = "6pt"
+"spacing.3" = "10pt"
+"spacing.4" = "14pt"
+"spacing.5" = "20pt"
+"spacing.6" = "28pt"
+
+# Table
+"table.header-bg" = "#e2e8f0"
+"table.row-alt-bg" = "#f8fafc"
+"table.border" = "#94a3b8"
+"table.border-width" = "0.75pt"
+
+# Page (standard print margins)
+"page.margin" = "2cm"
+"page.margin-top" = "2.5cm"
+"page.margin-bottom" = "2cm"
+"page.header-height" = "1.2cm"
+"page.footer-height" = "0.8cm"
+
+# Components
+"component.score-card.radius" = "4pt"
+"component.finding.radius" = "2pt"
+"component.callout.radius" = "2pt"
