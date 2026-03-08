@@ -141,6 +141,31 @@ impl Engine {
         source.push_str(&theme.tokens.to_typst_definitions());
         source.push_str("\n\n");
 
+        // Add theme helper functions
+        source.push_str("// Theme Helpers\n");
+        source.push_str(include_str!("../../templates/theme_helpers.typ"));
+        source.push_str("\n\n");
+
+        // Inject metadata as Typst variables (needed by header/footer)
+        source.push_str("// Report Metadata\n");
+        let title_str = request.title.as_deref().unwrap_or("");
+        let date_str = request
+            .metadata
+            .get("date")
+            .map(|s| s.as_str())
+            .unwrap_or("");
+        let author_str = request
+            .metadata
+            .get("author")
+            .map(|s| s.as_str())
+            .unwrap_or("");
+        source.push_str(&format!(
+            "#let report-title = \"{}\"\n#let report-date = \"{}\"\n#let report-author = \"{}\"\n\n",
+            title_str.replace('"', "\\\""),
+            date_str.replace('"', "\\\""),
+            author_str.replace('"', "\\\""),
+        ));
+
         // Add page setup
         source.push_str(&self.generate_page_setup(theme));
         source.push_str("\n\n");
@@ -163,8 +188,7 @@ impl Engine {
 
     /// Generate page setup Typst code
     fn generate_page_setup(&self, _theme: &Theme) -> String {
-        format!(
-            r#"#set page(
+        r#"#set page(
   paper: "a4",
   margin: (
     top: page-margin-top,
@@ -172,6 +196,28 @@ impl Engine {
     left: page-margin,
     right: page-margin,
   ),
+  header: context {
+    if counter(page).get().first() > 1 [
+      #set text(size: font-size-xs, fill: color-text-muted)
+      #grid(
+        columns: (1fr, auto),
+        gutter: spacing-3,
+        [Web Accessibility Audit Report],
+        [#report-date]
+      )
+      #v(4pt)
+      #line(length: 100%, stroke: (paint: color-border, thickness: 0.7pt))
+    ]
+  },
+  footer: context [
+    #set text(size: font-size-xs, fill: color-text-muted)
+    #grid(
+      columns: (1fr, auto),
+      gutter: spacing-3,
+      [AuditMySite],
+      [#counter(page).display("1 / 1", both: true)]
+    )
+  ],
 )
 
 #set text(
@@ -180,9 +226,14 @@ impl Engine {
   fill: color-text,
 )
 
-#set par(justify: true)
+#set par(justify: true, leading: 0.75em)
+
+#set heading(numbering: none)
+#show heading.where(level: 1): set text(size: font-size-2xl, weight: "bold", fill: color-text)
+#show heading.where(level: 2): set text(size: font-size-xl, weight: "bold", fill: color-text)
+#show heading.where(level: 3): set text(size: font-size-lg, weight: "bold", fill: color-text)
 "#
-        )
+        .to_string()
     }
 
     /// Generate report content

@@ -466,3 +466,55 @@ impl Component for KeyValueList {
         serde_json::to_value(self).unwrap_or_default()
     }
 }
+
+/// Table of Contents component
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TableOfContents {
+    /// TOC heading title
+    pub title: String,
+    /// Maximum heading depth to include
+    pub depth: u8,
+    /// Font size for TOC entries (e.g. "9pt", "10pt")
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub font_size: Option<String>,
+}
+
+impl TableOfContents {
+    pub fn new() -> Self {
+        Self {
+            title: "Inhaltsverzeichnis".to_string(),
+            depth: 3,
+            font_size: None,
+        }
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = title.into();
+        self
+    }
+
+    pub fn with_depth(mut self, depth: u8) -> Self {
+        self.depth = depth;
+        self
+    }
+
+    pub fn with_font_size(mut self, size: impl Into<String>) -> Self {
+        self.font_size = Some(size.into());
+        self
+    }
+}
+
+impl Default for TableOfContents {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Component for TableOfContents {
+    fn component_id(&self) -> &'static str {
+        "table-of-contents"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}

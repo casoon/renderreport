@@ -3,23 +3,23 @@
 
 #let callout-style(callout-type) = {
   if callout-type == "warning" {
-    (bg: rgb("#fffbeb"), border: color-warn, icon: "⚠")
+    (bg: color-warn-soft, border: color-warn, icon: "⚠")
   } else if callout-type == "error" {
-    (bg: rgb("#fef2f2"), border: color-bad, icon: "✕")
+    (bg: color-bad-soft, border: color-bad, icon: "✕")
   } else if callout-type == "success" {
-    (bg: rgb("#f0fdf4"), border: color-ok, icon: "✓")
+    (bg: color-ok-soft, border: color-ok, icon: "✓")
   } else if callout-type == "tip" {
-    (bg: rgb("#f0f9ff"), border: color-primary, icon: "💡")
+    (bg: color-accent-soft, border: color-primary, icon: "💡")
   } else {
     // info (default)
-    (bg: rgb("#eff6ff"), border: color-primary, icon: "ℹ")
+    (bg: color-info-soft, border: color-info, icon: "ℹ")
   }
 }
 
 #let callout(data) = {
   let style = callout-style(data.callout_type)
-  
-  box(
+
+  block(
     width: 100%,
     inset: spacing-4,
     radius: component-callout-radius,
@@ -27,12 +27,12 @@
     stroke: (left: (paint: style.border, thickness: 3pt)),
   )[
     #set text(fill: color-text)
-    
+
     #if data.title != none [
-      #text(weight: "semibold")[#style.icon #data.title]
+      #text(weight: "bold")[#style.icon #data.title]
       #v(spacing-2)
     ]
-    
-    #text(size: font-size-sm)[#data.content]
+
+    #text(size: font-size-base)[#data.content]
   ]
 }

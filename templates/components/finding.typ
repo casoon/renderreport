@@ -21,55 +21,49 @@
 
 #let finding(data) = {
   let sev-color = severity-color(data.severity)
-  
-  box(
+
+  block(
     width: 100%,
     inset: spacing-4,
     radius: component-finding-radius,
-    stroke: (left: (paint: sev-color, thickness: 3pt)),
+    stroke: (left: (paint: sev-color, thickness: 3pt), top: (paint: color-border, thickness: component-card-border-width), right: (paint: color-border, thickness: component-card-border-width), bottom: (paint: color-border, thickness: component-card-border-width)),
     fill: color-surface,
   )[
     #set text(fill: color-text)
-    
+
     // Header with severity badge
     #grid(
       columns: (auto, 1fr),
       gutter: spacing-3,
-      box(
-        inset: (x: spacing-2, y: spacing-1),
-        radius: 2pt,
-        fill: sev-color,
-        text(size: font-size-sm, weight: "bold", fill: white)[#severity-label(data.severity)]
-      ),
-      text(weight: "semibold", size: font-size-lg)[#data.title]
+      badge-for-severity(data.severity),
+      text(weight: "bold", size: font-size-lg)[#data.title]
     )
-    
+
     #v(spacing-3)
-    
+
     // Description
     #text(size: font-size-base)[#data.description]
-    
+
     // Affected resource
     #if data.affected != none [
       #v(spacing-2)
-      #text(size: font-size-sm, fill: color-text-muted)[
-        *Affected:* #raw(data.affected)
-      ]
+      #label-text([Betroffen: ])
+      #mono-text(data.affected)
     ]
-    
+
     // Recommendation
     #if data.recommendation != none [
       #v(spacing-3)
-      #box(
+      #block(
         width: 100%,
         inset: spacing-3,
-        radius: 2pt,
-        fill: rgb("#f0fdf4"),
+        radius: 8pt,
+        fill: color-ok-soft,
         stroke: (paint: color-ok, thickness: 0.5pt),
       )[
-        #text(size: font-size-sm, weight: "semibold", fill: color-ok)[Recommendation]
-        #v(spacing-1)
-        #text(size: font-size-sm)[#data.recommendation]
+        #label-text([Empfehlung])
+        #v(spacing-2)
+        #text(size: font-size-base)[#data.recommendation]
       ]
     ]
   ]

@@ -179,6 +179,32 @@ impl ComponentRegistry {
             ComponentId::new("resource-field"),
             include_str!("../../templates/components/resource_field.typ").to_string(),
         );
+
+        self.register(
+            ComponentId::new("table-of-contents"),
+            include_str!("../../templates/components/table_of_contents.typ").to_string(),
+        );
+
+        // Composite Components (self-contained layouts)
+        self.register(
+            ComponentId::new("metric-card"),
+            include_str!("../../templates/components/metric_card.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("hero-summary"),
+            include_str!("../../templates/components/hero_summary.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("module-dashboard"),
+            include_str!("../../templates/components/module_dashboard.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("action-roadmap"),
+            include_str!("../../templates/components/action_roadmap.typ").to_string(),
+        );
     }
 
     /// Register a component template

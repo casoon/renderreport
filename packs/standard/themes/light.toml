@@ -1,55 +1,67 @@
 # Light Theme (Default)
-# Standard light color scheme for reports
+# Modern B2B audit report theme
 
 id = "light"
 name = "Light Theme"
-description = "Default light theme for screen and print"
+description = "Modern B2B report theme with clean design"
 
 [tokens]
-# Colors
-"color.primary" = "#2563eb"
-"color.secondary" = "#64748b"
-"color.text" = "#1e293b"
-"color.text-muted" = "#64748b"
+# Colors — modern B2B palette
+"color.primary" = "#155EEF"
+"color.secondary" = "#667085"
+"color.text" = "#101828"
+"color.text-muted" = "#667085"
 "color.background" = "#ffffff"
-"color.surface" = "#f8fafc"
-"color.border" = "#e2e8f0"
-"color.ok" = "#22c55e"
-"color.warn" = "#f59e0b"
-"color.bad" = "#ef4444"
+"color.surface" = "#ffffff"
+"color.surface-soft" = "#F8FAFC"
+"color.surface-alt" = "#F2F4F7"
+"color.border" = "#E4E7EC"
+"color.ok" = "#12B76A"
+"color.ok-soft" = "#ECFDF3"
+"color.warn" = "#F79009"
+"color.warn-soft" = "#FEF0C7"
+"color.bad" = "#D92D20"
+"color.bad-soft" = "#FEE4E2"
+"color.accent-soft" = "#EAF2FF"
+"color.info" = "#1570EF"
+"color.info-soft" = "#EFF8FF"
 
 # Typography
 "font.body" = "Inter"
 "font.heading" = "Inter"
-"font.mono" = "JetBrains Mono"
-"font.size.base" = "11pt"
-"font.size.sm" = "9pt"
-"font.size.lg" = "14pt"
+"font.mono" = "IBM Plex Mono"
+"font.size.xs" = "8.5pt"
+"font.size.sm" = "8.8pt"
+"font.size.base" = "10.5pt"
+"font.size.lg" = "13pt"
 "font.size.xl" = "18pt"
 "font.size.2xl" = "24pt"
+"font.size.3xl" = "34pt"
 
 # Spacing
 "spacing.1" = "4pt"
-"spacing.2" = "8pt"
-"spacing.3" = "12pt"
-"spacing.4" = "16pt"
-"spacing.5" = "24pt"
-"spacing.6" = "32pt"
+"spacing.2" = "6pt"
+"spacing.3" = "10pt"
+"spacing.4" = "14pt"
+"spacing.5" = "20pt"
+"spacing.6" = "28pt"
+"spacing.7" = "40pt"
 
 # Table
-"table.header-bg" = "#f1f5f9"
-"table.row-alt-bg" = "#f8fafc"
-"table.border" = "#e2e8f0"
+"table.header-bg" = "#F2F4F7"
+"table.row-alt-bg" = "#F8FAFC"
+"table.border" = "#E4E7EC"
 "table.border-width" = "0.5pt"
 
 # Page
-"page.margin" = "2.5cm"
-"page.margin-top" = "3cm"
-"page.margin-bottom" = "2.5cm"
+"page.margin" = "18mm"
+"page.margin-top" = "18mm"
+"page.margin-bottom" = "16mm"
 "page.header-height" = "1.5cm"
 "page.footer-height" = "1cm"
 
 # Components
-"component.score-card.radius" = "8pt"
-"component.finding.radius" = "4pt"
-"component.callout.radius" = "4pt"
+"component.score-card.radius" = "10pt"
+"component.finding.radius" = "10pt"
+"component.callout.radius" = "10pt"
+"component.card.border-width" = "0.8pt"

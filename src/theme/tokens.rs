@@ -102,56 +102,68 @@ impl Default for ThemeTokens {
     fn default() -> Self {
         let mut tokens = Self::new();
 
-        // Colors
-        tokens.set("color.primary", TokenValue::Color("#2563eb".into()));
-        tokens.set("color.secondary", TokenValue::Color("#64748b".into()));
-        tokens.set("color.text", TokenValue::Color("#1e293b".into()));
-        tokens.set("color.text-muted", TokenValue::Color("#64748b".into()));
+        // Colors — modern B2B palette
+        tokens.set("color.primary", TokenValue::Color("#155EEF".into()));
+        tokens.set("color.secondary", TokenValue::Color("#667085".into()));
+        tokens.set("color.text", TokenValue::Color("#101828".into()));
+        tokens.set("color.text-muted", TokenValue::Color("#667085".into()));
         tokens.set("color.background", TokenValue::Color("#ffffff".into()));
-        tokens.set("color.surface", TokenValue::Color("#f8fafc".into()));
-        tokens.set("color.border", TokenValue::Color("#e2e8f0".into()));
-        tokens.set("color.ok", TokenValue::Color("#22c55e".into()));
-        tokens.set("color.warn", TokenValue::Color("#f59e0b".into()));
-        tokens.set("color.bad", TokenValue::Color("#ef4444".into()));
+        tokens.set("color.surface", TokenValue::Color("#ffffff".into()));
+        tokens.set("color.surface-soft", TokenValue::Color("#F8FAFC".into()));
+        tokens.set("color.surface-alt", TokenValue::Color("#F2F4F7".into()));
+        tokens.set("color.border", TokenValue::Color("#E4E7EC".into()));
+        tokens.set("color.ok", TokenValue::Color("#12B76A".into()));
+        tokens.set("color.ok-soft", TokenValue::Color("#ECFDF3".into()));
+        tokens.set("color.warn", TokenValue::Color("#F79009".into()));
+        tokens.set("color.warn-soft", TokenValue::Color("#FEF0C7".into()));
+        tokens.set("color.bad", TokenValue::Color("#D92D20".into()));
+        tokens.set("color.bad-soft", TokenValue::Color("#FEE4E2".into()));
+        tokens.set("color.accent-soft", TokenValue::Color("#EAF2FF".into()));
+        tokens.set("color.info", TokenValue::Color("#1570EF".into()));
+        tokens.set("color.info-soft", TokenValue::Color("#EFF8FF".into()));
 
         // Typography
         tokens.set("font.body", TokenValue::Font("Inter".into()));
         tokens.set("font.heading", TokenValue::Font("Inter".into()));
-        tokens.set("font.mono", TokenValue::Font("JetBrains Mono".into()));
-        tokens.set("font.size.base", TokenValue::Size("11pt".into()));
-        tokens.set("font.size.sm", TokenValue::Size("9pt".into()));
-        tokens.set("font.size.lg", TokenValue::Size("14pt".into()));
+        tokens.set("font.mono", TokenValue::Font("IBM Plex Mono".into()));
+        tokens.set("font.size.xs", TokenValue::Size("8.5pt".into()));
+        tokens.set("font.size.sm", TokenValue::Size("8.8pt".into()));
+        tokens.set("font.size.base", TokenValue::Size("10.5pt".into()));
+        tokens.set("font.size.lg", TokenValue::Size("13pt".into()));
         tokens.set("font.size.xl", TokenValue::Size("18pt".into()));
         tokens.set("font.size.2xl", TokenValue::Size("24pt".into()));
+        tokens.set("font.size.3xl", TokenValue::Size("34pt".into()));
 
         // Spacing
         tokens.set("spacing.1", TokenValue::Size("4pt".into()));
-        tokens.set("spacing.2", TokenValue::Size("8pt".into()));
-        tokens.set("spacing.3", TokenValue::Size("12pt".into()));
-        tokens.set("spacing.4", TokenValue::Size("16pt".into()));
-        tokens.set("spacing.5", TokenValue::Size("24pt".into()));
-        tokens.set("spacing.6", TokenValue::Size("32pt".into()));
+        tokens.set("spacing.2", TokenValue::Size("6pt".into()));
+        tokens.set("spacing.3", TokenValue::Size("10pt".into()));
+        tokens.set("spacing.4", TokenValue::Size("14pt".into()));
+        tokens.set("spacing.5", TokenValue::Size("20pt".into()));
+        tokens.set("spacing.6", TokenValue::Size("28pt".into()));
+        tokens.set("spacing.7", TokenValue::Size("40pt".into()));
 
         // Table
-        tokens.set("table.header-bg", TokenValue::Color("#f1f5f9".into()));
-        tokens.set("table.row-alt-bg", TokenValue::Color("#f8fafc".into()));
-        tokens.set("table.border", TokenValue::Color("#e2e8f0".into()));
+        tokens.set("table.header-bg", TokenValue::Color("#F2F4F7".into()));
+        tokens.set("table.row-alt-bg", TokenValue::Color("#F8FAFC".into()));
+        tokens.set("table.border", TokenValue::Color("#E4E7EC".into()));
         tokens.set("table.border-width", TokenValue::Size("0.5pt".into()));
 
         // Page
-        tokens.set("page.margin", TokenValue::Size("2.5cm".into()));
-        tokens.set("page.margin-top", TokenValue::Size("3cm".into()));
-        tokens.set("page.margin-bottom", TokenValue::Size("2.5cm".into()));
+        tokens.set("page.margin", TokenValue::Size("18mm".into()));
+        tokens.set("page.margin-top", TokenValue::Size("18mm".into()));
+        tokens.set("page.margin-bottom", TokenValue::Size("16mm".into()));
         tokens.set("page.header-height", TokenValue::Size("1.5cm".into()));
         tokens.set("page.footer-height", TokenValue::Size("1cm".into()));
 
         // Components
         tokens.set(
             "component.score-card.radius",
-            TokenValue::Size("8pt".into()),
+            TokenValue::Size("10pt".into()),
         );
-        tokens.set("component.finding.radius", TokenValue::Size("4pt".into()));
-        tokens.set("component.callout.radius", TokenValue::Size("4pt".into()));
+        tokens.set("component.finding.radius", TokenValue::Size("10pt".into()));
+        tokens.set("component.callout.radius", TokenValue::Size("10pt".into()));
+        tokens.set("component.card.border-width", TokenValue::Size("0.8pt".into()));
 
         tokens
     }
@@ -166,20 +178,30 @@ pub mod token_names {
     pub const COLOR_TEXT_MUTED: &str = "color.text-muted";
     pub const COLOR_BACKGROUND: &str = "color.background";
     pub const COLOR_SURFACE: &str = "color.surface";
+    pub const COLOR_SURFACE_SOFT: &str = "color.surface-soft";
+    pub const COLOR_SURFACE_ALT: &str = "color.surface-alt";
     pub const COLOR_BORDER: &str = "color.border";
     pub const COLOR_OK: &str = "color.ok";
+    pub const COLOR_OK_SOFT: &str = "color.ok-soft";
     pub const COLOR_WARN: &str = "color.warn";
+    pub const COLOR_WARN_SOFT: &str = "color.warn-soft";
     pub const COLOR_BAD: &str = "color.bad";
+    pub const COLOR_BAD_SOFT: &str = "color.bad-soft";
+    pub const COLOR_ACCENT_SOFT: &str = "color.accent-soft";
+    pub const COLOR_INFO: &str = "color.info";
+    pub const COLOR_INFO_SOFT: &str = "color.info-soft";
 
     // Typography
     pub const FONT_BODY: &str = "font.body";
     pub const FONT_HEADING: &str = "font.heading";
     pub const FONT_MONO: &str = "font.mono";
-    pub const FONT_SIZE_BASE: &str = "font.size.base";
+    pub const FONT_SIZE_XS: &str = "font.size.xs";
     pub const FONT_SIZE_SM: &str = "font.size.sm";
+    pub const FONT_SIZE_BASE: &str = "font.size.base";
     pub const FONT_SIZE_LG: &str = "font.size.lg";
     pub const FONT_SIZE_XL: &str = "font.size.xl";
     pub const FONT_SIZE_2XL: &str = "font.size.2xl";
+    pub const FONT_SIZE_3XL: &str = "font.size.3xl";
 
     // Spacing
     pub const SPACING_1: &str = "spacing.1";
@@ -188,6 +210,7 @@ pub mod token_names {
     pub const SPACING_4: &str = "spacing.4";
     pub const SPACING_5: &str = "spacing.5";
     pub const SPACING_6: &str = "spacing.6";
+    pub const SPACING_7: &str = "spacing.7";
 }
 
 #[cfg(test)]

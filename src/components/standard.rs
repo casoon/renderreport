@@ -470,3 +470,246 @@ impl Component for SummaryBox {
         serde_json::to_value(self).unwrap_or_default()
     }
 }
+
+// ── New Composite Components ──────────────────────────────────────────
+
+/// Compact metric card for KPI displays (flexible string values, unlike ScoreCard)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MetricCard {
+    pub title: String,
+    pub value: String,
+    #[serde(default)]
+    pub subtitle: Option<String>,
+    #[serde(default)]
+    pub accent_color: Option<String>,
+}
+
+impl MetricCard {
+    pub fn new(title: impl Into<String>, value: impl Into<String>) -> Self {
+        Self {
+            title: title.into(),
+            value: value.into(),
+            subtitle: None,
+            accent_color: None,
+        }
+    }
+
+    pub fn with_subtitle(mut self, subtitle: impl Into<String>) -> Self {
+        self.subtitle = Some(subtitle.into());
+        self
+    }
+
+    pub fn with_accent_color(mut self, color: impl Into<String>) -> Self {
+        self.accent_color = Some(color.into());
+        self
+    }
+}
+
+impl Component for MetricCard {
+    fn component_id(&self) -> &'static str {
+        "metric-card"
+    }
+
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Hero summary for the first content page after TOC
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HeroSummary {
+    pub score: u32,
+    pub grade: String,
+    pub domain: String,
+    pub date: String,
+    pub verdict: String,
+    pub metrics: Vec<HeroMetric>,
+    #[serde(default)]
+    pub top_actions: Vec<String>,
+    #[serde(default)]
+    pub positive_aspects: Vec<String>,
+    #[serde(default = "default_hero_good")]
+    pub good_threshold: u32,
+    #[serde(default = "default_hero_warn")]
+    pub warn_threshold: u32,
+}
+
+fn default_hero_good() -> u32 {
+    70
+}
+fn default_hero_warn() -> u32 {
+    50
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HeroMetric {
+    pub title: String,
+    pub value: String,
+    #[serde(default)]
+    pub accent_color: Option<String>,
+}
+
+impl HeroSummary {
+    pub fn new(score: u32, grade: impl Into<String>, domain: impl Into<String>) -> Self {
+        Self {
+            score,
+            grade: grade.into(),
+            domain: domain.into(),
+            date: String::new(),
+            verdict: String::new(),
+            metrics: Vec::new(),
+            top_actions: Vec::new(),
+            positive_aspects: Vec::new(),
+            good_threshold: 70,
+            warn_threshold: 50,
+        }
+    }
+
+    pub fn with_date(mut self, date: impl Into<String>) -> Self {
+        self.date = date.into();
+        self
+    }
+
+    pub fn with_verdict(mut self, verdict: impl Into<String>) -> Self {
+        self.verdict = verdict.into();
+        self
+    }
+
+    pub fn add_metric(mut self, metric: HeroMetric) -> Self {
+        self.metrics.push(metric);
+        self
+    }
+
+    pub fn with_top_actions(mut self, actions: Vec<String>) -> Self {
+        self.top_actions = actions;
+        self
+    }
+
+    pub fn with_positive_aspects(mut self, aspects: Vec<String>) -> Self {
+        self.positive_aspects = aspects;
+        self
+    }
+
+    pub fn with_thresholds(mut self, good: u32, warn: u32) -> Self {
+        self.good_threshold = good;
+        self.warn_threshold = warn;
+        self
+    }
+}
+
+impl Component for HeroSummary {
+    fn component_id(&self) -> &'static str {
+        "hero-summary"
+    }
+
+    fn to_data(&self) -> serde_json::Value {
+        let mut data = serde_json::to_value(self).unwrap_or_default();
+        if let serde_json::Value::Object(ref mut map) = data {
+            let status = if self.score >= self.good_threshold {
+                "good"
+            } else if self.score >= self.warn_threshold {
+                "warning"
+            } else {
+                "bad"
+            };
+            map.insert("computed_status".into(), serde_json::Value::String(status.into()));
+        }
+        data
+    }
+}
+
+/// Module dashboard showing scores as a horizontal card strip
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ModuleDashboard {
+    #[serde(default)]
+    pub title: Option<String>,
+    pub modules: Vec<DashboardModule>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DashboardModule {
+    pub name: String,
+    pub score: u32,
+    pub interpretation: String,
+    #[serde(default = "default_good_threshold")]
+    pub good_threshold: u32,
+    #[serde(default = "default_warn_threshold")]
+    pub warn_threshold: u32,
+}
+
+impl ModuleDashboard {
+    pub fn new(modules: Vec<DashboardModule>) -> Self {
+        Self {
+            title: None,
+            modules,
+        }
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+}
+
+impl Component for ModuleDashboard {
+    fn component_id(&self) -> &'static str {
+        "module-dashboard"
+    }
+
+    fn to_data(&self) -> serde_json::Value {
+        let mut data = serde_json::to_value(self).unwrap_or_default();
+        // Compute status for each module
+        if let serde_json::Value::Object(ref mut map) = data {
+            if let Some(serde_json::Value::Array(ref mut modules)) = map.get_mut("modules") {
+                for module in modules.iter_mut() {
+                    if let serde_json::Value::Object(ref mut m) = module {
+                        let score = m.get("score").and_then(|v| v.as_u64()).unwrap_or(0) as u32;
+                        let good = m.get("good_threshold").and_then(|v| v.as_u64()).unwrap_or(90) as u32;
+                        let warn = m.get("warn_threshold").and_then(|v| v.as_u64()).unwrap_or(50) as u32;
+                        let status = if score >= good { "good" } else if score >= warn { "warning" } else { "bad" };
+                        m.insert("computed_status".into(), serde_json::Value::String(status.into()));
+                    }
+                }
+            }
+        }
+        data
+    }
+}
+
+/// Action roadmap with categorized columns
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ActionRoadmap {
+    pub columns: Vec<RoadmapColumn>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RoadmapColumn {
+    pub title: String,
+    #[serde(default)]
+    pub accent_color: Option<String>,
+    pub items: Vec<RoadmapItem>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RoadmapItem {
+    pub action: String,
+    pub role: String,
+    pub priority: String,
+    pub benefit: String,
+}
+
+impl ActionRoadmap {
+    pub fn new(columns: Vec<RoadmapColumn>) -> Self {
+        Self { columns }
+    }
+}
+
+impl Component for ActionRoadmap {
+    fn component_id(&self) -> &'static str {
+        "action-roadmap"
+    }
+
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
