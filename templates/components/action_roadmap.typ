@@ -25,7 +25,14 @@
         theme-card(fill: color-surface-soft)[
           #text(size: font-size-base, weight: "bold")[#item.action]
           #v(spacing-2)
-          #label-text([#item.role · #item.priority])
+          #grid(
+            columns: (auto, 1fr),
+            row-gutter: spacing-1,
+            column-gutter: spacing-3,
+            label-text([Impact]), text(size: font-size-sm)[#item.priority],
+            label-text([Aufwand]), text(size: font-size-sm)[#{if item.effort != none { item.effort } else { "—" }}],
+            label-text([Rolle]), text(size: font-size-sm)[#item.role],
+          )
           #if item.benefit != "" [
             #v(spacing-2)
             #small-text(item.benefit)

@@ -226,6 +226,7 @@ impl Engine {
   fill: color-text,
 )
 
+#set text(hyphenate: false)
 #set par(justify: true, leading: 0.75em)
 
 #set heading(numbering: none)

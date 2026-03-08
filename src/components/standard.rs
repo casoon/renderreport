@@ -695,6 +695,8 @@ pub struct RoadmapItem {
     pub action: String,
     pub role: String,
     pub priority: String,
+    #[serde(default)]
+    pub effort: Option<String>,
     pub benefit: String,
 }
 
@@ -707,6 +709,352 @@ impl ActionRoadmap {
 impl Component for ActionRoadmap {
     fn component_id(&self) -> &'static str {
         "action-roadmap"
+    }
+
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── Severity Overview ──────────────────────────────────────────────────────
+
+/// Visual severity breakdown with cards and severity strip
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SeverityOverview {
+    #[serde(default)]
+    pub title: Option<String>,
+    pub critical: u32,
+    pub serious: u32,
+    pub moderate: u32,
+    pub minor: u32,
+}
+
+impl SeverityOverview {
+    pub fn new(critical: u32, serious: u32, moderate: u32, minor: u32) -> Self {
+        Self {
+            title: Some("Problemübersicht".into()),
+            critical,
+            serious,
+            moderate,
+            minor,
+        }
+    }
+
+    pub fn with_title(mut self, title: &str) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+}
+
+impl Component for SeverityOverview {
+    fn component_id(&self) -> &'static str {
+        "severity-overview"
+    }
+
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── Cover Page ─────────────────────────────────────────────────────────────
+
+/// Professional cover page with score preview
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CoverPage {
+    pub brand: String,
+    pub title: String,
+    pub domain: String,
+    pub subtitle: String,
+    pub date: String,
+    pub score: u32,
+    pub grade: String,
+    #[serde(default)]
+    pub total_issues: u32,
+    #[serde(default)]
+    pub critical_issues: u32,
+    #[serde(default)]
+    pub modules: Vec<String>,
+    /// Computed from score thresholds
+    #[serde(default)]
+    computed_status: String,
+}
+
+impl CoverPage {
+    pub fn new(title: &str, domain: &str, score: u32, grade: &str) -> Self {
+        let computed_status = if score >= 70 {
+            "good"
+        } else if score >= 50 {
+            "warning"
+        } else {
+            "bad"
+        }
+        .to_string();
+
+        Self {
+            brand: "AuditMySite".into(),
+            title: title.into(),
+            domain: domain.into(),
+            subtitle: "Automatisierte Analyse zu Accessibility, Performance, SEO, Sicherheit und Mobile.".into(),
+            date: String::new(),
+            score,
+            grade: grade.into(),
+            total_issues: 0,
+            critical_issues: 0,
+            modules: vec![],
+            computed_status,
+        }
+    }
+
+    pub fn with_brand(mut self, brand: &str) -> Self {
+        self.brand = brand.into();
+        self
+    }
+
+    pub fn with_subtitle(mut self, subtitle: &str) -> Self {
+        self.subtitle = subtitle.into();
+        self
+    }
+
+    pub fn with_date(mut self, date: &str) -> Self {
+        self.date = date.into();
+        self
+    }
+
+    pub fn with_modules(mut self, modules: Vec<String>) -> Self {
+        self.modules = modules;
+        self
+    }
+
+    pub fn with_issues(mut self, total: u32, critical: u32) -> Self {
+        self.total_issues = total;
+        self.critical_issues = critical;
+        self
+    }
+}
+
+impl Component for CoverPage {
+    fn component_id(&self) -> &'static str {
+        "cover-page"
+    }
+
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── Module Comparison ──────────────────────────────────────────────────────
+
+/// Horizontal score comparison rows for modules
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ModuleComparison {
+    #[serde(default)]
+    pub title: Option<String>,
+    pub modules: Vec<ComparisonModule>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ComparisonModule {
+    pub name: String,
+    pub score: u32,
+    #[serde(default)]
+    pub accent_color: Option<String>,
+    /// Computed from thresholds
+    #[serde(default)]
+    computed_status: String,
+}
+
+impl ModuleComparison {
+    pub fn new(modules: Vec<ComparisonModule>) -> Self {
+        Self {
+            title: Some("Modul-Scores im Vergleich".into()),
+            modules,
+        }
+    }
+
+    pub fn with_title(mut self, title: &str) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+}
+
+impl ComparisonModule {
+    pub fn new(name: &str, score: u32) -> Self {
+        let computed_status = if score >= 75 {
+            "good"
+        } else if score >= 50 {
+            "warning"
+        } else {
+            "bad"
+        }
+        .to_string();
+
+        Self {
+            name: name.into(),
+            score,
+            accent_color: None,
+            computed_status,
+        }
+    }
+
+    pub fn with_color(mut self, color: &str) -> Self {
+        self.accent_color = Some(color.into());
+        self
+    }
+}
+
+impl Component for ModuleComparison {
+    fn component_id(&self) -> &'static str {
+        "module-comparison"
+    }
+
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── Benchmark Summary ─────────────────────────────────────────────────────
+
+/// Portfolio-level summary cards for batch reports
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BenchmarkSummary {
+    pub total_sites: u32,
+    pub average_score: u32,
+    pub best_score: u32,
+    pub best_domain: String,
+    pub worst_score: u32,
+    pub worst_domain: String,
+    pub total_issues: u32,
+    pub critical_issues: u32,
+}
+
+impl BenchmarkSummary {
+    pub fn new(total_sites: u32, average_score: u32) -> Self {
+        Self {
+            total_sites,
+            average_score,
+            best_score: 0,
+            best_domain: String::new(),
+            worst_score: 0,
+            worst_domain: String::new(),
+            total_issues: 0,
+            critical_issues: 0,
+        }
+    }
+
+    pub fn with_best(mut self, domain: &str, score: u32) -> Self {
+        self.best_domain = domain.into();
+        self.best_score = score;
+        self
+    }
+
+    pub fn with_worst(mut self, domain: &str, score: u32) -> Self {
+        self.worst_domain = domain.into();
+        self.worst_score = score;
+        self
+    }
+
+    pub fn with_issues(mut self, total: u32, critical: u32) -> Self {
+        self.total_issues = total;
+        self.critical_issues = critical;
+        self
+    }
+}
+
+impl Component for BenchmarkSummary {
+    fn component_id(&self) -> &'static str {
+        "benchmark-summary"
+    }
+
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── Benchmark Table ────────────────────────────────────────────────────────
+
+/// Ranking table for batch report website comparison
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BenchmarkTable {
+    #[serde(default)]
+    pub title: Option<String>,
+    pub rows: Vec<BenchmarkRow>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BenchmarkRow {
+    pub rank: u32,
+    pub domain: String,
+    pub score: u32,
+    pub accessibility: u32,
+    #[serde(default)]
+    pub seo: Option<u32>,
+    #[serde(default)]
+    pub performance: Option<u32>,
+    #[serde(default)]
+    pub security: Option<u32>,
+    pub critical_issues: u32,
+    /// Computed from score
+    #[serde(default)]
+    computed_status: String,
+}
+
+impl BenchmarkTable {
+    pub fn new(rows: Vec<BenchmarkRow>) -> Self {
+        Self {
+            title: Some("Website-Ranking".into()),
+            rows,
+        }
+    }
+
+    pub fn with_title(mut self, title: &str) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+}
+
+impl BenchmarkRow {
+    pub fn new(rank: u32, domain: &str, score: u32, accessibility: u32, critical_issues: u32) -> Self {
+        let computed_status = if score >= 75 {
+            "good"
+        } else if score >= 50 {
+            "warning"
+        } else {
+            "bad"
+        }
+        .to_string();
+
+        Self {
+            rank,
+            domain: domain.into(),
+            score,
+            accessibility,
+            seo: None,
+            performance: None,
+            security: None,
+            critical_issues,
+            computed_status,
+        }
+    }
+
+    pub fn with_seo(mut self, score: u32) -> Self {
+        self.seo = Some(score);
+        self
+    }
+
+    pub fn with_performance(mut self, score: u32) -> Self {
+        self.performance = Some(score);
+        self
+    }
+
+    pub fn with_security(mut self, score: u32) -> Self {
+        self.security = Some(score);
+        self
+    }
+}
+
+impl Component for BenchmarkTable {
+    fn component_id(&self) -> &'static str {
+        "benchmark-table"
     }
 
     fn to_data(&self) -> serde_json::Value {

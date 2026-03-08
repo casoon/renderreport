@@ -15,7 +15,7 @@
   } else if data.style == "double" {
     (thickness: 2pt)
   } else {
-    ()
+    (:)
   }
   
   v(eval(data.spacing_above))

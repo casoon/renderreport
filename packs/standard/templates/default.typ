@@ -77,7 +77,7 @@
   heading(level: 1)[Table of Contents]
   outline(
     title: none,
-    indent: true,
+    indent: auto,
     depth: 3
   )
   pagebreak()

@@ -205,6 +205,31 @@ impl ComponentRegistry {
             ComponentId::new("action-roadmap"),
             include_str!("../../templates/components/action_roadmap.typ").to_string(),
         );
+
+        self.register(
+            ComponentId::new("severity-overview"),
+            include_str!("../../templates/components/severity_overview.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("cover-page"),
+            include_str!("../../templates/components/cover_page.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("module-comparison"),
+            include_str!("../../templates/components/module_comparison.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("benchmark-summary"),
+            include_str!("../../templates/components/benchmark_summary.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("benchmark-table"),
+            include_str!("../../templates/components/benchmark_table.typ").to_string(),
+        );
     }
 
     /// Register a component template
