@@ -1,5 +1,6 @@
 # @casoon/renderreport
 
+[![CI](https://github.com/casoon/renderreport/actions/workflows/ci.yml/badge.svg)](https://github.com/casoon/renderreport/actions/workflows/ci.yml)
 [![Crates.io](https://img.shields.io/crates/v/renderreport.svg)](https://crates.io/crates/renderreport)
 [![Documentation](https://docs.rs/renderreport/badge.svg)](https://docs.rs/renderreport)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE-MIT)
