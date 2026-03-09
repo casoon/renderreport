@@ -29,7 +29,7 @@ mod error;
 pub use components::{Component, ComponentId, ComponentRegistry};
 pub use engine::Engine;
 pub use error::{Error, Result};
-pub use pack::{Pack, PackId, PackManifest, PackLoader};
+pub use pack::{Pack, PackId, PackLoader, PackManifest};
 pub use render::{RenderOutput, RenderRequest};
 pub use theme::{Theme, ThemeTokens, TokenValue};
 

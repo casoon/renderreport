@@ -612,7 +612,10 @@ impl Component for HeroSummary {
             } else {
                 "bad"
             };
-            map.insert("computed_status".into(), serde_json::Value::String(status.into()));
+            map.insert(
+                "computed_status".into(),
+                serde_json::Value::String(status.into()),
+            );
         }
         data
     }
@@ -664,10 +667,25 @@ impl Component for ModuleDashboard {
                 for module in modules.iter_mut() {
                     if let serde_json::Value::Object(ref mut m) = module {
                         let score = m.get("score").and_then(|v| v.as_u64()).unwrap_or(0) as u32;
-                        let good = m.get("good_threshold").and_then(|v| v.as_u64()).unwrap_or(90) as u32;
-                        let warn = m.get("warn_threshold").and_then(|v| v.as_u64()).unwrap_or(50) as u32;
-                        let status = if score >= good { "good" } else if score >= warn { "warning" } else { "bad" };
-                        m.insert("computed_status".into(), serde_json::Value::String(status.into()));
+                        let good = m
+                            .get("good_threshold")
+                            .and_then(|v| v.as_u64())
+                            .unwrap_or(90) as u32;
+                        let warn = m
+                            .get("warn_threshold")
+                            .and_then(|v| v.as_u64())
+                            .unwrap_or(50) as u32;
+                        let status = if score >= good {
+                            "good"
+                        } else if score >= warn {
+                            "warning"
+                        } else {
+                            "bad"
+                        };
+                        m.insert(
+                            "computed_status".into(),
+                            serde_json::Value::String(status.into()),
+                        );
                     }
                 }
             }
@@ -794,7 +812,9 @@ impl CoverPage {
             brand: "AuditMySite".into(),
             title: title.into(),
             domain: domain.into(),
-            subtitle: "Automatisierte Analyse zu Accessibility, Performance, SEO, Sicherheit und Mobile.".into(),
+            subtitle:
+                "Automatisierte Analyse zu Accessibility, Performance, SEO, Sicherheit und Mobile."
+                    .into(),
             date: String::new(),
             score,
             grade: grade.into(),
@@ -1013,7 +1033,13 @@ impl BenchmarkTable {
 }
 
 impl BenchmarkRow {
-    pub fn new(rank: u32, domain: &str, score: u32, accessibility: u32, critical_issues: u32) -> Self {
+    pub fn new(
+        rank: u32,
+        domain: &str,
+        score: u32,
+        accessibility: u32,
+        critical_issues: u32,
+    ) -> Self {
         let computed_status = if score >= 75 {
             "good"
         } else if score >= 50 {

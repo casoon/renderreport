@@ -165,7 +165,10 @@ impl Default for ThemeTokens {
         );
         tokens.set("component.finding.radius", TokenValue::Size("10pt".into()));
         tokens.set("component.callout.radius", TokenValue::Size("10pt".into()));
-        tokens.set("component.card.border-width", TokenValue::Size("0.8pt".into()));
+        tokens.set(
+            "component.card.border-width",
+            TokenValue::Size("0.8pt".into()),
+        );
 
         tokens
     }
