@@ -1,0 +1,4 @@
+# Binary is downloaded at install time, not committed
+renderreport/bin/renderreport
+renderreport/bin/renderreport.exe
+renderreport/bin/download.*

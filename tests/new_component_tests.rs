@@ -168,7 +168,7 @@ fn test_label_styling() {
 
 #[test]
 fn test_text_creation() {
-    let text = Text::new("This is a longer text block with multiple sentences.");
+    let text = TextBlock::new("This is a longer text block with multiple sentences.");
 
     assert_eq!(text.component_id(), "textblock");
     assert!(text.content.contains("multiple sentences"));
@@ -176,7 +176,7 @@ fn test_text_creation() {
 
 #[test]
 fn test_text_formatting() {
-    let text = Text::new("Content")
+    let text = TextBlock::new("Content")
         .with_size("12pt")
         .with_line_height("1.5")
         .with_max_width("500pt");
@@ -251,7 +251,7 @@ fn test_all_components_implement_component_trait() {
     let pivot = PivotTable::new(vec![], vec![], vec![]);
     let barcode = Barcode::code128("TEST");
     let label = Label::new("Test");
-    let text = Text::new("Test");
+    let text = TextBlock::new("Test");
     let number = NumberField::new(100.0);
     let date = DateField::new("2024-01-01");
     let resource = ResourceField::new("key");

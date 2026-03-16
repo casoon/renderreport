@@ -1,0 +1,33 @@
+{
+  "name": "@casoon/renderreport",
+  "version": "0.1.0-alpha.1",
+  "description": "Data-driven report generation with Typst as embedded render engine",
+  "license": "MIT OR Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/casoon/renderreport",
+    "directory": "npm/renderreport"
+  },
+  "keywords": ["report", "pdf", "typst", "audit", "generator"],
+  "bin": {
+    "renderreport": "bin/run.cjs"
+  },
+  "scripts": {
+    "postinstall": "node bin/install.cjs"
+  },
+  "files": [
+    "bin/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ]
+}

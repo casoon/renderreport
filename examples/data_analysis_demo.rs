@@ -14,7 +14,7 @@
 //! Run with: cargo run --example data_analysis_demo
 
 use renderreport::components::crosstab::{Crosstab, PivotTable};
-use renderreport::components::text::{Label, Text};
+use renderreport::components::text::{Label, TextBlock};
 use renderreport::components::{Component, Section};
 use renderreport::prelude::*;
 use std::collections::HashMap;
@@ -40,7 +40,7 @@ fn main() -> renderreport::Result<()> {
         // SECTION 1: Introduction
         // ============================================
         .add_component(Section::new("Introduction to Data Analysis Components"))
-        .add_raw_component(add_comp(&Text::new(
+        .add_raw_component(add_comp(&TextBlock::new(
             "This report demonstrates powerful data analysis components inspired by enterprise \
              reporting tools like JasperReports and Eclipse BIRT. These components allow you to \
              create sophisticated pivot tables and crosstab reports for multi-dimensional data analysis.",
@@ -260,7 +260,7 @@ fn main() -> renderreport::Result<()> {
         // SECTION 8: Dynamic Crosstab Example
         // ============================================
         .add_component(Section::new("Dynamic Crosstab - Advanced Aggregation"))
-        .add_raw_component(add_comp(&Text::new(
+        .add_raw_component(add_comp(&TextBlock::new(
             "Crosstab components allow dynamic data aggregation with row and column totals. \
              Perfect for ad-hoc analysis and reporting where data structure may vary.",
         )))

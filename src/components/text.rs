@@ -66,7 +66,7 @@ impl Component for Label {
 
 /// Multi-line text block
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Text {
+pub struct TextBlock {
     /// Text content
     pub content: String,
     /// Font size
@@ -83,7 +83,7 @@ pub struct Text {
     pub max_width: Option<String>,
 }
 
-impl Text {
+impl TextBlock {
     pub fn new(content: impl Into<String>) -> Self {
         Self {
             content: content.into(),
@@ -110,7 +110,7 @@ impl Text {
     }
 }
 
-impl Component for Text {
+impl Component for TextBlock {
     fn component_id(&self) -> &'static str {
         "textblock"
     }

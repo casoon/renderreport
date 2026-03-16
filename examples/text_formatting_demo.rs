@@ -16,7 +16,7 @@
 //!
 //! Run with: cargo run --example text_formatting_demo
 
-use renderreport::components::text::{DateField, Label, NumberField, ResourceField, Text};
+use renderreport::components::text::{DateField, Label, NumberField, ResourceField, TextBlock};
 use renderreport::components::{Component, Section};
 use renderreport::prelude::*;
 
@@ -41,7 +41,7 @@ fn main() -> renderreport::Result<()> {
         // SECTION 1: Label Components
         // ============================================
         .add_component(Section::new("Label Components - Simple Text Styling"))
-        .add_raw_component(add_comp(&Text::new(
+        .add_raw_component(add_comp(&TextBlock::new(
             "Labels are perfect for headings, captions, and short text that needs styling. \
              They support font size, weight, color, and alignment.",
         )))
@@ -75,27 +75,27 @@ fn main() -> renderreport::Result<()> {
         // SECTION 2: Text Blocks
         // ============================================
         .add_component(Section::new("Text Blocks - Multi-line Content"))
-        .add_raw_component(add_comp(&Text::new(
+        .add_raw_component(add_comp(&TextBlock::new(
             "Text components are designed for longer, multi-line content like paragraphs, \
              descriptions, and documentation. They support line height control and maximum width \
              constraints for optimal readability.",
         )))
         .add_raw_component(add_comp(&Label::new("Executive Summary:").bold().with_size("12pt")))
-        .add_raw_component(add_comp(&Text::new(
+        .add_raw_component(add_comp(&TextBlock::new(
             "Our Q4 2024 results exceeded expectations across all key metrics. Revenue grew 23% \
              year-over-year, reaching $12.4M, while customer acquisition increased by 34%. The \
              successful launch of our Enterprise tier contributed significantly to this growth, \
              with 145 new enterprise customers onboarded during the quarter.",
         ).with_size("10pt").with_line_height("1.5")))
         .add_raw_component(add_comp(&Label::new("Technical Details:").bold().with_size("12pt")))
-        .add_raw_component(add_comp(&Text::new(
+        .add_raw_component(add_comp(&TextBlock::new(
             "The system architecture has been optimized for high availability and scalability. \
              We implemented a microservices-based approach using Kubernetes for orchestration, \
              Redis for caching, and PostgreSQL for persistent storage. Response times improved \
              by 45% compared to the previous quarter.",
         ).with_size("9pt").with_max_width("400pt")))
         .add_raw_component(add_comp(&Label::new("Conclusion:").bold().with_size("12pt")))
-        .add_raw_component(add_comp(&Text::new(
+        .add_raw_component(add_comp(&TextBlock::new(
             "Looking ahead to 2025, we remain focused on innovation and customer success. Our \
              product roadmap includes several exciting features that address customer feedback \
              and market demands.",
@@ -104,7 +104,7 @@ fn main() -> renderreport::Result<()> {
         // SECTION 3: Currency Formatting
         // ============================================
         .add_component(Section::new("Currency Formatting"))
-        .add_raw_component(add_comp(&Text::new(
+        .add_raw_component(add_comp(&TextBlock::new(
             "NumberField components provide sophisticated number formatting including currency, \
              percentages, and custom patterns. Perfect for financial reports and dashboards.",
         )))
@@ -128,7 +128,7 @@ fn main() -> renderreport::Result<()> {
         // SECTION 4: Percentage Formatting
         // ============================================
         .add_component(Section::new("Percentage Formatting"))
-        .add_raw_component(add_comp(&Text::new(
+        .add_raw_component(add_comp(&TextBlock::new(
             "Percentage values are commonly used in reports for growth rates, market share, \
              conversion rates, and performance metrics.",
         )))
@@ -184,7 +184,7 @@ fn main() -> renderreport::Result<()> {
         // SECTION 6: Date Formatting
         // ============================================
         .add_component(Section::new("Date Formatting"))
-        .add_raw_component(add_comp(&Text::new(
+        .add_raw_component(add_comp(&TextBlock::new(
             "DateField components support multiple date formats for international audiences. \
              Common formats include ISO 8601, European (DD.MM.YYYY), and US (MM/DD/YYYY) styles.",
         )))
@@ -224,7 +224,7 @@ fn main() -> renderreport::Result<()> {
         // SECTION 8: Resource Fields (i18n)
         // ============================================
         .add_component(Section::new("Resource Fields - Internationalization"))
-        .add_raw_component(add_comp(&Text::new(
+        .add_raw_component(add_comp(&TextBlock::new(
             "ResourceField components enable internationalization (i18n) by referencing localized \
              strings. This allows reports to be generated in multiple languages using resource bundles.",
         )))
@@ -280,7 +280,7 @@ fn main() -> renderreport::Result<()> {
         .add_raw_component(add_comp(&Label::new("Retention Rate: ")))
         .add_raw_component(add_comp(&NumberField::percentage(94.8)))
         .add_raw_component(add_comp(&Label::new("Summary:").bold().with_size("11pt")))
-        .add_raw_component(add_comp(&Text::new(
+        .add_raw_component(add_comp(&TextBlock::new(
             "Strong performance across all metrics. Revenue exceeded targets by 12%, driven by \
              enterprise customer growth and successful product launches.",
         ).with_size("10pt")))

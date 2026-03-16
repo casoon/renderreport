@@ -202,7 +202,7 @@ impl Engine {
       #grid(
         columns: (1fr, auto),
         gutter: spacing-3,
-        [Web Accessibility Audit Report],
+        [#report-title],
         [#report-date]
       )
       #v(4pt)
@@ -214,7 +214,7 @@ impl Engine {
     #grid(
       columns: (1fr, auto),
       gutter: spacing-3,
-      [AuditMySite],
+      [#report-author],
       [#counter(page).display("1 / 1", both: true)]
     )
   ],
