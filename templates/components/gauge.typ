@@ -28,25 +28,21 @@
     {
       if style == "circular" {
         // Circular gauge
-        align(center, {
-          circle(
+        align(center, box(width: 84pt, height: 84pt, {
+          place(center + horizon, circle(
             radius: 40pt,
             stroke: 3pt + gray.lighten(50%),
             fill: none
-          )
-          place(
-            center + horizon,
-            circle(
-              radius: 35pt,
-              stroke: 5pt + gauge_color,
-              fill: none
-            )
-          )
-          place(
-            center + horizon,
+          ))
+          place(center + horizon, circle(
+            radius: 35pt,
+            stroke: 5pt + gauge_color,
+            fill: none
+          ))
+          place(center + horizon,
             text(weight: "bold", size: 16pt, str(calc.round(value, digits: 1)))
           )
-        })
+        }))
       } else if style == "vertical" {
         // Thermometer style
         align(center, {

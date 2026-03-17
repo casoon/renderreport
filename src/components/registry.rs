@@ -30,6 +30,8 @@ impl From<&str> for ComponentId {
 pub struct ComponentRegistry {
     /// Component templates (Typst code)
     templates: HashMap<ComponentId, String>,
+    /// Insertion order for deterministic output
+    insertion_order: Vec<ComponentId>,
     /// Component factories for validation
     validators: HashMap<ComponentId, Arc<dyn Fn(&serde_json::Value) -> bool + Send + Sync>>,
 }
@@ -104,11 +106,6 @@ impl ComponentRegistry {
         self.register(
             ComponentId::new("key-value-list"),
             include_str!("../../templates/components/key_value_list.typ").to_string(),
-        );
-
-        self.register(
-            ComponentId::new("grid-component"),
-            include_str!("../../templates/components/grid.typ").to_string(),
         );
 
         self.register(
@@ -230,10 +227,20 @@ impl ComponentRegistry {
             ComponentId::new("benchmark-table"),
             include_str!("../../templates/components/benchmark_table.typ").to_string(),
         );
+
+        // Grid component MUST be registered last — its template dispatches
+        // to other component functions, so they must already be defined.
+        self.register(
+            ComponentId::new("grid-component"),
+            include_str!("../../templates/components/grid.typ").to_string(),
+        );
     }
 
     /// Register a component template
     pub fn register(&mut self, id: ComponentId, template: String) {
+        if !self.templates.contains_key(&id) {
+            self.insertion_order.push(id.clone());
+        }
         self.templates.insert(id, template);
     }
 
@@ -263,9 +270,9 @@ impl ComponentRegistry {
         self.validators.get(id).map(|v| v(data)).unwrap_or(true)
     }
 
-    /// List all registered component IDs
+    /// List all registered component IDs in insertion order
     pub fn list_components(&self) -> Vec<&ComponentId> {
-        self.templates.keys().collect()
+        self.insertion_order.iter().collect()
     }
 }
 

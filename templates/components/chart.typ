@@ -129,30 +129,187 @@
             }
           }
         )
-      } else if chart_type == "line" {
-        // Line chart representation
-        let points = if series.len() > 0 { series.at(0).data } else { () }
+      } else if chart_type == "line" or chart_type == "area" {
+        // Line/Area chart — data-driven with dots and connecting lines
+        let all_values = series.map(s => s.data.map(p => p.value)).flatten()
+        let max_val = if all_values.len() > 0 { calc.max(..all_values, 1) } else { 100 }
+        let min_val = if all_values.len() > 0 { calc.min(..all_values, 0) } else { 0 }
+        let val_range = if max_val > min_val { max_val - min_val } else { 1 }
+        let labels = if series.len() > 0 { series.at(0).data.map(p => p.label) } else { () }
+        let chart_h = 140
+        let chart_w_pt = 100 // percentage
 
         rect(
           width: 100%,
-          height: eval(height),
           stroke: 0.5pt + rgb("#e2e8f0"),
           radius: 4pt,
           fill: rgb("#f8fafc"),
-          inset: 12pt,
+          inset: 16pt,
           {
             if y_label != none {
-              rotate(-90deg, text(size: 8pt, fill: rgb("#94a3b8"), y_label))
-              h(8pt)
+              align(left, text(size: 8pt, fill: rgb("#94a3b8"), y_label))
+              v(4pt)
             }
-            align(center + horizon, {
-              line(length: 150pt, stroke: 2pt + rgb("#3b82f6"))
-              v(6pt)
-              text(size: 9pt, fill: rgb("#94a3b8"), [Line Chart])
-            })
+
+            // Chart area with placed elements
+            let n_points = if labels.len() > 0 { labels.len() } else { 1 }
+
+            for (si, s) in series.enumerate() {
+              let color = colors.at(calc.rem(si, colors.len()))
+              let points_data = s.data
+
+              if points_data.len() > 1 {
+                // Render columns with bars for area, dots for line
+                grid(
+                  columns: (1fr,) * points_data.len(),
+                  column-gutter: 0pt,
+                  ..points_data.enumerate().map(((i, p)) => {
+                    let bar_height = calc.max((p.value - min_val) / val_range * chart_h, 2)
+                    align(center, {
+                      // Value label
+                      text(size: 7pt, weight: "bold", fill: rgb("#334155"), str(calc.round(p.value)))
+                      v(2pt)
+                      // Spacer to push down (inverse height)
+                      v((chart_h - bar_height) * 1pt)
+                      if chart_type == "area" {
+                        // Filled area bar
+                        rect(
+                          width: 100%,
+                          height: bar_height * 1pt,
+                          fill: color.lighten(60%),
+                          stroke: (top: 2.5pt + color),
+                        )
+                      } else {
+                        // Line chart: thin bar with dot on top
+                        rect(
+                          width: 100%,
+                          height: bar_height * 1pt,
+                          fill: none,
+                          stroke: none,
+                          {
+                            place(center + top, circle(radius: 4pt, fill: color, stroke: 1pt + white))
+                            place(center + top, line(
+                              length: 100%,
+                              stroke: 2pt + color,
+                            ))
+                          }
+                        )
+                      }
+                    })
+                  })
+                )
+
+                // X-axis labels
+                grid(
+                  columns: (1fr,) * points_data.len(),
+                  column-gutter: 0pt,
+                  ..points_data.map(p => {
+                    align(center, text(size: 7pt, fill: rgb("#64748b"), p.label))
+                  })
+                )
+              }
+            }
+
             if x_label != none {
               v(8pt)
               align(center, text(size: 8pt, fill: rgb("#94a3b8"), x_label))
+            }
+          }
+        )
+      } else if chart_type == "scatter" {
+        // Scatter chart — dots positioned by value
+        let all_values = series.map(s => s.data.map(p => p.value)).flatten()
+        let max_val = if all_values.len() > 0 { calc.max(..all_values, 1) } else { 100 }
+        let min_val = if all_values.len() > 0 { calc.min(..all_values, 0) } else { 0 }
+        let val_range = if max_val > min_val { max_val - min_val } else { 1 }
+        let chart_h = 140
+
+        rect(
+          width: 100%,
+          stroke: 0.5pt + rgb("#e2e8f0"),
+          radius: 4pt,
+          fill: rgb("#f8fafc"),
+          inset: 16pt,
+          {
+            if y_label != none {
+              align(left, text(size: 8pt, fill: rgb("#94a3b8"), y_label))
+              v(4pt)
+            }
+
+            for (si, s) in series.enumerate() {
+              let color = colors.at(calc.rem(si, colors.len()))
+              let points_data = s.data
+
+              if points_data.len() > 0 {
+                grid(
+                  columns: (1fr,) * points_data.len(),
+                  column-gutter: 4pt,
+                  ..points_data.enumerate().map(((i, p)) => {
+                    let dot_y = calc.max((p.value - min_val) / val_range * chart_h, 4)
+                    align(center, {
+                      text(size: 6pt, fill: rgb("#64748b"), str(calc.round(p.value)))
+                      v(2pt)
+                      v((chart_h - dot_y) * 1pt)
+                      circle(radius: 5pt, fill: color, stroke: 1.5pt + white)
+                      v(dot_y * 1pt - 10pt)
+                    })
+                  })
+                )
+
+                // X-axis labels
+                grid(
+                  columns: (1fr,) * points_data.len(),
+                  column-gutter: 4pt,
+                  ..points_data.map(p => {
+                    align(center, text(size: 6pt, fill: rgb("#64748b"), p.label))
+                  })
+                )
+              }
+            }
+
+            if x_label != none {
+              v(8pt)
+              align(center, text(size: 8pt, fill: rgb("#94a3b8"), x_label))
+            }
+          }
+        )
+      } else if chart_type == "radar" {
+        // Radar chart — horizontal bar comparison per axis
+        let labels = if series.len() > 0 { series.at(0).data.map(p => p.label) } else { () }
+        let all_values = series.map(s => s.data.map(p => p.value)).flatten()
+        let max_val = if all_values.len() > 0 { calc.max(..all_values, 1) } else { 100 }
+
+        rect(
+          width: 100%,
+          stroke: 0.5pt + rgb("#e2e8f0"),
+          radius: 4pt,
+          fill: rgb("#f8fafc"),
+          inset: 16pt,
+          {
+            for (li, label) in labels.enumerate() {
+              // Axis label
+              text(size: 8pt, weight: "bold", fill: rgb("#334155"), label)
+              v(3pt)
+
+              // One bar per series for this axis
+              for (si, s) in series.enumerate() {
+                let color = colors.at(calc.rem(si, colors.len()))
+                let val = if li < s.data.len() { s.data.at(li).value } else { 0 }
+                let pct = calc.min(val / max_val * 100, 100)
+
+                stack(dir: ltr, spacing: 6pt,
+                  rect(
+                    width: pct * 1%,
+                    height: 12pt,
+                    fill: color.lighten(30%),
+                    stroke: (right: 2pt + color),
+                    radius: 2pt,
+                  ),
+                  text(size: 7pt, fill: rgb("#64748b"), str(calc.round(val))),
+                )
+                v(2pt)
+              }
+              v(6pt)
             }
           }
         )
