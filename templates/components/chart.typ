@@ -40,18 +40,16 @@
 
         rect(
           width: 100%,
-          stroke: 0.5pt + rgb("#e2e8f0"),
+          stroke: 0.5pt + color-border,
           radius: 4pt,
-          fill: rgb("#f8fafc"),
+          fill: color-surface,
           inset: 16pt,
           {
-            // Y-axis label
             if y_label != none {
-              align(left, text(size: 8pt, fill: rgb("#94a3b8"), y_label))
+              align(left, text(size: 8pt, fill: color-text-muted, y_label))
               v(4pt)
             }
 
-            // Scale lines
             let chart_height = 140
             grid(
               columns: (1fr,) * points.len(),
@@ -59,10 +57,8 @@
               ..points.enumerate().map(((i, p)) => {
                 let bar_height = calc.max(p.value / max_val * chart_height, 4)
                 align(center, {
-                  // Value on top
-                  text(size: 8pt, weight: "bold", fill: rgb("#334155"), str(calc.round(p.value)))
+                  text(size: 8pt, weight: "bold", fill: color-text, str(calc.round(p.value)))
                   v(4pt)
-                  // Bar
                   rect(
                     width: 100%,
                     height: bar_height * 1pt,
@@ -70,16 +66,14 @@
                     radius: (top: 3pt),
                   )
                   v(6pt)
-                  // Label
-                  text(size: 7pt, fill: rgb("#64748b"), p.label)
+                  text(size: 7pt, fill: color-text-muted, p.label)
                 })
               })
             )
 
-            // X-axis label
             if x_label != none {
               v(8pt)
-              align(center, text(size: 8pt, fill: rgb("#94a3b8"), x_label))
+              align(center, text(size: 8pt, fill: color-text-muted, x_label))
             }
           }
         )
@@ -92,9 +86,9 @@
 
         rect(
           width: 100%,
-          stroke: 0.5pt + rgb("#e2e8f0"),
+          stroke: 0.5pt + color-border,
           radius: 4pt,
-          fill: rgb("#f8fafc"),
+          fill: color-surface,
           inset: 16pt,
           {
             if points.len() > 0 {
@@ -141,13 +135,13 @@
 
         rect(
           width: 100%,
-          stroke: 0.5pt + rgb("#e2e8f0"),
+          stroke: 0.5pt + color-border,
           radius: 4pt,
-          fill: rgb("#f8fafc"),
+          fill: color-surface,
           inset: 16pt,
           {
             if y_label != none {
-              align(left, text(size: 8pt, fill: rgb("#94a3b8"), y_label))
+              align(left, text(size: 8pt, fill: color-text-muted, y_label))
               v(4pt)
             }
 
@@ -167,7 +161,7 @@
                     let bar_height = calc.max((p.value - min_val) / val_range * chart_h, 2)
                     align(center, {
                       // Value label
-                      text(size: 7pt, weight: "bold", fill: rgb("#334155"), str(calc.round(p.value)))
+                      text(size: 7pt, weight: "bold", fill: color-text, str(calc.round(p.value)))
                       v(2pt)
                       // Spacer to push down (inverse height)
                       v((chart_h - bar_height) * 1pt)
@@ -187,7 +181,7 @@
                           fill: none,
                           stroke: none,
                           {
-                            place(center + top, circle(radius: 4pt, fill: color, stroke: 1pt + white))
+                            place(center + top, circle(radius: 4pt, fill: color, stroke: 1pt + color-background))
                             place(center + top, line(
                               length: 100%,
                               stroke: 2pt + color,
@@ -204,7 +198,7 @@
                   columns: (1fr,) * points_data.len(),
                   column-gutter: 0pt,
                   ..points_data.map(p => {
-                    align(center, text(size: 7pt, fill: rgb("#64748b"), p.label))
+                    align(center, text(size: 7pt, fill: color-text-muted, p.label))
                   })
                 )
               }
@@ -212,7 +206,7 @@
 
             if x_label != none {
               v(8pt)
-              align(center, text(size: 8pt, fill: rgb("#94a3b8"), x_label))
+              align(center, text(size: 8pt, fill: color-text-muted, x_label))
             }
           }
         )
@@ -226,13 +220,13 @@
 
         rect(
           width: 100%,
-          stroke: 0.5pt + rgb("#e2e8f0"),
+          stroke: 0.5pt + color-border,
           radius: 4pt,
-          fill: rgb("#f8fafc"),
+          fill: color-surface,
           inset: 16pt,
           {
             if y_label != none {
-              align(left, text(size: 8pt, fill: rgb("#94a3b8"), y_label))
+              align(left, text(size: 8pt, fill: color-text-muted, y_label))
               v(4pt)
             }
 
@@ -247,10 +241,10 @@
                   ..points_data.enumerate().map(((i, p)) => {
                     let dot_y = calc.max((p.value - min_val) / val_range * chart_h, 4)
                     align(center, {
-                      text(size: 6pt, fill: rgb("#64748b"), str(calc.round(p.value)))
+                      text(size: 6pt, fill: color-text-muted, str(calc.round(p.value)))
                       v(2pt)
                       v((chart_h - dot_y) * 1pt)
-                      circle(radius: 5pt, fill: color, stroke: 1.5pt + white)
+                      circle(radius: 5pt, fill: color, stroke: 1.5pt + color-background)
                       v(dot_y * 1pt - 10pt)
                     })
                   })
@@ -261,7 +255,7 @@
                   columns: (1fr,) * points_data.len(),
                   column-gutter: 4pt,
                   ..points_data.map(p => {
-                    align(center, text(size: 6pt, fill: rgb("#64748b"), p.label))
+                    align(center, text(size: 6pt, fill: color-text-muted, p.label))
                   })
                 )
               }
@@ -269,7 +263,7 @@
 
             if x_label != none {
               v(8pt)
-              align(center, text(size: 8pt, fill: rgb("#94a3b8"), x_label))
+              align(center, text(size: 8pt, fill: color-text-muted, x_label))
             }
           }
         )
@@ -281,14 +275,14 @@
 
         rect(
           width: 100%,
-          stroke: 0.5pt + rgb("#e2e8f0"),
+          stroke: 0.5pt + color-border,
           radius: 4pt,
-          fill: rgb("#f8fafc"),
+          fill: color-surface,
           inset: 16pt,
           {
             for (li, label) in labels.enumerate() {
               // Axis label
-              text(size: 8pt, weight: "bold", fill: rgb("#334155"), label)
+              text(size: 8pt, weight: "bold", fill: color-text, label)
               v(3pt)
 
               // One bar per series for this axis
@@ -305,7 +299,7 @@
                     stroke: (right: 2pt + color),
                     radius: 2pt,
                   ),
-                  text(size: 7pt, fill: rgb("#64748b"), str(calc.round(val))),
+                  text(size: 7pt, fill: color-text-muted, str(calc.round(val))),
                 )
                 v(2pt)
               }
@@ -319,7 +313,7 @@
           height: eval(height),
           stroke: 0.5pt + gray,
           radius: 4pt,
-          fill: rgb("#f8fafc"),
+          fill: color-surface,
           inset: 12pt,
           align(center + horizon, text(size: 9pt, fill: gray, [Chart: ] + chart_type))
         )

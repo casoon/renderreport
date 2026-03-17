@@ -6,14 +6,14 @@
   let max_val = data.at("max", default: 100.0)
   let thresholds = data.at("thresholds", default: ())
   let style = data.at("style", default: "circular")
-  
+
   // Calculate percentage
   let pct = if max_val > min_val {
     ((value - min_val) / (max_val - min_val)) * 100
   } else {
     0
   }
-  
+
   // Determine color based on thresholds
   let gauge_color = rgb("#3b82f6")
   for threshold in thresholds {
@@ -21,7 +21,7 @@
       gauge_color = rgb(threshold.color)
     }
   }
-  
+
   block(
     width: 100%,
     breakable: false,
@@ -31,7 +31,7 @@
         align(center, box(width: 84pt, height: 84pt, {
           place(center + horizon, circle(
             radius: 40pt,
-            stroke: 3pt + gray.lighten(50%),
+            stroke: 3pt + color-border,
             fill: none
           ))
           place(center + horizon, circle(
@@ -40,7 +40,7 @@
             fill: none
           ))
           place(center + horizon,
-            text(weight: "bold", size: 16pt, str(calc.round(value, digits: 1)))
+            text(weight: "bold", size: 16pt, fill: color-text, str(calc.round(value, digits: 1)))
           )
         }))
       } else if style == "vertical" {
@@ -49,8 +49,8 @@
           rect(
             width: 30pt,
             height: 120pt,
-            stroke: 1pt + gray,
-            fill: gray.lighten(80%),
+            stroke: 1pt + color-border,
+            fill: color-surface,
             radius: 15pt,
             {
               place(
@@ -71,8 +71,8 @@
         rect(
           width: 200pt,
           height: 20pt,
-          stroke: 1pt + gray,
-          fill: gray.lighten(80%),
+          stroke: 1pt + color-border,
+          fill: color-surface,
           radius: 10pt,
           {
             place(
@@ -88,10 +88,10 @@
           }
         )
       }
-      
+
       v(8pt)
-      align(center, text(size: 10pt, weight: "medium", label))
-      align(center, text(size: 9pt, fill: gray, str(value) + " / " + str(max_val)))
+      align(center, text(size: 10pt, weight: "medium", fill: color-text, label))
+      align(center, text(size: 9pt, fill: color-text-muted, str(value) + " / " + str(max_val)))
     }
   )
 }

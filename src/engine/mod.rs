@@ -190,6 +190,7 @@ impl Engine {
     fn generate_page_setup(&self, _theme: &Theme) -> String {
         r#"#set page(
   paper: "a4",
+  fill: color-background,
   margin: (
     top: page-margin-top,
     bottom: page-margin-bottom,

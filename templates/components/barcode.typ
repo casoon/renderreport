@@ -16,25 +16,26 @@
         let cols = data.at("qr_width", default: 21)
         let rows = data.at("qr_height", default: cols)
         let target_w = eval(width)
-        // Compute module size from the wider dimension, keep aspect ratio
-        let module_size = calc.min(target_w / cols, target_w / rows)
-        let render_w = cols * module_size
-        let render_h = rows * module_size
+        // Quiet zone: 1 module on each side
+        let quiet = 2
+        let module_size = calc.min(target_w / (cols + quiet), target_w / (rows + quiet))
+        let padding = module_size
+        let render_w = cols * module_size + 2 * padding
+        let render_h = rows * module_size + 2 * padding
 
         box(
           width: render_w,
           height: render_h,
-          clip: true,
           {
             for (row_idx, row) in matrix.enumerate() {
               for (col_idx, cell) in row.enumerate() {
                 if cell == 1 {
                   place(
-                    dx: col_idx * module_size,
-                    dy: row_idx * module_size,
+                    dx: padding + col_idx * module_size,
+                    dy: padding + row_idx * module_size,
                     rect(
-                      width: module_size + 0.5pt,
-                      height: module_size + 0.5pt,
+                      width: module_size,
+                      height: module_size,
                       fill: black,
                       stroke: none,
                     )

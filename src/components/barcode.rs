@@ -177,7 +177,7 @@ impl Barcode {
     fn encode_data_matrix(&self) -> Option<(Vec<Vec<u8>>, usize, usize)> {
         datamatrix::DataMatrix::encode_str(
             &self.data,
-            datamatrix::SymbolList::default(),
+            datamatrix::SymbolList::default().enforce_square(),
         )
         .ok()
         .map(|dm| {
