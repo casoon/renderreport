@@ -173,6 +173,30 @@ impl Barcode {
         }
     }
 
+    /// Encode Data Matrix into a 2D module matrix
+    fn encode_data_matrix(&self) -> Option<(Vec<Vec<u8>>, usize)> {
+        datamatrix::DataMatrix::encode_str(
+            &self.data,
+            datamatrix::SymbolList::default(),
+        )
+        .ok()
+        .map(|dm| {
+            let bitmap = dm.bitmap();
+            let w = bitmap.width();
+            let h = bitmap.height();
+            let bits = bitmap.bits();
+            let matrix: Vec<Vec<u8>> = (0..h)
+                .map(|row| {
+                    (0..w)
+                        .map(|col| if bits[row * w + col] { 1 } else { 0 })
+                        .collect()
+                })
+                .collect();
+            let dim = w.max(h);
+            (matrix, dim)
+        })
+    }
+
     /// Encode QR code data into a 2D module matrix
     fn encode_qr(&self) -> Option<(Vec<Vec<u8>>, usize)> {
         use qrcode::EcLevel;
@@ -218,8 +242,14 @@ impl Component for Barcode {
                     obj.insert("qr_width".into(), serde_json::json!(width));
                 }
             }
-            BarcodeFormat::DataMatrix | BarcodeFormat::Pdf417 => {
-                // No Rust crate available for these; template will show placeholder
+            BarcodeFormat::DataMatrix => {
+                if let Some((matrix, width)) = self.encode_data_matrix() {
+                    obj.insert("encoding_2d".into(), serde_json::json!(matrix));
+                    obj.insert("qr_width".into(), serde_json::json!(width));
+                }
+            }
+            BarcodeFormat::Pdf417 => {
+                // No stable Rust crate available; template will show placeholder
                 obj.insert("unsupported".into(), serde_json::json!(true));
             }
             _ => {
