@@ -33,6 +33,6 @@
       #v(spacing-2)
     ]
 
-    #text(size: font-size-base)[#data.content]
+    #par(justify: true)[#text(size: font-size-base)[#data.content]]
   ]
 }

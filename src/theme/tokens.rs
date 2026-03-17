@@ -124,10 +124,10 @@ impl Default for ThemeTokens {
         tokens.set(COLOR_INFO, TokenValue::Color("#1570EF".into()));
         tokens.set(COLOR_INFO_SOFT, TokenValue::Color("#EFF8FF".into()));
 
-        // Typography
-        tokens.set(FONT_BODY, TokenValue::Font("Inter".into()));
-        tokens.set(FONT_HEADING, TokenValue::Font("Inter".into()));
-        tokens.set(FONT_MONO, TokenValue::Font("IBM Plex Mono".into()));
+        // Typography – use widely available fonts with fallbacks
+        tokens.set(FONT_BODY, TokenValue::Font("Helvetica Neue".into()));
+        tokens.set(FONT_HEADING, TokenValue::Font("Helvetica Neue".into()));
+        tokens.set(FONT_MONO, TokenValue::Font("Menlo".into()));
         tokens.set(FONT_SIZE_XS, TokenValue::Size("8.5pt".into()));
         tokens.set(FONT_SIZE_SM, TokenValue::Size("8.8pt".into()));
         tokens.set(FONT_SIZE_BASE, TokenValue::Size("10.5pt".into()));

@@ -7,7 +7,10 @@
   let max_width = data.at("max_width", default: none)
   
   let size_val = if font_size != none { eval(font_size) } else { 10pt }
-  let leading_val = if line_height != none { eval(line_height) } else { 0.65em }
+  let leading_val = if line_height != none {
+    let v = eval(line_height)
+    if type(v) == length { v } else { v * 1em }
+  } else { 0.65em }
   let align_fn = if align_val == "center" { center }
                  else if align_val == "right" { right }
                  else { left }
@@ -16,7 +19,7 @@
   block(
     width: width_val,
     {
-      set par(leading: leading_val)
+      set par(leading: leading_val, justify: true)
       align(align_fn, text(size: size_val, content))
     }
   )

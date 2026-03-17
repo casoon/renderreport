@@ -40,10 +40,10 @@
         [#text(weight: "bold", size: 9pt, "Row 2")], [200], [180], if show_row_totals [380] else [],
         
         // Totals row
-        if show_col_totals {
-          ([#text(weight: "bold", size: 9pt, "Total")], [300], [330], 
+        ..if show_col_totals {
+          ([#text(weight: "bold", size: 9pt, "Total")], [300], [330],
            if show_grand [#text(weight: "bold", "630")] else [])
-        }
+        } else { () }
       )
       
       v(6pt)

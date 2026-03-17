@@ -221,15 +221,16 @@ impl Engine {
 )
 
 #set text(
-  font: font-body,
+  font: (font-body, "Arial", "Liberation Sans", "Noto Sans"),
   size: font-size-base,
   fill: color-text,
 )
 
-#set text(hyphenate: false)
-#set par(justify: true, leading: 0.75em)
+#set text(hyphenate: true)
+#set par(justify: false, leading: 0.75em)
 
 #set heading(numbering: none)
+#show heading: set par(justify: false)
 #show heading.where(level: 1): set text(size: font-size-2xl, weight: "bold", fill: color-text)
 #show heading.where(level: 2): set text(size: font-size-xl, weight: "bold", fill: color-text)
 #show heading.where(level: 3): set text(size: font-size-lg, weight: "bold", fill: color-text)

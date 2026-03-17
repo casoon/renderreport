@@ -107,7 +107,7 @@ impl ComponentRegistry {
         );
 
         self.register(
-            ComponentId::new("grid"),
+            ComponentId::new("grid-component"),
             include_str!("../../templates/components/grid.typ").to_string(),
         );
 

@@ -1,59 +1,99 @@
-// Barcode component template
+// Barcode component template – renders real encoded patterns
 #let barcode(data) = {
   let barcode_data = data.data
   let format = data.format
   let width = data.at("width", default: "150pt")
   let height = data.at("height", default: "50pt")
   let show_text = data.at("show_text", default: true)
-  
+
   align(center, block(
     width: 100%,
     breakable: false,
     {
-      // Barcode visualization placeholder
-      // In production, this would integrate with a barcode generation library
-      
-      if format == "QR_CODE" or format == "DATA_MATRIX" or format == "PDF417" {
-        // 2D barcode (square)
+      if data.at("encoding_2d", default: none) != none {
+        // 2D barcode (QR Code) – draw module matrix
+        let matrix = data.encoding_2d
+        let qr_width = data.at("qr_width", default: 21)
+        let target_size = eval(width)
+        let module_size = target_size / qr_width
+
+        box(
+          width: target_size,
+          height: target_size,
+          clip: true,
+          {
+            for (row_idx, row) in matrix.enumerate() {
+              for (col_idx, cell) in row.enumerate() {
+                if cell == 1 {
+                  place(
+                    dx: col_idx * module_size,
+                    dy: row_idx * module_size,
+                    rect(
+                      width: module_size + 0.5pt,
+                      height: module_size + 0.5pt,
+                      fill: black,
+                      stroke: none,
+                    )
+                  )
+                }
+              }
+            }
+          }
+        )
+      } else if data.at("encoding", default: none) != none {
+        // 1D barcode – draw actual bar pattern
+        let bars = data.encoding
+        let bar_count = bars.len()
+        let target_width = eval(width)
+        let target_height = eval(height)
+        let bar_width = target_width / bar_count
+
+        box(
+          width: target_width,
+          height: target_height,
+          clip: true,
+          {
+            for (i, bar) in bars.enumerate() {
+              if bar == 1 {
+                place(
+                  dx: i * bar_width,
+                  rect(
+                    width: bar_width + 0.3pt,
+                    height: target_height,
+                    fill: black,
+                    stroke: none,
+                  )
+                )
+              }
+            }
+          }
+        )
+      } else if data.at("unsupported", default: false) {
+        // Unsupported 2D format – placeholder with notice
         rect(
           width: eval(width),
           height: eval(width),
-          fill: pattern(size: (4pt, 4pt))[
-            #square(size: 2pt, fill: black)
-          ],
-          stroke: 1pt + gray
+          fill: luma(240),
+          stroke: 1pt + gray,
+          align(center + horizon, text(size: 8pt, fill: gray, [#format encoding\ not yet supported]))
         )
       } else {
-        // 1D barcode (rectangular with vertical bars)
+        // Fallback placeholder
         rect(
           width: eval(width),
           height: eval(height),
+          fill: luma(240),
           stroke: 1pt + gray,
-          {
-            // Simulate barcode bars
-            grid(
-              columns: 20,
-              column-gutter: 0pt,
-              ..range(20).map(i => {
-                let bar_height = if calc.rem(i, 3) == 0 { 100% } else { 90% }
-                align(bottom, rect(
-                  width: 100%,
-                  height: bar_height,
-                  fill: if calc.rem(i, 2) == 0 { black } else { white },
-                  stroke: none
-                ))
-              })
-            )
-          }
+          align(center + horizon, text(size: 8pt, fill: gray, [Encoding failed]))
         )
       }
-      
+
       // Show text below barcode
       if show_text {
         v(4pt)
         text(size: 8pt, font: "Courier New", barcode_data)
       }
-      
+
       v(4pt)
       text(size: 7pt, fill: gray, format)
     }

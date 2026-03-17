@@ -5,7 +5,7 @@
 //! Run with: cargo run --example seo_audit
 
 use renderreport::prelude::*;
-use renderreport::theme::{Theme, ThemeTokens, TokenValue};
+use renderreport::theme::{Theme, TokenValue};
 
 fn main() -> renderreport::Result<()> {
     // Initialize the engine

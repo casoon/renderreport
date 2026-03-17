@@ -38,6 +38,10 @@ toml = "0.8"
 thiserror = "2.0"
 anyhow = "1.0"
 
+# Barcode encoding
+barcoders = "2.0"
+qrcode = "0.14"
+
 # Utilities
 chrono = { version = "0.4", features = ["serde"] }
 uuid = { version = "1.0", features = ["v4", "serde"] }
@@ -63,6 +67,14 @@ tempfile = "3.0"
 default = []
 cli = ["clap"]
 # remote-packs = ["tokio"]
+
+[[example]]
+name = "simple_report"
+path = "examples/simple_report.rs"
+
+[[example]]
+name = "custom_theme"
+path = "examples/custom_theme.rs"
 
 [[example]]
 name = "seo_audit"

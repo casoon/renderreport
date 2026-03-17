@@ -42,7 +42,7 @@
     #v(spacing-3)
 
     // Description
-    #text(size: font-size-base)[#data.description]
+    #par(justify: true)[#text(size: font-size-base)[#data.description]]
 
     // Affected resource
     #if data.affected != none [

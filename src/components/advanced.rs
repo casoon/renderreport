@@ -242,7 +242,7 @@ impl Grid {
 
 impl Component for Grid {
     fn component_id(&self) -> &'static str {
-        "grid"
+        "grid-component"
     }
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()

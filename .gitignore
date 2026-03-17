@@ -23,3 +23,8 @@
 
 # Documentation
 /target/doc/
+
+# Node / npm
+node_modules/
+*.tgz
+.npm
