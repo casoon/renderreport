@@ -174,7 +174,7 @@ impl Barcode {
     }
 
     /// Encode Data Matrix into a 2D module matrix
-    fn encode_data_matrix(&self) -> Option<(Vec<Vec<u8>>, usize)> {
+    fn encode_data_matrix(&self) -> Option<(Vec<Vec<u8>>, usize, usize)> {
         datamatrix::DataMatrix::encode_str(
             &self.data,
             datamatrix::SymbolList::default(),
@@ -192,8 +192,7 @@ impl Barcode {
                         .collect()
                 })
                 .collect();
-            let dim = w.max(h);
-            (matrix, dim)
+            (matrix, w, h)
         })
     }
 
@@ -243,9 +242,10 @@ impl Component for Barcode {
                 }
             }
             BarcodeFormat::DataMatrix => {
-                if let Some((matrix, width)) = self.encode_data_matrix() {
+                if let Some((matrix, cols, rows)) = self.encode_data_matrix() {
                     obj.insert("encoding_2d".into(), serde_json::json!(matrix));
-                    obj.insert("qr_width".into(), serde_json::json!(width));
+                    obj.insert("qr_width".into(), serde_json::json!(cols));
+                    obj.insert("qr_height".into(), serde_json::json!(rows));
                 }
             }
             BarcodeFormat::Pdf417 => {

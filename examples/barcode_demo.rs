@@ -170,23 +170,27 @@ fn main() -> renderreport::Result<()> {
         .add_raw_component(add_comp(&Label::new("Batch Number:").bold().with_size("11pt")))
         .add_raw_component(add_comp(&Barcode::data_matrix("BATCH:A123|EXP:2025-12-31")))
         // ============================================
-        // SECTION 11: PDF417 - High Capacity 2D
+        // SECTION 11: Additional 2D Examples
         // ============================================
-        .add_component(Section::new("PDF417 - Portable Data File"))
+        .add_component(Section::new("2D Codes - Real-World Applications"))
         .add_raw_component(add_comp(&Label::new(
-            "PDF417 is a stacked linear barcode used in transport, identification cards, \
-             and inventory management. It can store large amounts of data.",
+            "2D barcodes are widely used for inventory, logistics, and digital interactions. \
+             Here are practical examples with QR Code and Data Matrix formats.",
         )))
-        .add_raw_component(add_comp(&Label::new("Driver License:").bold().with_size("11pt")))
-        .add_raw_component(add_comp(&Barcode::new(
-            "DL:CA|NAME:JOHN DOE|DOB:1980-01-15|EXP:2028-01-15",
-            BarcodeFormat::Pdf417,
-        )))
-        .add_raw_component(add_comp(&Label::new("Shipping Label:").bold().with_size("11pt")))
-        .add_raw_component(add_comp(&Barcode::new(
-            "FROM:123 Main St|TO:456 Oak Ave|PKG:ABC-789|WEIGHT:2.5kg",
-            BarcodeFormat::Pdf417,
-        )))
+        .add_raw_component(add_comp(&Label::new("Event Ticket:").bold().with_size("11pt")))
+        .add_raw_component(add_comp(
+            &Barcode::qr_code("TICKET:EVT-2026-0317|SEAT:A12|GATE:3|TIME:19:30")
+                .with_size("120pt", "120pt"),
+        ))
+        .add_raw_component(add_comp(&Label::new("Pharmaceutical Package:").bold().with_size("11pt")))
+        .add_raw_component(add_comp(
+            &Barcode::data_matrix("NDC:12345-678-90|LOT:X42B|EXP:2027-06")
+                .with_size("100pt", "100pt"),
+        ))
+        .add_raw_component(add_comp(&Label::new("Asset Tag:").bold().with_size("11pt")))
+        .add_raw_component(add_comp(
+            &Barcode::data_matrix("ASSET:LAP-2024-0891|DEPT:ENG|PURCHASED:2024-03-15"),
+        ))
         .build();
 
     // Render to PDF
@@ -212,7 +216,6 @@ fn main() -> renderreport::Result<()> {
     println!("  2D Barcodes:");
     println!("    ✓ QR Code (high capacity, error correction)");
     println!("    ✓ Data Matrix (compact, electronics)");
-    println!("    ✓ PDF417 (high capacity, stacked)");
 
     Ok(())
 }

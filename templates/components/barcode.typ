@@ -11,15 +11,19 @@
     breakable: false,
     {
       if data.at("encoding_2d", default: none) != none {
-        // 2D barcode (QR Code) – draw module matrix
+        // 2D barcode (QR Code / Data Matrix) – draw module matrix
         let matrix = data.encoding_2d
-        let qr_width = data.at("qr_width", default: 21)
-        let target_size = eval(width)
-        let module_size = target_size / qr_width
+        let cols = data.at("qr_width", default: 21)
+        let rows = data.at("qr_height", default: cols)
+        let target_w = eval(width)
+        // Compute module size from the wider dimension, keep aspect ratio
+        let module_size = calc.min(target_w / cols, target_w / rows)
+        let render_w = cols * module_size
+        let render_h = rows * module_size
 
         box(
-          width: target_size,
-          height: target_size,
+          width: render_w,
+          height: render_h,
           clip: true,
           {
             for (row_idx, row) in matrix.enumerate() {
