@@ -152,8 +152,18 @@ fn main() -> renderreport::Result<()> {
     dark_theme.tokens.set("color.border", TokenValue::Color("#0f3460".into()));
     dark_theme.tokens.set("color.primary", TokenValue::Color("#e94560".into()));
     dark_theme.tokens.set("color.ok", TokenValue::Color("#06d6a0".into()));
+    dark_theme.tokens.set("color.ok-soft", TokenValue::Color("#0a2e23".into()));
     dark_theme.tokens.set("color.warn", TokenValue::Color("#ffd166".into()));
+    dark_theme.tokens.set("color.warn-soft", TokenValue::Color("#2e2510".into()));
     dark_theme.tokens.set("color.bad", TokenValue::Color("#ef476f".into()));
+    dark_theme.tokens.set("color.bad-soft", TokenValue::Color("#2e101a".into()));
+    dark_theme.tokens.set("color.info", TokenValue::Color("#4ea8de".into()));
+    dark_theme.tokens.set("color.info-soft", TokenValue::Color("#0f2540".into()));
+    dark_theme.tokens.set("color.accent-soft", TokenValue::Color("#1a1a3e".into()));
+    // Table colors for dark theme
+    dark_theme.tokens.set("table.header-bg", TokenValue::Color("#0f2040".into()));
+    dark_theme.tokens.set("table.row-alt-bg", TokenValue::Color("#121d33".into()));
+    dark_theme.tokens.set("table.border", TokenValue::Color("#1a3055".into()));
 
     let dark_report = engine
         .report("default")
