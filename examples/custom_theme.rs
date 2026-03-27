@@ -15,14 +15,30 @@ fn main() -> renderreport::Result<()> {
 
     // ── Corporate Blue Theme ────────────────────────────────────
     let mut corporate_theme = Theme::new("corporate", "Corporate Blue");
-    corporate_theme.tokens.set("color.primary", TokenValue::Color("#003366".into()));
-    corporate_theme.tokens.set("color.secondary", TokenValue::Color("#336699".into()));
-    corporate_theme.tokens.set("color.text", TokenValue::Color("#333333".into()));
-    corporate_theme.tokens.set("color.ok", TokenValue::Color("#006633".into()));
-    corporate_theme.tokens.set("color.warn", TokenValue::Color("#cc6600".into()));
-    corporate_theme.tokens.set("color.bad", TokenValue::Color("#cc0000".into()));
-    corporate_theme.tokens.set("font.heading", TokenValue::Font("Helvetica".into()));
-    corporate_theme.tokens.set("font.body", TokenValue::Font("Helvetica".into()));
+    corporate_theme
+        .tokens
+        .set("color.primary", TokenValue::Color("#003366".into()));
+    corporate_theme
+        .tokens
+        .set("color.secondary", TokenValue::Color("#336699".into()));
+    corporate_theme
+        .tokens
+        .set("color.text", TokenValue::Color("#333333".into()));
+    corporate_theme
+        .tokens
+        .set("color.ok", TokenValue::Color("#006633".into()));
+    corporate_theme
+        .tokens
+        .set("color.warn", TokenValue::Color("#cc6600".into()));
+    corporate_theme
+        .tokens
+        .set("color.bad", TokenValue::Color("#cc0000".into()));
+    corporate_theme
+        .tokens
+        .set("font.heading", TokenValue::Font("Helvetica".into()));
+    corporate_theme
+        .tokens
+        .set("font.body", TokenValue::Font("Helvetica".into()));
 
     let report = engine
         .report("default")
@@ -144,26 +160,64 @@ fn main() -> renderreport::Result<()> {
 
     // ── Dark Theme ──────────────────────────────────────────────
     let mut dark_theme = Theme::new("dark", "Dark Mode");
-    dark_theme.tokens.set("color.background", TokenValue::Color("#1a1a2e".into()));
-    dark_theme.tokens.set("color.surface", TokenValue::Color("#16213e".into()));
-    dark_theme.tokens.set("color.surface-soft", TokenValue::Color("#1a2744".into()));
-    dark_theme.tokens.set("color.text", TokenValue::Color("#eaeaea".into()));
-    dark_theme.tokens.set("color.text-muted", TokenValue::Color("#a0a0a0".into()));
-    dark_theme.tokens.set("color.border", TokenValue::Color("#0f3460".into()));
-    dark_theme.tokens.set("color.primary", TokenValue::Color("#e94560".into()));
-    dark_theme.tokens.set("color.ok", TokenValue::Color("#06d6a0".into()));
-    dark_theme.tokens.set("color.ok-soft", TokenValue::Color("#0a2e23".into()));
-    dark_theme.tokens.set("color.warn", TokenValue::Color("#ffd166".into()));
-    dark_theme.tokens.set("color.warn-soft", TokenValue::Color("#2e2510".into()));
-    dark_theme.tokens.set("color.bad", TokenValue::Color("#ef476f".into()));
-    dark_theme.tokens.set("color.bad-soft", TokenValue::Color("#2e101a".into()));
-    dark_theme.tokens.set("color.info", TokenValue::Color("#4ea8de".into()));
-    dark_theme.tokens.set("color.info-soft", TokenValue::Color("#0f2540".into()));
-    dark_theme.tokens.set("color.accent-soft", TokenValue::Color("#1a1a3e".into()));
+    dark_theme
+        .tokens
+        .set("color.background", TokenValue::Color("#1a1a2e".into()));
+    dark_theme
+        .tokens
+        .set("color.surface", TokenValue::Color("#16213e".into()));
+    dark_theme
+        .tokens
+        .set("color.surface-soft", TokenValue::Color("#1a2744".into()));
+    dark_theme
+        .tokens
+        .set("color.text", TokenValue::Color("#eaeaea".into()));
+    dark_theme
+        .tokens
+        .set("color.text-muted", TokenValue::Color("#a0a0a0".into()));
+    dark_theme
+        .tokens
+        .set("color.border", TokenValue::Color("#0f3460".into()));
+    dark_theme
+        .tokens
+        .set("color.primary", TokenValue::Color("#e94560".into()));
+    dark_theme
+        .tokens
+        .set("color.ok", TokenValue::Color("#06d6a0".into()));
+    dark_theme
+        .tokens
+        .set("color.ok-soft", TokenValue::Color("#0a2e23".into()));
+    dark_theme
+        .tokens
+        .set("color.warn", TokenValue::Color("#ffd166".into()));
+    dark_theme
+        .tokens
+        .set("color.warn-soft", TokenValue::Color("#2e2510".into()));
+    dark_theme
+        .tokens
+        .set("color.bad", TokenValue::Color("#ef476f".into()));
+    dark_theme
+        .tokens
+        .set("color.bad-soft", TokenValue::Color("#2e101a".into()));
+    dark_theme
+        .tokens
+        .set("color.info", TokenValue::Color("#4ea8de".into()));
+    dark_theme
+        .tokens
+        .set("color.info-soft", TokenValue::Color("#0f2540".into()));
+    dark_theme
+        .tokens
+        .set("color.accent-soft", TokenValue::Color("#1a1a3e".into()));
     // Table colors for dark theme
-    dark_theme.tokens.set("table.header-bg", TokenValue::Color("#0f2040".into()));
-    dark_theme.tokens.set("table.row-alt-bg", TokenValue::Color("#121d33".into()));
-    dark_theme.tokens.set("table.border", TokenValue::Color("#1a3055".into()));
+    dark_theme
+        .tokens
+        .set("table.header-bg", TokenValue::Color("#0f2040".into()));
+    dark_theme
+        .tokens
+        .set("table.row-alt-bg", TokenValue::Color("#121d33".into()));
+    dark_theme
+        .tokens
+        .set("table.border", TokenValue::Color("#1a3055".into()));
 
     let dark_report = engine
         .report("default")

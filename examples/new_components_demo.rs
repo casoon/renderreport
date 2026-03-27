@@ -172,6 +172,10 @@ fn main() -> renderreport::Result<()> {
     let output_path = "examples/output/new_components_demo.pdf";
     std::fs::write(output_path, &pdf)?;
 
-    println!("✓ Component showcase generated: {} ({} KB)", output_path, pdf.len() / 1024);
+    println!(
+        "✓ Component showcase generated: {} ({} KB)",
+        output_path,
+        pdf.len() / 1024
+    );
     Ok(())
 }

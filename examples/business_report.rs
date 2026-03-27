@@ -206,6 +206,10 @@ fn main() -> renderreport::Result<()> {
     let output_path = "examples/output/business_report.pdf";
     std::fs::write(output_path, &pdf)?;
 
-    println!("✓ Business report generated: {} ({} KB)", output_path, pdf.len() / 1024);
+    println!(
+        "✓ Business report generated: {} ({} KB)",
+        output_path,
+        pdf.len() / 1024
+    );
     Ok(())
 }

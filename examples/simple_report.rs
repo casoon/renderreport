@@ -119,6 +119,9 @@ fn main() -> renderreport::Result<()> {
     let pdf = engine.render_pdf(&report)?;
     std::fs::write("examples/output/simple_report.pdf", &pdf)?;
 
-    println!("✓ Simple report generated: examples/output/simple_report.pdf ({} KB)", pdf.len() / 1024);
+    println!(
+        "✓ Simple report generated: examples/output/simple_report.pdf ({} KB)",
+        pdf.len() / 1024
+    );
     Ok(())
 }
