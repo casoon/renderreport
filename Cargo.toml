@@ -3,12 +3,21 @@ name = "renderreport"
 version = "0.1.0-alpha.1"
 edition = "2021"
 authors = ["Casoon <info@casoon.de>"]
-description = "Data-driven report generation with Typst as embedded render engine (early development)"
-license = "MIT OR Apache-2.0"
+description = "Data-driven report generation with Typst as embedded render engine — no CLI dependency"
+homepage = "https://www.casoon.de"
 repository = "https://github.com/casoon/renderreport"
+documentation = "https://docs.rs/renderreport"
+license = "MIT OR Apache-2.0"
 keywords = ["report", "pdf", "typst", "audit", "generator"]
-categories = ["text-processing", "rendering"]
+categories = ["text-processing", "rendering", "template-engine"]
 readme = "README.md"
+rust-version = "1.75"
+exclude = [
+    "target/",
+    ".github/",
+    "docs/",
+    "fixtures/",
+]
 
 [lib]
 name = "renderreport"
