@@ -1,6 +1,6 @@
 [package]
 name = "renderreport"
-version = "0.1.0-alpha.1"
+version = "0.1.0-alpha.2"
 edition = "2021"
 authors = ["Casoon <info@casoon.de>"]
 description = "Data-driven report generation with Typst as embedded render engine — no CLI dependency"
