@@ -175,7 +175,7 @@ fn test_pack_loader_creation() {
 
     // Loader should be created successfully
     // Can't test loading without actual pack files
-    assert!(true);
+    // Can't test loading without actual pack files — creation succeeds
 }
 
 #[test]

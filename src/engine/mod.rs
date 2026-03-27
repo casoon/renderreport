@@ -274,7 +274,7 @@ impl Engine {
                 .unwrap_or_else(|| component.clone());
 
             // Generate component call
-            let fn_name = component_type.replace('-', "-");
+            let fn_name = component_type;
             content.push_str(&format!(
                 "#{}(json.decode(\"{}\"))\n\n#v(spacing-4)\n\n",
                 fn_name,

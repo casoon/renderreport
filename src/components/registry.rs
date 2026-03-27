@@ -3,6 +3,8 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+type ValidatorFn = Arc<dyn Fn(&serde_json::Value) -> bool + Send + Sync>;
+
 /// Unique identifier for a component type
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ComponentId(pub String);
@@ -33,7 +35,7 @@ pub struct ComponentRegistry {
     /// Insertion order for deterministic output
     insertion_order: Vec<ComponentId>,
     /// Component factories for validation
-    validators: HashMap<ComponentId, Arc<dyn Fn(&serde_json::Value) -> bool + Send + Sync>>,
+    validators: HashMap<ComponentId, ValidatorFn>,
 }
 
 impl ComponentRegistry {

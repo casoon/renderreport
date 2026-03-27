@@ -126,7 +126,7 @@ fn test_engine_config() {
 
     assert!(config.use_embedded_fonts);
     assert!(config.use_system_fonts);
-    assert!(config.pack_paths.len() > 0);
+    assert!(!config.pack_paths.is_empty());
 }
 
 #[test]

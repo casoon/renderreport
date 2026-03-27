@@ -104,7 +104,7 @@ impl PackLoader {
         // Load assets
         let assets_dir = path.join("assets");
         if assets_dir.exists() {
-            self.load_assets_recursive(&assets_dir, &assets_dir, &mut pack)?;
+            Self::load_assets_recursive(&assets_dir, &assets_dir, &mut pack)?;
         }
 
         Ok(pack)
@@ -112,7 +112,6 @@ impl PackLoader {
 
     /// Recursively load assets from a directory
     fn load_assets_recursive(
-        &self,
         base_dir: &Path,
         current_dir: &Path,
         pack: &mut Pack,
@@ -122,7 +121,7 @@ impl PackLoader {
             let path = entry.path();
 
             if path.is_dir() {
-                self.load_assets_recursive(base_dir, &path, pack)?;
+                Self::load_assets_recursive(base_dir, &path, pack)?;
             } else if path.is_file() {
                 let relative_path = path
                     .strip_prefix(base_dir)

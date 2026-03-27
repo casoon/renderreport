@@ -42,6 +42,12 @@ pub struct ListItem {
     pub children: Vec<ListItem>,
 }
 
+impl Default for List {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl List {
     pub fn new() -> Self {
         Self {
@@ -130,6 +136,12 @@ fn default_divider_thickness() -> String {
 }
 fn default_spacing() -> String {
     "12pt".into()
+}
+
+impl Default for Divider {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Divider {
@@ -253,6 +265,12 @@ impl Component for Grid {
 /// Inspired by BIRT Page Setup
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PageBreak;
+
+impl Default for PageBreak {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl PageBreak {
     pub fn new() -> Self {
@@ -423,6 +441,12 @@ pub struct KeyValuePair {
     pub value: String,
     #[serde(default)]
     pub highlight: bool,
+}
+
+impl Default for KeyValueList {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl KeyValueList {

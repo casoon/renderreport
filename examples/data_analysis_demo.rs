@@ -269,13 +269,13 @@ fn main() -> renderreport::Result<()> {
             let mut data_rows = Vec::new();
 
             // Sample sales data
-            let regions = vec!["North", "South", "East", "West"];
-            let products = vec!["Widget A", "Widget B", "Widget C"];
-            let sales = vec![
-                vec![15000, 12000, 18000],
-                vec![22000, 19000, 24000],
-                vec![16000, 14000, 21000],
-                vec![19000, 17000, 23000],
+            let regions = ["North", "South", "East", "West"];
+            let products = ["Widget A", "Widget B", "Widget C"];
+            let sales = [
+                [15000, 12000, 18000],
+                [22000, 19000, 24000],
+                [16000, 14000, 21000],
+                [19000, 17000, 23000],
             ];
 
             for (i, region) in regions.iter().enumerate() {
