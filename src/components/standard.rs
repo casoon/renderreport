@@ -25,6 +25,9 @@ pub struct ScoreCard {
     /// Threshold for "warning" status
     #[serde(default = "default_warn_threshold")]
     pub warn_threshold: u32,
+    /// Optional card height (e.g. "100%", "120pt")
+    #[serde(default)]
+    pub height: Option<String>,
 }
 
 fn default_max_score() -> u32 {
@@ -47,6 +50,7 @@ impl ScoreCard {
             status: None,
             good_threshold: 90,
             warn_threshold: 50,
+            height: None,
         }
     }
 
@@ -58,6 +62,11 @@ impl ScoreCard {
     pub fn with_thresholds(mut self, good: u32, warn: u32) -> Self {
         self.good_threshold = good;
         self.warn_threshold = warn;
+        self
+    }
+
+    pub fn with_height(mut self, height: impl Into<String>) -> Self {
+        self.height = Some(height.into());
         self
     }
 
@@ -482,6 +491,8 @@ pub struct MetricCard {
     pub subtitle: Option<String>,
     #[serde(default)]
     pub accent_color: Option<String>,
+    #[serde(default)]
+    pub height: Option<String>,
 }
 
 impl MetricCard {
@@ -491,6 +502,7 @@ impl MetricCard {
             value: value.into(),
             subtitle: None,
             accent_color: None,
+            height: None,
         }
     }
 
@@ -501,6 +513,11 @@ impl MetricCard {
 
     pub fn with_accent_color(mut self, color: impl Into<String>) -> Self {
         self.accent_color = Some(color.into());
+        self
+    }
+
+    pub fn with_height(mut self, height: impl Into<String>) -> Self {
+        self.height = Some(height.into());
         self
     }
 }
@@ -886,7 +903,7 @@ pub struct ComparisonModule {
 impl ModuleComparison {
     pub fn new(modules: Vec<ComparisonModule>) -> Self {
         Self {
-            title: Some("Modul-Scores im Vergleich".into()),
+            title: Some("Modulvergleich".into()),
             modules,
         }
     }

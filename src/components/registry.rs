@@ -236,6 +236,12 @@ impl ComponentRegistry {
             ComponentId::new("grid-component"),
             include_str!("../../templates/components/grid.typ").to_string(),
         );
+
+        // Flow group depends on other component functions, including grid-component.
+        self.register(
+            ComponentId::new("flow-group"),
+            include_str!("../../templates/components/flow_group.typ").to_string(),
+        );
     }
 
     /// Register a component template

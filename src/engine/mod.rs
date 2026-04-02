@@ -159,11 +159,23 @@ impl Engine {
             .get("author")
             .map(|s| s.as_str())
             .unwrap_or("");
+        let footer_link_url = request
+            .metadata
+            .get("footer_link_url")
+            .map(|s| s.as_str())
+            .unwrap_or("");
+        let footer_prefix = request
+            .metadata
+            .get("footer_prefix")
+            .map(|s| s.as_str())
+            .unwrap_or("");
         source.push_str(&format!(
-            "#let report-title = \"{}\"\n#let report-date = \"{}\"\n#let report-author = \"{}\"\n\n",
+            "#let report-title = \"{}\"\n#let report-date = \"{}\"\n#let report-author = \"{}\"\n#let report-footer-link-url = \"{}\"\n#let report-footer-prefix = \"{}\"\n\n",
             title_str.replace('"', "\\\""),
             date_str.replace('"', "\\\""),
             author_str.replace('"', "\\\""),
+            footer_link_url.replace('"', "\\\""),
+            footer_prefix.replace('"', "\\\""),
         ));
 
         // Add page setup
@@ -211,12 +223,21 @@ impl Engine {
     ]
   },
   footer: context [
-    #set text(size: font-size-xs, fill: color-text-muted)
+    #v(1pt)
+    #line(length: 100%, stroke: (paint: color-border, thickness: 0.5pt))
+    #v(3pt)
     #grid(
       columns: (1fr, auto),
       gutter: spacing-3,
-      [#report-author],
-      [#counter(page).display("1 / 1", both: true)]
+      [#text(size: font-size-xs, fill: color-text-muted)[
+        #if report-footer-prefix != "" { report-footer-prefix + " " }
+        #if report-footer-link-url != "" {
+          link(report-footer-link-url)[#text(weight: "semibold", fill: color-text-muted)[#report-author]]
+        } else {
+          text(weight: "semibold")[#report-author]
+        }
+      ]],
+      [#text(size: font-size-xs, fill: color-text-muted)[#counter(page).display("1 / 1", both: true)]]
     )
   ],
 )
@@ -274,7 +295,7 @@ impl Engine {
                 .unwrap_or_else(|| component.clone());
 
             // Generate component call
-            let fn_name = component_type;
+            let fn_name = component_function_name(component_type);
             content.push_str(&format!(
                 "#{}(json.decode(\"{}\"))\n\n#v(spacing-4)\n\n",
                 fn_name,
@@ -293,6 +314,14 @@ impl Engine {
         use crate::render::typst_compile;
 
         typst_compile::compile_to_pdf(source, &self.config, request)
+    }
+}
+
+fn component_function_name(component_type: &str) -> &str {
+    match component_type {
+        // Avoid collision with Typst's built-in `image(...)`.
+        "image" => "report-image",
+        _ => component_type,
     }
 }
 

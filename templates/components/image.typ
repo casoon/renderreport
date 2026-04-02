@@ -3,9 +3,11 @@
 
 #let report-image(data) = {
   let img-width = if data.width != none { eval(data.width) } else { 100% }
-  
-  figure(
-    image(data.src, width: img-width, alt: data.alt),
-    caption: if data.caption != none { data.caption } else { none },
-  )
+
+  align(center)[
+    #figure(
+      image(data.src, width: img-width, alt: data.alt),
+      caption: if data.caption != none { data.caption } else { none },
+    )
+  ]
 }

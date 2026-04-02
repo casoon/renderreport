@@ -21,6 +21,7 @@
     else if comp-type == "textblock" { textblock(comp-data) }
     else if comp-type == "number-field" { number-field(comp-data) }
     else if comp-type == "barcode" { barcode(comp-data) }
+    else if comp-type == "image" { report-image(comp-data) }
     else {
       // Fallback for unknown types
       text(size: 9pt, fill: gray, "[" + comp-type + "]")
@@ -64,6 +65,7 @@
     ]
 
     #let col-widths = (1fr,) * data.columns
+    #let item-min-height = if data.item_min_height != none { eval(data.item_min_height) } else { none }
 
     #grid(
       columns: col-widths,
@@ -72,9 +74,8 @@
 
       ..data.items.map(item => {
         let c = item.content
-        // Check if content has a type — if so, render without card wrapper
-        if type(c) == dictionary and "type" in c and "data" in c {
-          box(width: 100%, _grid-dispatch(c))
+        let item-body = if type(c) == dictionary and "type" in c and "data" in c {
+          [#_grid-dispatch(c)]
         } else {
           box(
             width: 100%,
@@ -83,6 +84,12 @@
             radius: 4pt,
             stroke: (paint: color-border, thickness: 0.5pt),
           )[#_grid-dispatch(c)]
+        }
+
+        if item-min-height != none {
+          box(width: 100%, height: item-min-height)[#item-body]
+        } else {
+          box(width: 100%)[#item-body]
         }
       })
     )

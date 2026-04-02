@@ -208,6 +208,9 @@ pub struct Grid {
     /// Gap between rows
     #[serde(default = "default_grid_gap")]
     pub row_gap: String,
+    /// Optional minimum height for each grid item
+    #[serde(default)]
+    pub item_min_height: Option<String>,
 }
 
 fn default_grid_gap() -> String {
@@ -235,7 +238,13 @@ impl Grid {
             items: Vec::new(),
             column_gap: "16pt".into(),
             row_gap: "16pt".into(),
+            item_min_height: None,
         }
+    }
+
+    pub fn with_item_min_height(mut self, min_height: impl Into<String>) -> Self {
+        self.item_min_height = Some(min_height.into());
+        self
     }
 
     pub fn add_item(mut self, content: serde_json::Value) -> Self {
@@ -255,6 +264,59 @@ impl Grid {
 impl Component for Grid {
     fn component_id(&self) -> &'static str {
         "grid-component"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Flow group with optional soft keep-together behavior
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FlowGroup {
+    /// Ordered child components or raw content blocks
+    pub items: Vec<serde_json::Value>,
+    /// Spacing between items
+    #[serde(default)]
+    pub spacing: Option<String>,
+    /// Keep the group together if its measured height stays under this threshold
+    #[serde(default)]
+    pub keep_together_if_under: Option<String>,
+}
+
+impl Default for FlowGroup {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl FlowGroup {
+    pub fn new() -> Self {
+        Self {
+            items: Vec::new(),
+            spacing: None,
+            keep_together_if_under: None,
+        }
+    }
+
+    pub fn add_item(mut self, content: serde_json::Value) -> Self {
+        self.items.push(content);
+        self
+    }
+
+    pub fn with_spacing(mut self, spacing: impl Into<String>) -> Self {
+        self.spacing = Some(spacing.into());
+        self
+    }
+
+    pub fn with_keep_together_if_under(mut self, threshold: impl Into<String>) -> Self {
+        self.keep_together_if_under = Some(threshold.into());
+        self
+    }
+}
+
+impl Component for FlowGroup {
+    fn component_id(&self) -> &'static str {
+        "flow-group"
     }
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()

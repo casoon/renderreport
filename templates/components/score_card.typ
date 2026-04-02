@@ -10,7 +10,7 @@
     color-bad
   }
 
-  theme-card[
+  let body = [
     #set text(fill: color-text)
 
     #label-text(data.title)
@@ -29,4 +29,17 @@
       #small-text(data.description)
     ]
   ]
+
+  if data.height != none {
+    block(
+      width: 100%,
+      height: eval(data.height),
+      fill: color-surface,
+      stroke: (paint: color-border, thickness: component-card-border-width),
+      radius: 10pt,
+      inset: (x: spacing-4, y: spacing-4),
+    )[ #body ]
+  } else {
+    theme-card[#body]
+  }
 }
