@@ -21,13 +21,13 @@
         #h(spacing-4)
       ]
     ] else [
-      #for item in data.items [
-        #grid(
-          columns: (auto, 1fr),
-          gutter: spacing-3,
-          align: (left, left),
-          row-gutter: spacing-2,
-          
+      #grid(
+        columns: (auto, 1fr),
+        column-gutter: spacing-3,
+        row-gutter: spacing-2,
+        align: (left, left),
+
+        ..data.items.map(item => (
           box(
             inset: (x: spacing-2, y: 2pt),
             fill: if item.highlight { color-surface } else { none },
@@ -39,9 +39,9 @@
             fill: if item.highlight { color-surface } else { none },
           )[
             #text(size: font-size-sm)[#item.value]
-          ]
-        )
-      ]
+          ],
+        )).flatten()
+      )
     ]
   ]
 }
