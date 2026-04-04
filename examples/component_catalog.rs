@@ -372,8 +372,13 @@ fn main() -> renderreport::Result<()> {
         ))
 
         .add_component(Section::new("4.4 Sparkline").with_level(2))
-        .add_component(TextBlock::new("Compact inline trend chart.")) // @id: sparkline
-        .add_component(Sparkline::new(vec![62.0, 65.0, 70.0, 68.0, 74.0, 79.0, 83.0]))
+        .add_component(TextBlock::new("Compact inline trend chart. Types: bar, line."))
+        .add_component({ // @id: sparkline
+            let mut s = Sparkline::bar(vec![62.0, 65.0, 70.0, 68.0, 74.0, 79.0, 83.0]);
+            s.width = "200pt".into();
+            s.height = "40pt".into();
+            s
+        })
         .add_component(PageBreak::new())
 
         // ── 5. Findings & Callouts ───────────────────────────────────────────
