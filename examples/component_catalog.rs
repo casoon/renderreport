@@ -638,6 +638,44 @@ fn main() -> renderreport::Result<()> {
                 .with_total(3)
                 .with_color("#e53e3e"),
         )
+        .add_component(Section::new("7.7 DiagnosisPanel").with_level(2))
+        .add_component(TextBlock::new("Label–diagnosis rows with optional status indicators."))
+        .add_component( // @id: diagnosis-panel
+            DiagnosisPanel::new(vec![
+                DiagnosisRow::new("Meta Descriptions", "12 pages missing").with_status("bad"),
+                DiagnosisRow::new("Alt Text", "All images covered").with_status("good"),
+                DiagnosisRow::new("HTTPS", "Valid TLS 1.3").with_status("good"),
+                DiagnosisRow::new("Core Web Vitals", "LCP needs improvement").with_status("warn"),
+            ])
+            .with_title("Technical Health Check"),
+        )
+
+        .add_component(Section::new("7.8 DominantIssueSpotlight").with_level(2))
+        .add_component(TextBlock::new("Full-width spotlight for a single dominant issue."))
+        .add_component( // @id: dominant-issue-spotlight
+            DominantIssueSpotlight::new(
+                "Missing Meta Descriptions",
+                "high",
+                "12 of 24 pages have no meta description, reducing click-through rates from search results by up to 30%.",
+                "Users see generic snippets in search results, leading to lower engagement.",
+                "Add unique, compelling meta descriptions (150–160 characters) to all pages.",
+            )
+            .with_eyebrow("Dominant Issue")
+            .with_affected_count(12),
+        )
+
+        .add_component(Section::new("7.9 WrongRightBlock").with_level(2))
+        .add_component(TextBlock::new("Before/after comparison — wrong vs. right."))
+        .add_component( // @id: wrong-right-block
+            WrongRightBlock::new(
+                "<img src=\"photo.jpg\">",
+                "<img src=\"photo.jpg\" alt=\"Team meeting in conference room\">",
+            )
+            .code()
+            .with_labels("Incorrect", "Correct")
+            .with_note("Always provide descriptive alt text for informational images."),
+        )
+
         .add_component(PageBreak::new())
 
         // ── 8. Text & Labels ─────────────────────────────────────────────────
