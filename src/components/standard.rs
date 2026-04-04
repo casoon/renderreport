@@ -1883,4 +1883,62 @@ impl Component for QuoteBlock {
     }
 }
 
+/// Product/Project hero page — for introducing a product or project
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProductHero {
+    pub title: String,
+    pub subtitle: String,
+    #[serde(default)]
+    pub tagline: Option<String>,
+    #[serde(default)]
+    pub highlights: Vec<String>,
+    #[serde(default)]
+    pub cta_label: Option<String>,
+    #[serde(default)]
+    pub cta_url: Option<String>,
+}
+
+impl ProductHero {
+    pub fn new(title: impl Into<String>, subtitle: impl Into<String>) -> Self {
+        Self {
+            title: title.into(),
+            subtitle: subtitle.into(),
+            tagline: None,
+            highlights: vec![],
+            cta_label: None,
+            cta_url: None,
+        }
+    }
+
+    pub fn with_tagline(mut self, tagline: impl Into<String>) -> Self {
+        self.tagline = Some(tagline.into());
+        self
+    }
+
+    pub fn add_highlight(mut self, highlight: impl Into<String>) -> Self {
+        self.highlights.push(highlight.into());
+        self
+    }
+
+    pub fn with_highlights(mut self, highlights: Vec<String>) -> Self {
+        self.highlights = highlights;
+        self
+    }
+
+    pub fn with_cta(mut self, label: impl Into<String>, url: impl Into<String>) -> Self {
+        self.cta_label = Some(label.into());
+        self.cta_url = Some(url.into());
+        self
+    }
+}
+
+impl Component for ProductHero {
+    fn component_id(&self) -> &'static str {
+        "product-hero"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
 // SpotlightCard is defined and exported from advanced.rs

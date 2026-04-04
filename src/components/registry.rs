@@ -201,6 +201,11 @@ impl ComponentRegistry {
         );
 
         self.register(
+            ComponentId::new("product-hero"),
+            include_str!("../../templates/components/product_hero.typ").to_string(),
+        );
+
+        self.register(
             ComponentId::new("card-dashboard"),
             include_str!("../../templates/components/card_dashboard.typ").to_string(),
         );

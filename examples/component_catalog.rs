@@ -29,11 +29,20 @@ fn main() -> renderreport::Result<()> {
         .metadata("footer_prefix", "renderreport")
         .metadata("footer_link_url", "https://github.com/casoon/renderreport")
         // ── Cover ────────────────────────────────────────────────────────────
-        // @id: cover-page
+        // @id: cover-page (not rendered in this catalog, but component exists)
+        // @id: product-hero
         .add_component(
-            CoverPage::new("renderreport", "Type-safe PDF reports from Rust", 51, "Complete")
-                .with_brand("renderreport")
-                .with_date(env!("CARGO_PKG_VERSION")),
+            ProductHero::new("renderreport", "Type-safe PDF reports from Rust")
+                .with_tagline("Declare components as Rust structs. Render to PDF in milliseconds.")
+                .with_highlights(vec![
+                    "Full type safety — catch errors at compile time".into(),
+                    "Theme system — customize every visual token".into(),
+                    "Component-driven — build complex layouts from reusable blocks".into(),
+                    "Fast rendering — 20-page PDFs in under 500ms".into(),
+                    "Open source — MIT licensed, embedded-friendly".into(),
+                    "51 built-in components — from metrics to infographics".into(),
+                ])
+                .with_cta("View on GitHub", "https://github.com/casoon/renderreport"),
         )
         // @id: table-of-contents
         .add_component(TableOfContents::new().with_title("Contents").with_depth(2))
