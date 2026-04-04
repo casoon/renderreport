@@ -18,21 +18,19 @@
     fill: color-surface,
     stroke: (paint: color-border, thickness: component-card-border-width),
     radius: 10pt,
+    clip: true,
   )[
-    #grid(
-      columns: (4pt, 1fr),
-      gutter: 0pt,
-
-      // Left severity stripe
-      block(
-        width: 4pt,
-        height: 100%,
-        fill: stripe-color,
-        radius: (left: 10pt),
-      ),
-
-      // Main content
-      block(inset: (x: spacing-4, y: spacing-4))[
+    #block(
+      width: 100%,
+      inset: (left: 4pt),
+      fill: stripe-color,
+      radius: (left: 10pt),
+    )[
+      #block(
+        width: 100%,
+        fill: color-surface,
+        inset: (x: spacing-4, y: spacing-4),
+      )[
         #grid(
           columns: if data.metric != none { (1fr, auto) } else { (1fr,) },
           column-gutter: spacing-4,
@@ -72,7 +70,7 @@
             ],
           )},
         )
-      ],
-    )
+      ]
+    ]
   ]
 }

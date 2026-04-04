@@ -222,24 +222,26 @@ impl Engine {
       #line(length: 100%, stroke: (paint: color-border, thickness: 0.7pt))
     ]
   },
-  footer: context [
-    #v(1pt)
-    #line(length: 100%, stroke: (paint: color-border, thickness: 0.5pt))
-    #v(3pt)
-    #grid(
-      columns: (1fr, auto),
-      gutter: spacing-3,
-      [#text(size: font-size-xs, fill: color-text-muted)[
-        #if report-footer-prefix != "" { report-footer-prefix + " " }
-        #if report-footer-link-url != "" {
-          link(report-footer-link-url)[#text(weight: "semibold", fill: color-text-muted)[#report-author]]
-        } else {
-          text(weight: "semibold")[#report-author]
-        }
-      ]],
-      [#text(size: font-size-xs, fill: color-text-muted)[#counter(page).display("1 / 1", both: true)]]
-    )
-  ],
+  footer: context {
+    if counter(page).get().first() > 1 [
+      #v(1pt)
+      #line(length: 100%, stroke: (paint: color-border, thickness: 0.5pt))
+      #v(3pt)
+      #grid(
+        columns: (1fr, auto),
+        gutter: spacing-3,
+        [#text(size: font-size-xs, fill: color-text-muted)[
+          #if report-footer-prefix != "" { report-footer-prefix + " " }
+          #if report-footer-link-url != "" {
+            link(report-footer-link-url)[#text(weight: "semibold", fill: color-text-muted)[#report-author]]
+          } else {
+            text(weight: "semibold")[#report-author]
+          }
+        ]],
+        [#text(size: font-size-xs, fill: color-text-muted)[#counter(page).display("1 / 1", both: true)]]
+      )
+    ]
+  },
 )
 
 #set text(
@@ -264,23 +266,36 @@ impl Engine {
     fn generate_content(&self, request: &RenderRequest) -> Result<String> {
         let mut content = String::new();
 
-        // Title
-        if let Some(title) = &request.title {
+        // Title page
+        let has_title = request.title.as_ref().is_some_and(|t| !t.is_empty());
+        if has_title {
+            let title = request.title.as_deref().unwrap_or("");
+            let subtitle = request.subtitle.as_deref().unwrap_or("");
+            let author = request.metadata.get("author").map(|s| s.as_str()).unwrap_or("");
+            let date = request.metadata.get("date").map(|s| s.as_str()).unwrap_or("");
+
             content.push_str(&format!(
-                "#align(center)[#text(size: font-size-2xl, weight: \"bold\")[{}]]\n\n",
-                title
+                r#"#block(width: 100%, height: 100%, breakable: false)[
+  #v(1fr)
+  #block(width: 60pt, height: 4pt, fill: color-primary, radius: 2pt)
+  #v(spacing-5)
+  #block(width: 100%)[#set par(leading: 0.4em); #text(size: 36pt, weight: "bold", fill: color-text, tracking: -0.02em)[{title}]]
+  #v(spacing-3)
+  #text(size: 18pt, fill: color-text-muted)[{subtitle}]
+  #v(1fr)
+  #line(length: 100%, stroke: 0.5pt + color-border)
+  #v(spacing-3)
+  #text(size: font-size-xs, fill: color-text-muted)[{author}#h(1fr){date}]
+]
+#pagebreak()
+
+"#,
+                title = title.replace('"', "\\\""),
+                subtitle = subtitle.replace('"', "\\\""),
+                author = author.replace('"', "\\\""),
+                date = date.replace('"', "\\\""),
             ));
         }
-
-        // Subtitle
-        if let Some(subtitle) = &request.subtitle {
-            content.push_str(&format!(
-                "#align(center)[#text(size: font-size-lg, fill: color-text-muted)[{}]]\n\n",
-                subtitle
-            ));
-        }
-
-        content.push_str("#v(spacing-6)\n\n");
 
         // Components
         for component in &request.components {

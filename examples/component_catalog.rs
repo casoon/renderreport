@@ -22,29 +22,14 @@ fn main() -> renderreport::Result<()> {
 
     let report = engine
         .report("default")
-        .title("")
-        .subtitle("")
+        .title("renderreport — Component Catalog")
+        .subtitle("Visual reference of all registered components")
         .metadata("author", "renderreport")
         .metadata("date", env!("CARGO_PKG_VERSION"))
         .metadata("footer_prefix", "renderreport")
         .metadata("footer_link_url", "https://github.com/casoon/renderreport")
         // ── Cover ────────────────────────────────────────────────────────────
         // @id: cover-page (not rendered in this catalog, but component exists)
-        // @id: product-hero
-        .add_component(
-            ProductHero::new("renderreport", "Type-safe PDF reports from Rust")
-                .with_tagline("Declare components as Rust structs. Render to PDF in milliseconds.")
-                .with_highlights(vec![
-                    "Full type safety — catch errors at compile time".into(),
-                    "Theme system — customize every visual token".into(),
-                    "Component-driven — build complex layouts from reusable blocks".into(),
-                    "Fast rendering — 20-page PDFs in under 500ms".into(),
-                    "Open source — MIT licensed, embedded-friendly".into(),
-                    "51 built-in components — from metrics to infographics".into(),
-                ])
-                .with_cta("View on GitHub", "https://github.com/casoon/renderreport"),
-        )
-        .add_component(PageBreak::new())
         // @id: table-of-contents
         .add_component(TableOfContents::new().with_title("Contents").with_depth(2))
         // @id: page-break
@@ -751,7 +736,21 @@ fn main() -> renderreport::Result<()> {
         // ── 11. Marketing & Narrative ─────────────────────────────────────────
         .add_component(Section::new("11. Marketing & Narrative").with_level(1))
 
-        .add_component(Section::new("11.1 FeatureGrid").with_level(2))
+        .add_component(Section::new("11.1 ProductHero").with_level(2))
+        .add_component(TextBlock::new("Full-page product/project introduction with highlights and CTA."))
+        .add_component( // @id: product-hero
+            ProductHero::new("renderreport", "Type-safe PDF reports from Rust")
+                .with_tagline("Declare components as Rust structs. Render to PDF in milliseconds.")
+                .with_highlights(vec![
+                    "Full type safety — catch errors at compile time".into(),
+                    "Theme system — customize every visual token".into(),
+                    "Component-driven — build complex layouts from reusable blocks".into(),
+                    "Fast rendering — 20-page PDFs in under 500ms".into(),
+                ])
+                .with_cta("View on GitHub", "https://github.com/casoon/renderreport"),
+        )
+
+        .add_component(Section::new("11.2 FeatureGrid").with_level(2))
         .add_component(TextBlock::new("Marketing feature/benefit grid with optional icons."))
         .add_component( // @id: feature-grid
             FeatureGrid::new(vec![
@@ -764,7 +763,7 @@ fn main() -> renderreport::Result<()> {
             .with_title("Why renderreport?"),
         )
 
-        .add_component(Section::new("11.2 CTABox").with_level(2))
+        .add_component(Section::new("11.3 CTABox").with_level(2))
         .add_component(TextBlock::new("Call-to-action block. Tones: primary, urgent, neutral."))
         .add_component( // @id: cta-box
             CTABox::new("Start your first report today")
@@ -773,7 +772,7 @@ fn main() -> renderreport::Result<()> {
                 .with_tone("primary"),
         )
 
-        .add_component(Section::new("11.3 Testimonial").with_level(2))
+        .add_component(Section::new("11.4 Testimonial").with_level(2))
         .add_component( // @id: testimonial
             Testimonial::new(
                 "renderreport saved us hours every sprint — our PDF reports now build in CI automatically.",
@@ -782,7 +781,7 @@ fn main() -> renderreport::Result<()> {
             .with_company("Example Corp"),
         )
 
-        .add_component(Section::new("11.4 ProcessFlow").with_level(2))
+        .add_component(Section::new("11.5 ProcessFlow").with_level(2))
         .add_component(TextBlock::new("Linear process with numbered steps. Direction: horizontal or vertical."))
         .add_component( // @id: process-flow
             ProcessFlow::new(vec![
@@ -793,7 +792,7 @@ fn main() -> renderreport::Result<()> {
             .with_title("Report Pipeline"),
         )
 
-        .add_component(Section::new("11.5 Timeline").with_level(2))
+        .add_component(Section::new("11.6 Timeline").with_level(2))
         .add_component( // @id: timeline
             Timeline::new(vec![
                 TimelineItem { date: "Q1 2026".into(), title: "v0.1 alpha".into(), description: Some("Core engine + standard components.".into()), status: Some("good".into()) },
@@ -803,7 +802,7 @@ fn main() -> renderreport::Result<()> {
             .with_title("Release Timeline"),
         )
 
-        .add_component(Section::new("11.6 Funnel").with_level(2))
+        .add_component(Section::new("11.7 Funnel").with_level(2))
         .add_component( // @id: funnel
             Funnel::new(vec![
                 FunnelStep { label: "Visitors".into(), value: "10,000".into(), unit: Some("sessions".into()), color: None },
@@ -814,7 +813,7 @@ fn main() -> renderreport::Result<()> {
             .with_title("Conversion Funnel"),
         )
 
-        .add_component(Section::new("11.7 ProblemSolution").with_level(2))
+        .add_component(Section::new("11.8 ProblemSolution").with_level(2))
         .add_component( // @id: problem-solution
             ProblemSolution::new(
                 "Generating PDFs manually is slow, error-prone, and hard to maintain.",
@@ -823,7 +822,7 @@ fn main() -> renderreport::Result<()> {
             .with_labels("The Problem", "The Solution"),
         )
 
-        .add_component(Section::new("11.8 BeforeAfter").with_level(2))
+        .add_component(Section::new("11.9 BeforeAfter").with_level(2))
         .add_component( // @id: before-after
             BeforeAfter::new(
                 "Hand-written PDF layout in LaTeX — 300 lines of fragile code.",
@@ -832,7 +831,7 @@ fn main() -> renderreport::Result<()> {
             .with_labels("Before", "After"),
         )
 
-        .add_component(Section::new("11.9 WhyItMatters").with_level(2))
+        .add_component(Section::new("11.10 WhyItMatters").with_level(2))
         .add_component( // @id: why-it-matters
             WhyItMatters::new(
                 "Automated, reproducible reports eliminate human error and free engineers \
@@ -841,19 +840,162 @@ fn main() -> renderreport::Result<()> {
             .with_title("Why automation matters"),
         )
 
-        .add_component(Section::new("11.10 FactBox").with_level(2))
+        .add_component(Section::new("11.11 FactBox").with_level(2))
         .add_component( // @id: fact-box
             FactBox::new("renderreport renders a 20-page PDF in under 500 ms on a standard CI runner.")
                 .with_label("Performance fact"),
         )
 
-        .add_component(Section::new("11.11 QuoteBlock").with_level(2))
+        .add_component(Section::new("11.12 QuoteBlock").with_level(2))
         .add_component( // @id: quote-block
             QuoteBlock::new(
                 "Good tools shape good reports. renderreport gives your data the presentation it deserves.",
             )
             .with_author("renderreport team"),
         )
+
+        // ── 12. Phase 2 — Advanced Extensions ─────────────────────────────────
+        .add_component(Section::new("12. Phase 2 — Advanced Extensions").with_level(1))
+
+        .add_component(Section::new("12.1 BenefitStrip").with_level(2))
+        .add_component(TextBlock::new("Horizontal benefit/feature strip for marketing intro and value prop."))
+        .add_component( // @id: benefit-strip
+            BenefitStrip::new()
+                .add_benefit_with_icon("⚡", "Fast", "Sub-second PDF rendering")
+                .add_benefit_with_icon("🔒", "Safe", "Type-safe Rust API")
+                .add_benefit_with_icon("🎨", "Themeable", "Customize all tokens")
+                .with_columns(3),
+        )
+
+        .add_component(Section::new("12.2 PricingCard").with_level(2))
+        .add_component(TextBlock::new("Single pricing/plan card with features and highlight option."))
+        .add_component( // @id: pricing-card
+            PricingCard::new("Professional", "$299")
+                .with_billing_period("/month")
+                .with_description("For growing teams")
+                .add_feature("Up to 50 reports/month")
+                .add_feature("Custom themes")
+                .add_feature("Priority support")
+                .with_cta("Start Free Trial"),
+        )
+
+        .add_component(PricingCard::new("Enterprise", "Custom")
+            .with_description("For high-volume needs")
+            .add_feature("Unlimited reports")
+            .add_feature("Dedicated SLA")
+            .add_feature("On-premise deployment")
+            .with_cta("Contact Sales")
+            .highlighted(),
+        )
+
+        .add_component(Section::new("12.3 RecommendationCard").with_level(2))
+        .add_component(TextBlock::new("Lightweight recommendation: title + description + impact/effort/priority badges."))
+        .add_component( // @id: recommendation-card
+            RecommendationCard::new(
+                "Enable HTTPS for all endpoints",
+                "Encrypt traffic to prevent man-in-the-middle attacks.",
+            )
+            .with_impact("high")
+            .with_effort("low")
+            .with_priority("critical"),
+        )
+
+        .add_component(Section::new("12.4 StepCardRow").with_level(2))
+        .add_component(TextBlock::new("Numbered steps displayed horizontally for process overview."))
+        .add_component( // @id: step-card-row
+            StepCardRow::new()
+                .add_step("Collect Data", "Pull metrics from your systems")
+                .add_step("Analyze", "Identify patterns and insights")
+                .add_step("Report", "Generate and distribute PDF")
+                .with_columns(3),
+        )
+
+        .add_component(Section::new("12.5 Columns").with_level(2))
+        .add_component(TextBlock::new("Asymmetric two-column layout with flexible width ratio."))
+        .add_component( // @id: columns
+            Columns::new(
+                "Your image or component would go here on the left (60% width).",
+                "Right column (40% width) for text, description, or complementary content.",
+            )
+            .with_ratio(0.6),
+        )
+
+        .add_component(Section::new("12.6 FaqList").with_level(2))
+        .add_component(TextBlock::new("Question-answer pairs for FAQs and knowledge bases."))
+        .add_component( // @id: faq-list
+            FaqList::new()
+                .with_title("Frequently Asked Questions")
+                .add_item("How does renderreport work?", "It takes Rust structs as input, serializes them to JSON, and renders them via an embedded Typst engine.")
+                .add_item("Can I customize the styling?", "Yes, the theme system lets you override every visual token globally.")
+                .add_item("What output formats are supported?", "Currently PDF via Typst. HTML and other formats are planned for future releases."),
+        )
+
+        .add_component(Section::new("12.7 UseCaseCard").with_level(2))
+        .add_component(TextBlock::new("Single use case with context, problem, solution, and optional outcome."))
+        .add_component( // @id: use-case-card
+            UseCaseCard::new(
+                "Enterprise Audit Automation",
+                "Large organizations with 50+ websites",
+                "Manual PDF audits take weeks and require coordination across teams.",
+                "renderreport generates consistent, type-safe audit reports in CI—eliminating manual steps and reducing turnaround to hours.",
+            )
+            .with_outcome("Reduced audit time from 2 weeks to 2 hours per run."),
+        )
+
+        .add_component(Section::new("12.8 LogoStrip").with_level(2))
+        .add_component(TextBlock::new("Display logos of customers, partners, or certifications."))
+        .add_component( // @id: logo-strip
+            LogoStrip::new()
+                .with_title("Trusted by")
+                .add_logo("TechCorp")
+                .add_logo("InnovateLabs")
+                .add_logo("CloudSystems")
+                .add_logo("DataFlow Inc")
+                .with_columns(4),
+        )
+
+        .add_component(Section::new("12.9 PullQuote").with_level(2))
+        .add_component(TextBlock::new("Large, visually prominent full-width quote."))
+        .add_component( // @id: pull-quote
+            PullQuote::new(
+                "renderreport transformed our reporting pipeline from a weeks-long manual process into a fully automated CI/CD workflow.",
+            )
+            .with_attribution("Engineering Director, FinTech Startup"),
+        )
+
+        .add_component(Section::new("12.10 BigNumber").with_level(2))
+        .add_component(TextBlock::new("Large metric display for impact statistics."))
+        .add_component( // @id: big-number
+            BigNumber::new("10x", "Faster report generation")
+                .with_context("From 2 weeks to 2 days"),
+        )
+
+        .add_component(Section::new("12.11 GlossaryList").with_level(2))
+        .add_component(TextBlock::new("Term-definition pairs for reference and terminology."))
+        .add_component( // @id: glossary-list
+            GlossaryList::new()
+                .with_title("Glossary of Terms")
+                .add_item("Component", "A reusable, type-safe building block for reports.")
+                .add_item("Theme", "A set of design tokens controlling visual appearance.")
+                .add_item("Typst", "A markup-based typesetting language used for rendering."),
+        )
+
+        // ── 13. Report Patterns ──────────────────────────────────────────────────
+        .add_component(PageBreak::new())
+        .add_component(Section::new("13. Report Patterns").with_level(1))
+        .add_component(TextBlock::new("Pre-configured component sequences for common report types. Patterns orchestrate components into a logical narrative flow: context → analysis → solution → actions → CTA."))
+
+        .add_component(Section::new("13.1 Pattern Architecture").with_level(2))
+        .add_component(TextBlock::new("Every pattern follows BasePattern: hero (intro), context (why it matters), analysis (findings), solution (approach), actions (next steps), cta (call-to-action). Each pattern specializes this for a specific use case."))
+
+        .add_component(Section::new("13.2 AuditPattern").with_level(2))
+        .add_component(TextBlock::new("For security/compliance audits. Hero: score/grade. Analysis: findings, impact grid, checklist. Solution: roadmap. CTA: schedule review."))
+
+        .add_component(Section::new("13.3 MarketingPattern").with_level(2))
+        .add_component(TextBlock::new("For product/feature showcases. Hero: product intro. Analysis: features, benefits, comparison. Solution: process flow. Actions: testimonials, use cases. CTA: pricing/signup."))
+
+        .add_component(Section::new("13.4 ExecutivePattern").with_level(2))
+        .add_component(TextBlock::new("For C-level summaries. Hero: key metrics. Analysis: top findings, risk assessment. Solution: strategic recommendation. Actions: implementation plan, timeline. CTA: approval/next meeting."))
 
         .build();
 

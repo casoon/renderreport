@@ -1197,3 +1197,736 @@ impl Component for SideLabel {
         serde_json::to_value(self).unwrap_or_default()
     }
 }
+
+/// Horizontal benefit strip (3–5 points)
+/// For: Product features, value proposition, marketing intro
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BenefitStrip {
+    /// Benefit titles
+    pub titles: Vec<String>,
+    /// Benefit descriptions
+    pub descriptions: Vec<String>,
+    /// Icons (optional, one per item)
+    #[serde(default)]
+    pub icons: Vec<String>,
+    /// Number of columns (2-5, defaults to 3)
+    #[serde(default = "default_benefit_columns")]
+    pub columns: usize,
+}
+
+fn default_benefit_columns() -> usize {
+    3
+}
+
+impl BenefitStrip {
+    pub fn new() -> Self {
+        Self {
+            titles: Vec::new(),
+            descriptions: Vec::new(),
+            icons: Vec::new(),
+            columns: default_benefit_columns(),
+        }
+    }
+
+    pub fn add_benefit(mut self, title: impl Into<String>, description: impl Into<String>) -> Self {
+        self.titles.push(title.into());
+        self.descriptions.push(description.into());
+        self
+    }
+
+    pub fn add_benefit_with_icon(mut self, icon: impl Into<String>, title: impl Into<String>, description: impl Into<String>) -> Self {
+        self.titles.push(title.into());
+        self.descriptions.push(description.into());
+        self.icons.push(icon.into());
+        self
+    }
+
+    pub fn with_columns(mut self, columns: usize) -> Self {
+        self.columns = columns.max(2).min(5);
+        self
+    }
+}
+
+impl Component for BenefitStrip {
+    fn component_id(&self) -> &'static str {
+        "benefit-strip"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Pricing / Plan card
+/// For: Service packages, pricing tiers, audit levels, feature bundles
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PricingCard {
+    /// Plan name
+    pub name: String,
+    /// Price / cost (e.g. "$99" or "Free")
+    pub price: String,
+    /// Optional billing period (e.g. "/month")
+    #[serde(default)]
+    pub billing_period: Option<String>,
+    /// Brief description
+    #[serde(default)]
+    pub description: Option<String>,
+    /// Features included
+    #[serde(default)]
+    pub features: Vec<String>,
+    /// CTA label (e.g. "Choose Plan")
+    #[serde(default)]
+    pub cta_label: Option<String>,
+    /// Highlight this card as recommended
+    #[serde(default)]
+    pub highlighted: bool,
+}
+
+impl PricingCard {
+    pub fn new(name: impl Into<String>, price: impl Into<String>) -> Self {
+        Self {
+            name: name.into(),
+            price: price.into(),
+            billing_period: None,
+            description: None,
+            features: Vec::new(),
+            cta_label: None,
+            highlighted: false,
+        }
+    }
+
+    pub fn with_billing_period(mut self, period: impl Into<String>) -> Self {
+        self.billing_period = Some(period.into());
+        self
+    }
+
+    pub fn with_description(mut self, description: impl Into<String>) -> Self {
+        self.description = Some(description.into());
+        self
+    }
+
+    pub fn add_feature(mut self, feature: impl Into<String>) -> Self {
+        self.features.push(feature.into());
+        self
+    }
+
+    pub fn with_cta(mut self, label: impl Into<String>) -> Self {
+        self.cta_label = Some(label.into());
+        self
+    }
+
+    pub fn highlighted(mut self) -> Self {
+        self.highlighted = true;
+        self
+    }
+}
+
+impl Component for PricingCard {
+    fn component_id(&self) -> &'static str {
+        "pricing-card"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Recommendation card
+/// Lighter than Finding: recommendation + impact + effort + priority
+/// For: Audit recommendations, best practices, improvements
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RecommendationCard {
+    /// Recommendation title
+    pub title: String,
+    /// Brief description
+    pub description: String,
+    /// Impact level (high | medium | low)
+    #[serde(default)]
+    pub impact: Option<String>,
+    /// Effort required (high | medium | low)
+    #[serde(default)]
+    pub effort: Option<String>,
+    /// Priority (critical | high | medium | low)
+    #[serde(default)]
+    pub priority: Option<String>,
+}
+
+impl RecommendationCard {
+    pub fn new(title: impl Into<String>, description: impl Into<String>) -> Self {
+        Self {
+            title: title.into(),
+            description: description.into(),
+            impact: None,
+            effort: None,
+            priority: None,
+        }
+    }
+
+    pub fn with_impact(mut self, impact: impl Into<String>) -> Self {
+        self.impact = Some(impact.into());
+        self
+    }
+
+    pub fn with_effort(mut self, effort: impl Into<String>) -> Self {
+        self.effort = Some(effort.into());
+        self
+    }
+
+    pub fn with_priority(mut self, priority: impl Into<String>) -> Self {
+        self.priority = Some(priority.into());
+        self
+    }
+}
+
+impl Component for RecommendationCard {
+    fn component_id(&self) -> &'static str {
+        "recommendation-card"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Step card row
+/// Numbered steps displayed horizontally (2-4 steps)
+/// For: "How it works", process overview, methodology
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StepCardRow {
+    /// Step titles
+    pub titles: Vec<String>,
+    /// Step descriptions
+    pub descriptions: Vec<String>,
+    /// Number of columns (2-4, defaults to 3)
+    #[serde(default = "default_step_columns")]
+    pub columns: usize,
+}
+
+fn default_step_columns() -> usize {
+    3
+}
+
+impl StepCardRow {
+    pub fn new() -> Self {
+        Self {
+            titles: Vec::new(),
+            descriptions: Vec::new(),
+            columns: default_step_columns(),
+        }
+    }
+
+    pub fn add_step(mut self, title: impl Into<String>, description: impl Into<String>) -> Self {
+        self.titles.push(title.into());
+        self.descriptions.push(description.into());
+        self
+    }
+
+    pub fn with_columns(mut self, columns: usize) -> Self {
+        self.columns = columns.max(2).min(4);
+        self
+    }
+}
+
+impl Component for StepCardRow {
+    fn component_id(&self) -> &'static str {
+        "step-card-row"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Columns layout component
+/// Asymmetric two-column layout with flexible width ratio (e.g. 60/40, 70/30)
+/// For: Text + image, side-by-side content, mixed layouts
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Columns {
+    /// Left column content (raw Typst or component references)
+    pub left: String,
+    /// Right column content (raw Typst or component references)
+    pub right: String,
+    /// Left column width ratio (0.0-1.0, defaults to 0.6 for 60/40)
+    #[serde(default = "default_left_width")]
+    pub left_width: f64,
+    /// Gap between columns
+    #[serde(default)]
+    pub gap: Option<String>,
+}
+
+fn default_left_width() -> f64 {
+    0.6
+}
+
+impl Columns {
+    pub fn new(left: impl Into<String>, right: impl Into<String>) -> Self {
+        Self {
+            left: left.into(),
+            right: right.into(),
+            left_width: default_left_width(),
+            gap: None,
+        }
+    }
+
+    pub fn with_ratio(mut self, left_width: f64) -> Self {
+        self.left_width = left_width.max(0.2).min(0.8);
+        self
+    }
+
+    pub fn with_gap(mut self, gap: impl Into<String>) -> Self {
+        self.gap = Some(gap.into());
+        self
+    }
+}
+
+impl Component for Columns {
+    fn component_id(&self) -> &'static str {
+        "columns"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// FAQ list component
+/// Question-answer pairs for FAQs, knowledge bases, product docs
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FaqList {
+    /// FAQ items
+    pub items: Vec<FaqItem>,
+    /// Optional title
+    #[serde(default)]
+    pub title: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FaqItem {
+    /// Question
+    pub question: String,
+    /// Answer
+    pub answer: String,
+}
+
+impl FaqList {
+    pub fn new() -> Self {
+        Self {
+            items: Vec::new(),
+            title: None,
+        }
+    }
+
+    pub fn add_item(mut self, question: impl Into<String>, answer: impl Into<String>) -> Self {
+        self.items.push(FaqItem {
+            question: question.into(),
+            answer: answer.into(),
+        });
+        self
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+}
+
+impl Component for FaqList {
+    fn component_id(&self) -> &'static str {
+        "faq-list"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Use-case card component
+/// Single use case: context + problem + solution
+/// For: Product documentation, case studies, application examples
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UseCaseCard {
+    /// Use case title
+    pub title: String,
+    /// Context / industry / audience
+    pub context: String,
+    /// The problem
+    pub problem: String,
+    /// The solution / how we help
+    pub solution: String,
+    /// Optional outcome / result
+    #[serde(default)]
+    pub outcome: Option<String>,
+}
+
+impl UseCaseCard {
+    pub fn new(
+        title: impl Into<String>,
+        context: impl Into<String>,
+        problem: impl Into<String>,
+        solution: impl Into<String>,
+    ) -> Self {
+        Self {
+            title: title.into(),
+            context: context.into(),
+            problem: problem.into(),
+            solution: solution.into(),
+            outcome: None,
+        }
+    }
+
+    pub fn with_outcome(mut self, outcome: impl Into<String>) -> Self {
+        self.outcome = Some(outcome.into());
+        self
+    }
+}
+
+impl Component for UseCaseCard {
+    fn component_id(&self) -> &'static str {
+        "use-case-card"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Logo strip component
+/// Display logos of customers, partners, or certifications
+/// For: Trust building, social proof, partner logos, client lists
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LogoStrip {
+    /// Logo labels/names
+    pub labels: Vec<String>,
+    /// Number of columns (2-6, defaults to 4)
+    #[serde(default = "default_logo_columns")]
+    pub columns: usize,
+    /// Optional title
+    #[serde(default)]
+    pub title: Option<String>,
+}
+
+fn default_logo_columns() -> usize {
+    4
+}
+
+impl LogoStrip {
+    pub fn new() -> Self {
+        Self {
+            labels: Vec::new(),
+            columns: default_logo_columns(),
+            title: None,
+        }
+    }
+
+    pub fn add_logo(mut self, label: impl Into<String>) -> Self {
+        self.labels.push(label.into());
+        self
+    }
+
+    pub fn with_columns(mut self, columns: usize) -> Self {
+        self.columns = columns.max(2).min(6);
+        self
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+}
+
+impl Component for LogoStrip {
+    fn component_id(&self) -> &'static str {
+        "logo-strip"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Pull quote component
+/// Large, visually prominent single quote (centered, full-width)
+/// For: Key statements, expert opinions, marketing headlines
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PullQuote {
+    /// The quote text
+    pub quote: String,
+    /// Optional attribution (author, source)
+    #[serde(default)]
+    pub attribution: Option<String>,
+}
+
+impl PullQuote {
+    pub fn new(quote: impl Into<String>) -> Self {
+        Self {
+            quote: quote.into(),
+            attribution: None,
+        }
+    }
+
+    pub fn with_attribution(mut self, attribution: impl Into<String>) -> Self {
+        self.attribution = Some(attribution.into());
+        self
+    }
+}
+
+impl Component for PullQuote {
+    fn component_id(&self) -> &'static str {
+        "pull-quote"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Big number component
+/// Large metric display for marketing/impact stats
+/// For: Key metrics, conversion rates, impact statistics
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BigNumber {
+    /// The number/value (e.g. "+23%", "10x", "500ms")
+    pub value: String,
+    /// Description/label
+    pub label: String,
+    /// Optional context or explanation
+    #[serde(default)]
+    pub context: Option<String>,
+}
+
+impl BigNumber {
+    pub fn new(value: impl Into<String>, label: impl Into<String>) -> Self {
+        Self {
+            value: value.into(),
+            label: label.into(),
+            context: None,
+        }
+    }
+
+    pub fn with_context(mut self, context: impl Into<String>) -> Self {
+        self.context = Some(context.into());
+        self
+    }
+}
+
+impl Component for BigNumber {
+    fn component_id(&self) -> &'static str {
+        "big-number"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Glossary list component
+/// Term-definition pairs for reference, appendix, or terminology
+/// For: Glossaries, abbreviations, technical terms, standards
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GlossaryList {
+    /// Glossary items
+    pub items: Vec<GlossaryItem>,
+    /// Optional title
+    #[serde(default)]
+    pub title: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GlossaryItem {
+    /// Term/abbreviation
+    pub term: String,
+    /// Definition
+    pub definition: String,
+}
+
+impl GlossaryList {
+    pub fn new() -> Self {
+        Self {
+            items: Vec::new(),
+            title: None,
+        }
+    }
+
+    pub fn add_item(mut self, term: impl Into<String>, definition: impl Into<String>) -> Self {
+        self.items.push(GlossaryItem {
+            term: term.into(),
+            definition: definition.into(),
+        });
+        self
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+}
+
+impl Component for GlossaryList {
+    fn component_id(&self) -> &'static str {
+        "glossary-list"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── Diagnosis Panel ─────────────────────────────────────────────────────────
+
+/// A single row in a DiagnosisPanel
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagnosisRow {
+    pub label: String,
+    pub diagnosis: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<String>,
+}
+
+impl DiagnosisRow {
+    pub fn new(label: impl Into<String>, diagnosis: impl Into<String>) -> Self {
+        Self {
+            label: label.into(),
+            diagnosis: diagnosis.into(),
+            status: None,
+        }
+    }
+
+    pub fn with_status(mut self, status: impl Into<String>) -> Self {
+        self.status = Some(status.into());
+        self
+    }
+}
+
+/// Card with label–diagnosis rows and optional status indicators
+/// For: Technical overview, module diagnosis, quick health checks
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagnosisPanel {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+    pub rows: Vec<DiagnosisRow>,
+}
+
+impl DiagnosisPanel {
+    pub fn new(rows: Vec<DiagnosisRow>) -> Self {
+        Self { title: None, rows }
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+}
+
+impl Component for DiagnosisPanel {
+    fn component_id(&self) -> &'static str {
+        "diagnosis-panel"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── Dominant Issue Spotlight ────────────────────────────────────────────────
+
+/// Full-width spotlight for a single dominant issue
+/// For: Highlighting the biggest problem in an audit report
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DominantIssueSpotlight {
+    pub title: String,
+    pub severity: String,
+    pub body: String,
+    pub user_impact: String,
+    pub recommendation: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub eyebrow: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub affected_count: Option<u32>,
+}
+
+impl DominantIssueSpotlight {
+    pub fn new(
+        title: impl Into<String>,
+        severity: impl Into<String>,
+        body: impl Into<String>,
+        user_impact: impl Into<String>,
+        recommendation: impl Into<String>,
+    ) -> Self {
+        Self {
+            title: title.into(),
+            severity: severity.into(),
+            body: body.into(),
+            user_impact: user_impact.into(),
+            recommendation: recommendation.into(),
+            eyebrow: None,
+            affected_count: None,
+        }
+    }
+
+    pub fn with_eyebrow(mut self, eyebrow: impl Into<String>) -> Self {
+        self.eyebrow = Some(eyebrow.into());
+        self
+    }
+
+    pub fn with_affected_count(mut self, count: u32) -> Self {
+        self.affected_count = Some(count);
+        self
+    }
+}
+
+impl Component for DominantIssueSpotlight {
+    fn component_id(&self) -> &'static str {
+        "dominant-issue-spotlight"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── Wrong/Right Block ───────────────────────────────────────────────────────
+
+/// Before/after comparison block (wrong vs. right)
+/// For: Code examples, best practice comparisons, fix demonstrations
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WrongRightBlock {
+    pub wrong: String,
+    pub right: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wrong_label: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub right_label: Option<String>,
+    #[serde(default)]
+    pub is_code: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub note: Option<String>,
+}
+
+impl WrongRightBlock {
+    pub fn new(wrong: impl Into<String>, right: impl Into<String>) -> Self {
+        Self {
+            wrong: wrong.into(),
+            right: right.into(),
+            wrong_label: None,
+            right_label: None,
+            is_code: false,
+            note: None,
+        }
+    }
+
+    pub fn code(mut self) -> Self {
+        self.is_code = true;
+        self
+    }
+
+    pub fn with_labels(
+        mut self,
+        wrong_label: impl Into<String>,
+        right_label: impl Into<String>,
+    ) -> Self {
+        self.wrong_label = Some(wrong_label.into());
+        self.right_label = Some(right_label.into());
+        self
+    }
+
+    pub fn with_note(mut self, note: impl Into<String>) -> Self {
+        self.note = Some(note.into());
+        self
+    }
+}
+
+impl Component for WrongRightBlock {
+    fn component_id(&self) -> &'static str {
+        "wrong-right-block"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}

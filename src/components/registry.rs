@@ -368,6 +368,77 @@ impl ComponentRegistry {
             include_str!("../../templates/components/quote_block.typ").to_string(),
         );
 
+        // Phase 2 Components
+        self.register(
+            ComponentId::new("benefit-strip"),
+            include_str!("../../templates/components/benefit_strip.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("pricing-card"),
+            include_str!("../../templates/components/pricing_card.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("recommendation-card"),
+            include_str!("../../templates/components/recommendation_card.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("step-card-row"),
+            include_str!("../../templates/components/step_card_row.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("columns"),
+            include_str!("../../templates/components/columns.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("faq-list"),
+            include_str!("../../templates/components/faq_list.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("use-case-card"),
+            include_str!("../../templates/components/use_case_card.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("logo-strip"),
+            include_str!("../../templates/components/logo_strip.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("pull-quote"),
+            include_str!("../../templates/components/pull_quote.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("big-number"),
+            include_str!("../../templates/components/big_number.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("glossary-list"),
+            include_str!("../../templates/components/glossary_list.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("diagnosis-panel"),
+            include_str!("../../templates/components/diagnosis_panel.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("dominant-issue-spotlight"),
+            include_str!("../../templates/components/dominant_issue_spotlight.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("wrong-right-block"),
+            include_str!("../../templates/components/wrong_right_block.typ").to_string(),
+        );
+
         // Grid component MUST be registered last — its template dispatches
         // to other component functions, so they must already be defined.
         self.register(

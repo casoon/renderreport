@@ -39,7 +39,7 @@
             ),
             // Connecting line below (not for last item)
             if i < data.items.len() - 1 {
-              block(width: 1pt, height: 100%, fill: color-border)
+              block(width: 1pt, height: spacing-2, fill: color-border)
             },
           ),
 

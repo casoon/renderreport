@@ -28,9 +28,12 @@ pub use standard::*;
 
 // Re-export new primitive and composite types
 pub use advanced::{
-    ChecklistPanel, ChecklistRow, ComparisonBlock, ComparisonCluster, ComparisonClusterItem,
-    ImpactGrid, ImpactGridCard, MetricStrip, MetricStripItem, PhaseBlock, SectionHeaderSplit,
-    SpotlightCard,
+    BenefitStrip, BigNumber, ChecklistPanel, ChecklistRow, Columns, ComparisonBlock,
+    ComparisonCluster, ComparisonClusterItem, DiagnosisPanel, DiagnosisRow,
+    DominantIssueSpotlight, FaqList, FaqItem, GlossaryList, GlossaryItem,
+    ImpactGrid, ImpactGridCard, LogoStrip, MetricStrip, MetricStripItem, PhaseBlock, PricingCard,
+    PullQuote, RecommendationCard, SectionHeaderSplit, SpotlightCard, StepCardRow, UseCaseCard,
+    WrongRightBlock,
 };
 pub use text::Eyebrow;
 

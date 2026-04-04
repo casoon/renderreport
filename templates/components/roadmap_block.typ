@@ -18,7 +18,7 @@
         #small-text([#column.items.len() actions])
       ]
 
-      #v(spacing-3)
+      #v(spacing-2)
 
       // Items
       #for item in column.items {
@@ -30,8 +30,8 @@
             row-gutter: spacing-1,
             column-gutter: spacing-3,
             label-text([Impact]), text(size: font-size-sm)[#item.priority],
-            label-text([Aufwand]), text(size: font-size-sm)[#{if item.effort != none { item.effort } else { "—" }}],
-            label-text([Rolle]), text(size: font-size-sm)[#item.role],
+            label-text([Effort]), text(size: font-size-sm)[#{if item.effort != none { item.effort } else { "—" }}],
+            label-text([Role]), text(size: font-size-sm)[#item.role],
           )
           #if item.benefit != "" [
             #v(spacing-2)

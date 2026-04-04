@@ -20,6 +20,7 @@
 pub mod components;
 pub mod engine;
 pub mod pack;
+pub mod patterns;
 pub mod render;
 pub mod theme;
 pub mod vfs;
@@ -27,9 +28,10 @@ pub mod vfs;
 mod error;
 
 pub use components::{Component, ComponentId, ComponentRegistry};
-pub use engine::Engine;
+pub use engine::{Engine, ReportBuilder};
 pub use error::{Error, Result};
 pub use pack::{Pack, PackId, PackLoader, PackManifest};
+pub use patterns::{AuditPattern, MarketingPattern, ExecutivePattern, BasePattern};
 pub use render::{RenderOutput, RenderRequest};
 pub use theme::{Theme, ThemeTokens, TokenValue};
 

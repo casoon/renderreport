@@ -29,7 +29,7 @@
         text(size: font-size-3xl, weight: "bold")[#data.phase_number],
 
         stack(
-          spacing: 3pt,
+          spacing: spacing-2,
           text(size: font-size-lg, weight: "bold")[#data.phase_label],
           text(size: font-size-xs, fill: white.transparentize(20%))[#data.description],
         ),

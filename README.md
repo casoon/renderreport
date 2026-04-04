@@ -56,28 +56,26 @@ renderreport = "0.1"
 
 ## Components
 
-### Standard Components
+**59+ production-ready components** organized into 8 semantic categories:
 
-| Component | Description |
-|-----------|-------------|
-| `ScoreCard` | Metric with score visualization |
-| `Finding` | Audit finding with severity |
-| `AuditTable` | Data table for results |
-| `Section` | Document section with heading |
-| `SummaryBox` | Executive summary widget |
-| `Callout` | Information callout box |
-| `Image` | Image with caption |
+1. **Layout & Structure** — Section, Grid, Columns, FlowGroup, PageBreak
+2. **Text & Editorial** — TextBlock, Label, Eyebrow
+3. **Metrics & KPIs** — ScoreCard, Gauge, BigNumber, TrendTile, ProgressBar
+4. **Data & Comparison** — AuditTable, ComparisonBlock, Crosstab, PivotTable
+5. **Narrative & Storytelling** — Finding, QuoteBlock, WhyItMatters, ProblemSolution, BeforeAfter
+6. **Infographics** — ProcessFlow, Timeline, Funnel, RoadmapBlock, PhaseBlock
+7. **Marketing & Sales** — ProductHero, FeatureGrid, BenefitStrip, CTABox, PricingCard, Testimonial, UseCaseCard
+8. **Media & Assets** — Image, Barcode, Sparkline, Chart, List, FaqList, GlossaryList
 
-### Advanced Components
+→ See [COMPONENTS.md](./COMPONENTS.md) for complete reference with examples.
 
-Inspired by [JasperReports](https://jasperreports.sourceforge.net/), [Eclipse BIRT](https://eclipse-birt.github.io/birt-website/), and [Pentaho Reporting](https://help.pentaho.com/):
+## Patterns
 
-| Component | Description | Inspired By |
-|-----------|-------------|-------------|
-| `List` | Iterative list with nested items | JasperReports List Component |
-| `Grid` | Multi-column grid layout | Pentaho Row/Block Layout |
-| `ProgressBar` | Visual progress indicator | JasperReports Charts |
-| `KeyValueList` | Key-value pairs display | BIRT Parameters |
+Pre-configured report structures for common use cases:
+
+- **AuditPattern** — Security/compliance audits (findings, impact, roadmap, CTA)
+- **MarketingPattern** — Product showcases (hero, features, comparison, testimonials, pricing)
+- **ExecutivePattern** — C-level summaries (metrics, top findings, recommendation, timeline)
 | `Divider` | Horizontal separator line | BIRT Band Elements |
 | `Watermark` | Background watermark text | Pentaho Watermark |
 | `PageBreak` | Force page break | BIRT Page Setup |
