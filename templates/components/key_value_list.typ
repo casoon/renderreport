@@ -29,13 +29,13 @@
           row-gutter: spacing-2,
           
           box(
-            inset: (x: spacing-2, y: spacing-1),
+            inset: (x: spacing-2, y: 2pt),
             fill: if item.highlight { color-surface } else { none },
           )[
             #text(weight: "semibold", size: font-size-sm, fill: color-text-muted)[#item.key]
           ],
           box(
-            inset: (x: spacing-2, y: spacing-1),
+            inset: (x: spacing-2, y: 2pt),
             fill: if item.highlight { color-surface } else { none },
           )[
             #text(size: font-size-sm)[#item.value]

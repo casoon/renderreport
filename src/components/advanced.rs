@@ -604,3 +604,569 @@ impl Component for TableOfContents {
         serde_json::to_value(self).unwrap_or_default()
     }
 }
+
+// ─── SectionHeaderSplit ──────────────────────────────────────────────────────
+
+fn default_level_two() -> u8 { 2 }
+fn default_outlined() -> bool { true }
+fn default_divider_below() -> bool { true }
+
+/// Section header with 1/3 title and 2/3 body text side-by-side
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SectionHeaderSplit {
+    pub title: String,
+    pub body: String,
+    #[serde(default)]
+    pub eyebrow: Option<String>,
+    #[serde(default = "default_level_two")]
+    pub level: u8,
+    #[serde(default = "default_outlined")]
+    pub outlined: bool,
+    #[serde(default = "default_divider_below")]
+    pub divider_below: bool,
+}
+
+impl SectionHeaderSplit {
+    pub fn new(title: impl Into<String>, body: impl Into<String>) -> Self {
+        Self {
+            title: title.into(),
+            body: body.into(),
+            eyebrow: None,
+            level: 2,
+            outlined: true,
+            divider_below: true,
+        }
+    }
+
+    pub fn with_eyebrow(mut self, eyebrow: impl Into<String>) -> Self {
+        self.eyebrow = Some(eyebrow.into());
+        self
+    }
+
+    pub fn with_level(mut self, level: u8) -> Self {
+        self.level = level.clamp(1, 6);
+        self
+    }
+
+    pub fn no_divider(mut self) -> Self {
+        self.divider_below = false;
+        self
+    }
+}
+
+impl Component for SectionHeaderSplit {
+    fn component_id(&self) -> &'static str {
+        "section-header-split"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── PhaseBlock ──────────────────────────────────────────────────────────────
+
+/// A phase block for roadmap/plan displays
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PhaseBlock {
+    pub phase_number: u8,
+    pub phase_label: String,
+    pub description: String,
+    pub items: Vec<String>,
+    #[serde(default)]
+    pub accent_color: Option<String>,
+    #[serde(default)]
+    pub item_count_total: Option<usize>,
+}
+
+impl PhaseBlock {
+    pub fn new(
+        number: u8,
+        label: impl Into<String>,
+        description: impl Into<String>,
+    ) -> Self {
+        Self {
+            phase_number: number,
+            phase_label: label.into(),
+            description: description.into(),
+            items: Vec::new(),
+            accent_color: None,
+            item_count_total: None,
+        }
+    }
+
+    pub fn with_items(mut self, items: Vec<String>) -> Self {
+        self.items = items;
+        self
+    }
+
+    pub fn with_total(mut self, total: usize) -> Self {
+        self.item_count_total = Some(total);
+        self
+    }
+
+    pub fn with_color(mut self, color: impl Into<String>) -> Self {
+        self.accent_color = Some(color.into());
+        self
+    }
+}
+
+impl Component for PhaseBlock {
+    fn component_id(&self) -> &'static str {
+        "phase-block"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── DiagnosisPanel ──────────────────────────────────────────────────────────
+
+/// A single row in a DiagnosisPanel
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagnosisRow {
+    pub label: String,
+    pub diagnosis: String,
+    #[serde(default)]
+    pub status: Option<String>,
+}
+
+impl DiagnosisRow {
+    pub fn new(label: impl Into<String>, diagnosis: impl Into<String>) -> Self {
+        Self {
+            label: label.into(),
+            diagnosis: diagnosis.into(),
+            status: None,
+        }
+    }
+
+    pub fn with_status(mut self, status: impl Into<String>) -> Self {
+        self.status = Some(status.into());
+        self
+    }
+}
+
+/// Card showing label–diagnosis pairs
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagnosisPanel {
+    #[serde(default)]
+    pub title: Option<String>,
+    pub rows: Vec<DiagnosisRow>,
+}
+
+impl DiagnosisPanel {
+    pub fn new(rows: Vec<DiagnosisRow>) -> Self {
+        Self { title: None, rows }
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+}
+
+impl Component for DiagnosisPanel {
+    fn component_id(&self) -> &'static str {
+        "diagnosis-panel"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── MetricStrip ─────────────────────────────────────────────────────────────
+
+/// Item inside a MetricStrip
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MetricStripItem {
+    pub label: String,
+    pub value: String,
+    #[serde(default)]
+    pub unit: Option<String>,
+    #[serde(default)]
+    pub accent_color: Option<String>,
+    #[serde(default)]
+    pub status: Option<String>,
+}
+
+impl MetricStripItem {
+    pub fn new(label: impl Into<String>, value: impl Into<String>) -> Self {
+        Self {
+            label: label.into(),
+            value: value.into(),
+            unit: None,
+            accent_color: None,
+            status: None,
+        }
+    }
+
+    pub fn with_unit(mut self, unit: impl Into<String>) -> Self {
+        self.unit = Some(unit.into());
+        self
+    }
+
+    pub fn with_accent(mut self, color: impl Into<String>) -> Self {
+        self.accent_color = Some(color.into());
+        self
+    }
+
+    pub fn with_status(mut self, status: impl Into<String>) -> Self {
+        self.status = Some(status.into());
+        self
+    }
+}
+
+/// Horizontal row of equal KPI cells
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MetricStrip {
+    pub items: Vec<MetricStripItem>,
+    #[serde(default)]
+    pub compact: bool,
+}
+
+impl MetricStrip {
+    pub fn new(items: Vec<MetricStripItem>) -> Self {
+        Self { items, compact: false }
+    }
+
+    pub fn compact(mut self) -> Self {
+        self.compact = true;
+        self
+    }
+}
+
+impl Component for MetricStrip {
+    fn component_id(&self) -> &'static str {
+        "metric-strip"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── ImpactTriad ─────────────────────────────────────────────────────────────
+
+/// A single card inside an ImpactTriad
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ImpactCard {
+    pub label: String,
+    pub headline: String,
+    pub body: String,
+    #[serde(default)]
+    pub status: Option<String>,
+    #[serde(default)]
+    pub icon: Option<String>,
+}
+
+impl ImpactCard {
+    pub fn new(
+        label: impl Into<String>,
+        headline: impl Into<String>,
+        body: impl Into<String>,
+    ) -> Self {
+        Self {
+            label: label.into(),
+            headline: headline.into(),
+            body: body.into(),
+            status: None,
+            icon: None,
+        }
+    }
+
+    pub fn with_status(mut self, status: impl Into<String>) -> Self {
+        self.status = Some(status.into());
+        self
+    }
+
+    pub fn with_icon(mut self, icon: impl Into<String>) -> Self {
+        self.icon = Some(icon.into());
+        self
+    }
+}
+
+/// Three-column impact card layout (user / risk / conversion)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ImpactTriad {
+    pub user: ImpactCard,
+    pub risk: ImpactCard,
+    pub conversion: ImpactCard,
+    #[serde(default)]
+    pub title: Option<String>,
+}
+
+impl ImpactTriad {
+    pub fn new(user: ImpactCard, risk: ImpactCard, conversion: ImpactCard) -> Self {
+        Self { user, risk, conversion, title: None }
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+}
+
+impl Component for ImpactTriad {
+    fn component_id(&self) -> &'static str {
+        "impact-triad"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── DominantIssueSpotlight ──────────────────────────────────────────────────
+
+/// Full-width spotlight for the most important finding
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DominantIssueSpotlight {
+    pub title: String,
+    pub severity: String,
+    pub body: String,
+    pub user_impact: String,
+    pub recommendation: String,
+    #[serde(default)]
+    pub eyebrow: Option<String>,
+    #[serde(default)]
+    pub affected_count: Option<u32>,
+}
+
+impl DominantIssueSpotlight {
+    pub fn new(
+        title: impl Into<String>,
+        severity: impl Into<String>,
+        body: impl Into<String>,
+    ) -> Self {
+        Self {
+            title: title.into(),
+            severity: severity.into(),
+            body: body.into(),
+            user_impact: String::new(),
+            recommendation: String::new(),
+            eyebrow: None,
+            affected_count: None,
+        }
+    }
+
+    pub fn with_impact(mut self, impact: impl Into<String>) -> Self {
+        self.user_impact = impact.into();
+        self
+    }
+
+    pub fn with_recommendation(mut self, rec: impl Into<String>) -> Self {
+        self.recommendation = rec.into();
+        self
+    }
+
+    pub fn with_count(mut self, count: u32) -> Self {
+        self.affected_count = Some(count);
+        self
+    }
+
+    pub fn with_eyebrow(mut self, eyebrow: impl Into<String>) -> Self {
+        self.eyebrow = Some(eyebrow.into());
+        self
+    }
+}
+
+impl Component for DominantIssueSpotlight {
+    fn component_id(&self) -> &'static str {
+        "dominant-issue-spotlight"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── WrongRightBlock ─────────────────────────────────────────────────────────
+
+/// Before/after code or text comparison block
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WrongRightBlock {
+    pub wrong: String,
+    pub right: String,
+    #[serde(default)]
+    pub wrong_label: Option<String>,
+    #[serde(default)]
+    pub right_label: Option<String>,
+    #[serde(default)]
+    pub is_code: bool,
+    #[serde(default)]
+    pub note: Option<String>,
+}
+
+impl WrongRightBlock {
+    pub fn new(wrong: impl Into<String>, right: impl Into<String>) -> Self {
+        Self {
+            wrong: wrong.into(),
+            right: right.into(),
+            wrong_label: None,
+            right_label: None,
+            is_code: false,
+            note: None,
+        }
+    }
+
+    pub fn code(mut self) -> Self {
+        self.is_code = true;
+        self
+    }
+
+    pub fn with_note(mut self, note: impl Into<String>) -> Self {
+        self.note = Some(note.into());
+        self
+    }
+
+    pub fn with_labels(
+        mut self,
+        wrong_label: impl Into<String>,
+        right_label: impl Into<String>,
+    ) -> Self {
+        self.wrong_label = Some(wrong_label.into());
+        self.right_label = Some(right_label.into());
+        self
+    }
+}
+
+impl Component for WrongRightBlock {
+    fn component_id(&self) -> &'static str {
+        "wrong-right-block"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── ComparisonCluster ───────────────────────────────────────────────────────
+
+/// A single item in a ComparisonCluster
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ComparisonClusterItem {
+    pub label: String,
+    pub value: String,
+    #[serde(default)]
+    pub sub: Option<String>,
+    #[serde(default)]
+    pub status: Option<String>,
+}
+
+impl ComparisonClusterItem {
+    pub fn new(label: impl Into<String>, value: impl Into<String>) -> Self {
+        Self {
+            label: label.into(),
+            value: value.into(),
+            sub: None,
+            status: None,
+        }
+    }
+
+    pub fn with_sub(mut self, sub: impl Into<String>) -> Self {
+        self.sub = Some(sub.into());
+        self
+    }
+
+    pub fn with_status(mut self, status: impl Into<String>) -> Self {
+        self.status = Some(status.into());
+        self
+    }
+}
+
+fn default_three() -> usize { 3 }
+
+/// Grid of comparison items with optional title
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ComparisonCluster {
+    pub items: Vec<ComparisonClusterItem>,
+    #[serde(default)]
+    pub title: Option<String>,
+    #[serde(default = "default_three")]
+    pub columns: usize,
+}
+
+impl ComparisonCluster {
+    pub fn new(items: Vec<ComparisonClusterItem>) -> Self {
+        Self { items, title: None, columns: 3 }
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+
+    pub fn with_columns(mut self, columns: usize) -> Self {
+        self.columns = columns;
+        self
+    }
+}
+
+impl Component for ComparisonCluster {
+    fn component_id(&self) -> &'static str {
+        "comparison-cluster"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ─── SideLabel ───────────────────────────────────────────────────────────────
+
+/// Two-column layout: left 1/3 heading, right 2/3 content (bullets or text).
+///
+/// Ideal for structured information blocks where a label identifies a category
+/// and associated details are listed alongside it.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SideLabel {
+    /// Section heading shown in the left column
+    pub heading: String,
+    /// Optional smaller subheading below the main heading
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subheading: Option<String>,
+    /// Bullet items shown in the right column (preferred for lists)
+    #[serde(default)]
+    pub items: Vec<String>,
+    /// Plain text shown in the right column when no items are provided
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
+    /// Whether to render a horizontal divider below this block
+    #[serde(default)]
+    pub divider: bool,
+}
+
+impl SideLabel {
+    pub fn new(heading: impl Into<String>) -> Self {
+        Self {
+            heading: heading.into(),
+            subheading: None,
+            items: Vec::new(),
+            text: None,
+            divider: false,
+        }
+    }
+
+    pub fn with_subheading(mut self, subheading: impl Into<String>) -> Self {
+        self.subheading = Some(subheading.into());
+        self
+    }
+
+    pub fn add_item(mut self, item: impl Into<String>) -> Self {
+        self.items.push(item.into());
+        self
+    }
+
+    pub fn with_text(mut self, text: impl Into<String>) -> Self {
+        self.text = Some(text.into());
+        self
+    }
+
+    pub fn with_divider(mut self) -> Self {
+        self.divider = true;
+        self
+    }
+}
+
+impl Component for SideLabel {
+    fn component_id(&self) -> &'static str {
+        "side-label"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}

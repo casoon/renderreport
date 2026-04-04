@@ -25,8 +25,8 @@
     // Progress bar
     #box(
       width: 100%,
-      height: 12pt,
-      radius: 6pt,
+      height: 16pt,
+      radius: 8pt,
       fill: color-surface,
       stroke: (paint: color-border, thickness: 0.5pt),
     )[
@@ -35,10 +35,15 @@
         box(
           width: percentage * 1%,
           height: 100%,
-          radius: 6pt,
+          radius: 8pt,
           fill: bar-color,
         )
       )
+      #if percentage >= 20 [
+        #place(left + horizon, dx: 8pt,
+          text(size: 7pt, weight: "bold", fill: white)[#calc.round(percentage, digits: 0)%]
+        )
+      ]
     ]
     
     #v(spacing-3)

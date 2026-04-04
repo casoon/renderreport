@@ -249,6 +249,49 @@ impl Component for DateField {
     }
 }
 
+/// Eyebrow label — small uppercase category marker
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Eyebrow {
+    pub text: String,
+    #[serde(default)]
+    pub color: Option<String>,
+    #[serde(default = "default_true")]
+    pub uppercase: bool,
+}
+
+fn default_true() -> bool {
+    true
+}
+
+impl Eyebrow {
+    pub fn new(text: impl Into<String>) -> Self {
+        Self {
+            text: text.into(),
+            color: None,
+            uppercase: true,
+        }
+    }
+
+    pub fn with_color(mut self, color: impl Into<String>) -> Self {
+        self.color = Some(color.into());
+        self
+    }
+
+    pub fn lowercase(mut self) -> Self {
+        self.uppercase = false;
+        self
+    }
+}
+
+impl Component for Eyebrow {
+    fn component_id(&self) -> &'static str {
+        "eyebrow"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
 /// Resource field for localized strings
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ResourceField {

@@ -28,6 +28,9 @@ pub struct ScoreCard {
     /// Optional card height (e.g. "100%", "120pt")
     #[serde(default)]
     pub height: Option<String>,
+    /// Inverted: colored background with white text
+    #[serde(default)]
+    pub inverted: bool,
 }
 
 fn default_max_score() -> u32 {
@@ -51,6 +54,7 @@ impl ScoreCard {
             good_threshold: 90,
             warn_threshold: 50,
             height: None,
+            inverted: false,
         }
     }
 
@@ -67,6 +71,11 @@ impl ScoreCard {
 
     pub fn with_height(mut self, height: impl Into<String>) -> Self {
         self.height = Some(height.into());
+        self
+    }
+
+    pub fn inverted(mut self) -> Self {
+        self.inverted = true;
         self
     }
 
@@ -360,12 +369,15 @@ impl Component for Image {
 pub struct Callout {
     /// Callout content
     pub content: String,
-    /// Callout type (info, warning, error, success, tip)
+    /// Callout type (info, warning, error, success, tip, neutral)
     #[serde(default = "default_callout_type")]
     pub callout_type: String,
     /// Optional title
     #[serde(default)]
     pub title: Option<String>,
+    /// Inverted: filled background with white text
+    #[serde(default)]
+    pub inverted: bool,
 }
 
 fn default_callout_type() -> String {
@@ -378,6 +390,7 @@ impl Callout {
             content: content.into(),
             callout_type: "info".into(),
             title: None,
+            inverted: false,
         }
     }
 
@@ -386,6 +399,7 @@ impl Callout {
             content: content.into(),
             callout_type: "warning".into(),
             title: None,
+            inverted: false,
         }
     }
 
@@ -394,6 +408,7 @@ impl Callout {
             content: content.into(),
             callout_type: "error".into(),
             title: None,
+            inverted: false,
         }
     }
 
@@ -402,11 +417,26 @@ impl Callout {
             content: content.into(),
             callout_type: "success".into(),
             title: None,
+            inverted: false,
+        }
+    }
+
+    pub fn neutral(content: impl Into<String>) -> Self {
+        Self {
+            content: content.into(),
+            callout_type: "neutral".into(),
+            title: None,
+            inverted: false,
         }
     }
 
     pub fn with_title(mut self, title: impl Into<String>) -> Self {
         self.title = Some(title.into());
+        self
+    }
+
+    pub fn inverted(mut self) -> Self {
+        self.inverted = true;
         self
     }
 }
@@ -475,6 +505,249 @@ impl Component for SummaryBox {
         "summary-box"
     }
 
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// ── Primitive Components ──────────────────────────────────────────────
+
+/// Status pill badge — colored label for status display
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StatusPill {
+    pub label: String,
+    #[serde(default = "default_neutral")]
+    pub status: String,
+    #[serde(default)]
+    pub uppercase: bool,
+}
+
+fn default_neutral() -> String {
+    "neutral".into()
+}
+
+impl StatusPill {
+    pub fn good(label: impl Into<String>) -> Self {
+        Self { label: label.into(), status: "good".into(), uppercase: false }
+    }
+    pub fn warn(label: impl Into<String>) -> Self {
+        Self { label: label.into(), status: "warn".into(), uppercase: false }
+    }
+    pub fn bad(label: impl Into<String>) -> Self {
+        Self { label: label.into(), status: "bad".into(), uppercase: false }
+    }
+    pub fn neutral(label: impl Into<String>) -> Self {
+        Self { label: label.into(), status: "neutral".into(), uppercase: false }
+    }
+    pub fn info(label: impl Into<String>) -> Self {
+        Self { label: label.into(), status: "info".into(), uppercase: false }
+    }
+}
+
+impl Component for StatusPill {
+    fn component_id(&self) -> &'static str {
+        "status-pill"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Single KPI stat with optional trend indicator
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Stat {
+    pub label: String,
+    pub value: String,
+    #[serde(default)]
+    pub unit: Option<String>,
+    #[serde(default)]
+    pub trend: Option<String>,
+    #[serde(default)]
+    pub trend_positive: Option<bool>,
+    #[serde(default)]
+    pub accent_color: Option<String>,
+}
+
+impl Stat {
+    pub fn new(label: impl Into<String>, value: impl Into<String>) -> Self {
+        Self {
+            label: label.into(),
+            value: value.into(),
+            unit: None,
+            trend: None,
+            trend_positive: None,
+            accent_color: None,
+        }
+    }
+
+    pub fn with_unit(mut self, unit: impl Into<String>) -> Self {
+        self.unit = Some(unit.into());
+        self
+    }
+
+    pub fn with_trend(mut self, trend: impl Into<String>, positive: bool) -> Self {
+        self.trend = Some(trend.into());
+        self.trend_positive = Some(positive);
+        self
+    }
+
+    pub fn with_accent(mut self, color: impl Into<String>) -> Self {
+        self.accent_color = Some(color.into());
+        self
+    }
+}
+
+impl Component for Stat {
+    fn component_id(&self) -> &'static str {
+        "stat"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Entry in a StatPair
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StatPairEntry {
+    pub label: String,
+    pub value: String,
+    #[serde(default)]
+    pub unit: Option<String>,
+    #[serde(default)]
+    pub accent_color: Option<String>,
+}
+
+impl StatPairEntry {
+    pub fn new(label: impl Into<String>, value: impl Into<String>) -> Self {
+        Self {
+            label: label.into(),
+            value: value.into(),
+            unit: None,
+            accent_color: None,
+        }
+    }
+
+    pub fn with_unit(mut self, unit: impl Into<String>) -> Self {
+        self.unit = Some(unit.into());
+        self
+    }
+
+    pub fn with_accent(mut self, color: impl Into<String>) -> Self {
+        self.accent_color = Some(color.into());
+        self
+    }
+}
+
+/// Two-stat side-by-side layout with optional vertical divider
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StatPair {
+    pub left: StatPairEntry,
+    pub right: StatPairEntry,
+    #[serde(default = "default_true")]
+    pub divider: bool,
+}
+
+impl StatPair {
+    pub fn new(left: StatPairEntry, right: StatPairEntry) -> Self {
+        Self { left, right, divider: true }
+    }
+}
+
+impl Component for StatPair {
+    fn component_id(&self) -> &'static str {
+        "stat-pair"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+fn default_seventy() -> u32 { 70 }
+fn default_fifty() -> u32 { 50 }
+
+/// Horizontal score band with color-coded segments and marker
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ScoreBand {
+    pub value: u32,
+    #[serde(default = "default_seventy")]
+    pub good_threshold: u32,
+    #[serde(default = "default_fifty")]
+    pub warn_threshold: u32,
+    #[serde(default)]
+    pub label: Option<String>,
+    #[serde(default = "default_true")]
+    pub show_value: bool,
+}
+
+impl ScoreBand {
+    pub fn new(value: u32) -> Self {
+        Self {
+            value,
+            good_threshold: 70,
+            warn_threshold: 50,
+            label: None,
+            show_value: true,
+        }
+    }
+
+    pub fn with_thresholds(mut self, good: u32, warn: u32) -> Self {
+        self.good_threshold = good;
+        self.warn_threshold = warn;
+        self
+    }
+
+    pub fn with_label(mut self, label: impl Into<String>) -> Self {
+        self.label = Some(label.into());
+        self
+    }
+}
+
+impl Component for ScoreBand {
+    fn component_id(&self) -> &'static str {
+        "score-band"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Compact trend tile with direction arrow
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TrendTile {
+    pub label: String,
+    pub delta: String,
+    #[serde(default = "default_stable")]
+    pub direction: String,
+    #[serde(default)]
+    pub reference: Option<String>,
+    #[serde(default = "default_true")]
+    pub positive_is_up: bool,
+}
+
+fn default_stable() -> String {
+    "stable".into()
+}
+
+impl TrendTile {
+    pub fn up(label: impl Into<String>, delta: impl Into<String>) -> Self {
+        Self { label: label.into(), delta: delta.into(), direction: "up".into(), reference: None, positive_is_up: true }
+    }
+    pub fn down(label: impl Into<String>, delta: impl Into<String>) -> Self {
+        Self { label: label.into(), delta: delta.into(), direction: "down".into(), reference: None, positive_is_up: true }
+    }
+    pub fn stable(label: impl Into<String>, delta: impl Into<String>) -> Self {
+        Self { label: label.into(), delta: delta.into(), direction: "stable".into(), reference: None, positive_is_up: true }
+    }
+    pub fn with_reference(mut self, reference: impl Into<String>) -> Self {
+        self.reference = Some(reference.into());
+        self
+    }
+}
+
+impl Component for TrendTile {
+    fn component_id(&self) -> &'static str {
+        "trend-tile"
+    }
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }

@@ -180,6 +180,11 @@ impl ComponentRegistry {
         );
 
         self.register(
+            ComponentId::new("side-label"),
+            include_str!("../../templates/components/side_label.typ").to_string(),
+        );
+
+        self.register(
             ComponentId::new("table-of-contents"),
             include_str!("../../templates/components/table_of_contents.typ").to_string(),
         );
@@ -228,6 +233,78 @@ impl ComponentRegistry {
         self.register(
             ComponentId::new("benchmark-table"),
             include_str!("../../templates/components/benchmark_table.typ").to_string(),
+        );
+
+        // ─── Phase 1: Primitives ──────────────────────────────────────────
+        self.register(
+            ComponentId::new("eyebrow"),
+            include_str!("../../templates/components/eyebrow.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("status-pill"),
+            include_str!("../../templates/components/status_pill.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("stat"),
+            include_str!("../../templates/components/stat.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("stat-pair"),
+            include_str!("../../templates/components/stat_pair.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("score-band"),
+            include_str!("../../templates/components/score_band.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("trend-tile"),
+            include_str!("../../templates/components/trend_tile.typ").to_string(),
+        );
+
+        // ─── Phase 2: Composite Blocks ────────────────────────────────────
+        self.register(
+            ComponentId::new("section-header-split"),
+            include_str!("../../templates/components/section_header_split.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("phase-block"),
+            include_str!("../../templates/components/phase_block.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("diagnosis-panel"),
+            include_str!("../../templates/components/diagnosis_panel.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("metric-strip"),
+            include_str!("../../templates/components/metric_strip.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("impact-triad"),
+            include_str!("../../templates/components/impact_triad.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("dominant-issue-spotlight"),
+            include_str!("../../templates/components/dominant_issue_spotlight.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("wrong-right-block"),
+            include_str!("../../templates/components/wrong_right_block.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("comparison-cluster"),
+            include_str!("../../templates/components/comparison_cluster.typ").to_string(),
         );
 
         // Grid component MUST be registered last — its template dispatches

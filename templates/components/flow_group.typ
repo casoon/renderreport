@@ -25,8 +25,17 @@
     else if comp-type == "severity-overview" { severity-overview(comp-data) }
     else if comp-type == "list" { list(comp-data) }
     else if comp-type == "divider" { divider(comp-data) }
+    else if comp-type == "side-label" { side-label(comp-data) }
     else if comp-type == "grid-component" { grid-component(comp-data) }
     else if comp-type == "flow-group" { flow-group(comp-data) }
+    else if comp-type == "metric-strip" { metric-strip(comp-data) }
+    else if comp-type == "impact-triad" { impact-triad(comp-data) }
+    else if comp-type == "dominant-issue-spotlight" { dominant-issue-spotlight(comp-data) }
+    else if comp-type == "phase-block" { phase-block(comp-data) }
+    else if comp-type == "section-header-split" { section-header-split(comp-data) }
+    else if comp-type == "wrong-right-block" { wrong-right-block(comp-data) }
+    else if comp-type == "benchmark-table" { benchmark-table(comp-data) }
+    else if comp-type == "benchmark-summary" { benchmark-summary(comp-data) }
     else {
       text(size: 9pt, fill: gray, "[" + comp-type + "]")
     }

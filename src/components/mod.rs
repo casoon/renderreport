@@ -26,6 +26,14 @@ pub mod text;
 pub use registry::{ComponentId, ComponentRegistry};
 pub use standard::*;
 
+// Re-export new primitive and composite types
+pub use advanced::{
+    ComparisonCluster, ComparisonClusterItem, DiagnosisPanel, DiagnosisRow,
+    DominantIssueSpotlight, ImpactCard, ImpactTriad, MetricStrip, MetricStripItem,
+    PhaseBlock, SectionHeaderSplit, WrongRightBlock,
+};
+pub use text::Eyebrow;
+
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 

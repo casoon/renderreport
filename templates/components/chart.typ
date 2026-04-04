@@ -281,29 +281,38 @@
           inset: 16pt,
           {
             for (li, label) in labels.enumerate() {
-              // Axis label
-              text(size: 8pt, weight: "bold", fill: color-text, label)
-              v(3pt)
-
-              // One bar per series for this axis
+              // Axis label + value summary on same line
               for (si, s) in series.enumerate() {
                 let color = colors.at(calc.rem(si, colors.len()))
                 let val = if li < s.data.len() { s.data.at(li).value } else { 0 }
                 let pct = calc.min(val / max_val * 100, 100)
+                let val-color = if val >= 85 { rgb("#22c55e") } else if val >= 70 { rgb("#3b82f6") } else if val >= 50 { rgb("#f59e0b") } else { rgb("#ef4444") }
 
-                stack(dir: ltr, spacing: 6pt,
-                  rect(
-                    width: pct * 1%,
-                    height: 12pt,
-                    fill: color.lighten(30%),
-                    stroke: (right: 2pt + color),
-                    radius: 2pt,
-                  ),
-                  text(size: 7pt, fill: color-text-muted, str(calc.round(val))),
+                grid(
+                  columns: (120pt, 1fr, 36pt),
+                  gutter: 8pt,
+                  align: (left + horizon, left + horizon, right + horizon),
+                  text(size: 9pt, weight: "semibold", fill: color-text, label),
+                  box(
+                    width: 100%,
+                    height: 18pt,
+                    radius: 4pt,
+                    fill: color-surface-alt,
+                    stroke: 0.5pt + color-border,
+                  )[
+                    #place(left + horizon,
+                      box(width: pct * 1%, height: 100%, radius: 4pt, fill: val-color.lighten(20%))
+                    )
+                    #if pct >= 15 [
+                      #place(left + horizon, dx: 6pt,
+                        text(size: 7pt, weight: "bold", fill: val-color.darken(30%))[#str(calc.round(val))]
+                      )
+                    ]
+                  ],
+                  text(size: 9pt, weight: "bold", fill: val-color)[#str(calc.round(val))],
                 )
-                v(2pt)
+                v(5pt)
               }
-              v(6pt)
             }
           }
         )

@@ -13,7 +13,7 @@
     }
   })
   
-  box(width: 100%)[
+  block(width: 100%)[
     #if data.title != none [
       #text(weight: "semibold", size: font-size-lg)[#data.title]
       #v(spacing-3)
