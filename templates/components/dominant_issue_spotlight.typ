@@ -47,7 +47,7 @@
             text(size: font-size-lg, weight: "bold", fill: color-text)[#data.title],
             badge-for-severity(data.severity),
             if data.affected_count != none {
-              small-text(str(data.affected_count) + " betroffene Elemente")
+              small-text(str(data.affected_count) + " affected elements")
             },
             par(justify: true)[#text(size: font-size-sm, fill: color-text)[#data.body]],
           ),
@@ -57,12 +57,12 @@
             spacing: spacing-3,
             stack(
               spacing: spacing-1,
-              label-text("Nutzerauswirkung"),
+              label-text("User Impact"),
               text(size: font-size-sm, fill: color-text)[#data.user_impact],
             ),
             stack(
               spacing: spacing-1,
-              label-text("Empfehlung"),
+              label-text("Recommendation"),
               text(size: font-size-sm, fill: color-text)[#data.recommendation],
             ),
           ),

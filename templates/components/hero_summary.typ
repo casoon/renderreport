@@ -59,7 +59,7 @@
 
   // ── Top 3 Actions ──────────────────────────────────────────
   if data.top_actions.len() > 0 {
-    text(size: font-size-xl, weight: "bold")[Wichtigste Maßnahmen]
+    text(size: font-size-xl, weight: "bold")[Top Actions]
     v(spacing-3)
 
     for (i, action) in data.top_actions.enumerate() {

@@ -61,7 +61,7 @@
         fill: color-ok-soft,
         stroke: (paint: color-ok, thickness: 0.5pt),
       )[
-        #label-text([Empfehlung])
+        #label-text([Recommendation])
         #v(spacing-2)
         #text(size: font-size-base)[#data.recommendation]
       ]

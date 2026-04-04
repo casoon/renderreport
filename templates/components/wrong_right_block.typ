@@ -2,8 +2,8 @@
 // Before/after comparison using before-after() helper from theme_helpers.typ
 
 #let wrong-right-block(data) = {
-  let wrong-label = if data.wrong_label != none { data.wrong_label } else { "✕ Falsch" }
-  let right-label = if data.right_label != none { data.right_label } else { "✓ Richtig" }
+  let wrong-label = if data.wrong_label != none { data.wrong_label } else { "✕ Wrong" }
+  let right-label = if data.right_label != none { data.right_label } else { "✓ Right" }
 
   block(width: 100%)[
     #grid(

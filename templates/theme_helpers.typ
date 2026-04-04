@@ -91,8 +91,8 @@
 #let before-after(bad, good) = grid(
   columns: (1fr, 1fr),
   gutter: spacing-3,
-  code-panel("✕ Falsch", bad, fill: color-bad-soft),
-  code-panel("✓ Richtig", good, fill: color-ok-soft),
+  code-panel("✕ Wrong", bad, fill: color-bad-soft),
+  code-panel("✓ Right", good, fill: color-ok-soft),
 )
 
 // ── Status color helper ─────────────────────────────────────

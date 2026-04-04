@@ -15,7 +15,7 @@
       )[
         #text(size: font-size-lg, weight: "bold", fill: accent)[#column.title]
         #h(spacing-2)
-        #small-text([#column.items.len() Maßnahmen])
+        #small-text([#column.items.len() actions])
       ]
 
       #v(spacing-3)

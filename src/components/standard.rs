@@ -1099,12 +1099,10 @@ impl CoverPage {
         .to_string();
 
         Self {
-            brand: "AuditMySite".into(),
+            brand: String::new(),
             title: title.into(),
             domain: domain.into(),
-            subtitle:
-                "Automatisierte Analyse zu Accessibility, Performance, SEO, Sicherheit und Mobile."
-                    .into(),
+            subtitle: String::new(),
             date: String::new(),
             score,
             grade: grade.into(),
@@ -1176,7 +1174,7 @@ pub struct ComparisonModule {
 impl ModuleComparison {
     pub fn new(modules: Vec<ComparisonModule>) -> Self {
         Self {
-            title: Some("Modulvergleich".into()),
+            title: Some("Module Comparison".into()),
             modules,
         }
     }
