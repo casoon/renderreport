@@ -3,7 +3,7 @@
 //! Demonstrates how to use AuditPattern to quickly assemble a complete
 //! security audit report with findings, impact assessment, and remediation roadmap.
 
-use renderreport::{Engine, ReportBuilder, patterns::AuditPattern, components::*};
+use renderreport::{Engine, patterns::AuditPattern};
 
 fn main() -> renderreport::Result<()> {
     let engine = Engine::new()?;
