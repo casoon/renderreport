@@ -10,6 +10,7 @@
 
   block(
     width: 100%,
+    height: 100%,
     fill: color-surface,
     stroke: (paint: color-border, thickness: component-card-border-width),
     radius: 10pt,
