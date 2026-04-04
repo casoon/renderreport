@@ -126,6 +126,11 @@ impl Engine {
         // Generate Typst source
         let typst_source = self.generate_typst_source(request, &theme)?;
 
+        // Debug dump
+        if std::env::var("RENDERREPORT_DUMP_TYPST").is_ok() {
+            let _ = std::fs::write("/tmp/renderreport_debug.typ", &typst_source);
+        }
+
         // Compile with Typst
         let pdf_bytes = self.compile_typst(&typst_source, request)?;
 

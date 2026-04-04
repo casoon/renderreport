@@ -911,16 +911,16 @@ impl Component for HeroSummary {
     }
 }
 
-/// Module dashboard showing scores as a horizontal card strip
+/// Card dashboard showing scores as a horizontal card strip
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ModuleDashboard {
+pub struct CardDashboard {
     #[serde(default)]
     pub title: Option<String>,
-    pub modules: Vec<DashboardModule>,
+    pub modules: Vec<DashboardCard>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DashboardModule {
+pub struct DashboardCard {
     pub name: String,
     pub score: u32,
     pub interpretation: String,
@@ -930,8 +930,8 @@ pub struct DashboardModule {
     pub warn_threshold: u32,
 }
 
-impl ModuleDashboard {
-    pub fn new(modules: Vec<DashboardModule>) -> Self {
+impl CardDashboard {
+    pub fn new(modules: Vec<DashboardCard>) -> Self {
         Self {
             title: None,
             modules,
@@ -944,9 +944,9 @@ impl ModuleDashboard {
     }
 }
 
-impl Component for ModuleDashboard {
+impl Component for CardDashboard {
     fn component_id(&self) -> &'static str {
-        "module-dashboard"
+        "card-dashboard"
     }
 
     fn to_data(&self) -> serde_json::Value {
@@ -984,9 +984,9 @@ impl Component for ModuleDashboard {
     }
 }
 
-/// Action roadmap with categorized columns
+/// Roadmap block with categorized columns
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ActionRoadmap {
+pub struct RoadmapBlock {
     pub columns: Vec<RoadmapColumn>,
 }
 
@@ -995,11 +995,11 @@ pub struct RoadmapColumn {
     pub title: String,
     #[serde(default)]
     pub accent_color: Option<String>,
-    pub items: Vec<RoadmapItem>,
+    pub items: Vec<ActionItem>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RoadmapItem {
+pub struct ActionItem {
     pub action: String,
     pub role: String,
     pub priority: String,
@@ -1008,15 +1008,15 @@ pub struct RoadmapItem {
     pub benefit: String,
 }
 
-impl ActionRoadmap {
+impl RoadmapBlock {
     pub fn new(columns: Vec<RoadmapColumn>) -> Self {
         Self { columns }
     }
 }
 
-impl Component for ActionRoadmap {
+impl Component for RoadmapBlock {
     fn component_id(&self) -> &'static str {
-        "action-roadmap"
+        "roadmap-block"
     }
 
     fn to_data(&self) -> serde_json::Value {
@@ -1222,11 +1222,11 @@ impl Component for ModuleComparison {
     }
 }
 
-// ─── Benchmark Summary ─────────────────────────────────────────────────────
+// ─── Portfolio Summary ──────────────────────────────────────────────────────
 
 /// Portfolio-level summary cards for batch reports
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BenchmarkSummary {
+pub struct PortfolioSummary {
     pub total_sites: u32,
     pub average_score: u32,
     pub best_score: u32,
@@ -1237,7 +1237,7 @@ pub struct BenchmarkSummary {
     pub critical_issues: u32,
 }
 
-impl BenchmarkSummary {
+impl PortfolioSummary {
     pub fn new(total_sites: u32, average_score: u32) -> Self {
         Self {
             total_sites,
@@ -1270,9 +1270,9 @@ impl BenchmarkSummary {
     }
 }
 
-impl Component for BenchmarkSummary {
+impl Component for PortfolioSummary {
     fn component_id(&self) -> &'static str {
-        "benchmark-summary"
+        "portfolio-summary"
     }
 
     fn to_data(&self) -> serde_json::Value {
@@ -1377,3 +1377,510 @@ impl Component for BenchmarkTable {
         serde_json::to_value(self).unwrap_or_default()
     }
 }
+
+// ─── Phase 3: Marketing / Narrative Components ──────────────────────────────
+
+/// Marketing feature/benefit grid
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FeatureGridItem {
+    pub title: String,
+    #[serde(default)]
+    pub description: Option<String>,
+    #[serde(default)]
+    pub icon: Option<String>,
+    #[serde(default)]
+    pub status: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FeatureGrid {
+    pub items: Vec<FeatureGridItem>,
+    #[serde(default)]
+    pub columns: Option<usize>,
+    #[serde(default)]
+    pub title: Option<String>,
+}
+
+impl FeatureGrid {
+    pub fn new(items: Vec<FeatureGridItem>) -> Self {
+        Self { items, columns: None, title: None }
+    }
+
+    pub fn with_columns(mut self, columns: usize) -> Self {
+        self.columns = Some(columns);
+        self
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+}
+
+impl Component for FeatureGrid {
+    fn component_id(&self) -> &'static str {
+        "feature-grid"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Call to action block
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTABox {
+    pub headline: String,
+    #[serde(default)]
+    pub body: Option<String>,
+    #[serde(default)]
+    pub action_label: Option<String>,
+    #[serde(default)]
+    pub action_url: Option<String>,
+    #[serde(default)]
+    pub tone: Option<String>,
+}
+
+impl CTABox {
+    pub fn new(headline: impl Into<String>) -> Self {
+        Self {
+            headline: headline.into(),
+            body: None,
+            action_label: None,
+            action_url: None,
+            tone: None,
+        }
+    }
+
+    pub fn with_body(mut self, body: impl Into<String>) -> Self {
+        self.body = Some(body.into());
+        self
+    }
+
+    pub fn with_action(mut self, label: impl Into<String>, url: impl Into<String>) -> Self {
+        self.action_label = Some(label.into());
+        self.action_url = Some(url.into());
+        self
+    }
+
+    pub fn with_tone(mut self, tone: impl Into<String>) -> Self {
+        self.tone = Some(tone.into());
+        self
+    }
+}
+
+impl Component for CTABox {
+    fn component_id(&self) -> &'static str {
+        "cta-box"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Customer quote / testimonial
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Testimonial {
+    pub quote: String,
+    pub author: String,
+    #[serde(default)]
+    pub role: Option<String>,
+    #[serde(default)]
+    pub company: Option<String>,
+}
+
+impl Testimonial {
+    pub fn new(quote: impl Into<String>, author: impl Into<String>) -> Self {
+        Self {
+            quote: quote.into(),
+            author: author.into(),
+            role: None,
+            company: None,
+        }
+    }
+
+    pub fn with_role(mut self, role: impl Into<String>) -> Self {
+        self.role = Some(role.into());
+        self
+    }
+
+    pub fn with_company(mut self, company: impl Into<String>) -> Self {
+        self.company = Some(company.into());
+        self
+    }
+}
+
+impl Component for Testimonial {
+    fn component_id(&self) -> &'static str {
+        "testimonial"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// A step in a process flow
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProcessStep {
+    pub label: String,
+    #[serde(default)]
+    pub description: Option<String>,
+    #[serde(default)]
+    pub icon: Option<String>,
+}
+
+/// Linear process visualization
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProcessFlow {
+    pub steps: Vec<ProcessStep>,
+    #[serde(default)]
+    pub title: Option<String>,
+    #[serde(default)]
+    pub direction: Option<String>,
+}
+
+impl ProcessFlow {
+    pub fn new(steps: Vec<ProcessStep>) -> Self {
+        Self { steps, title: None, direction: None }
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+
+    pub fn vertical(mut self) -> Self {
+        self.direction = Some("vertical".into());
+        self
+    }
+}
+
+impl Component for ProcessFlow {
+    fn component_id(&self) -> &'static str {
+        "process-flow"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// A timeline milestone item
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TimelineItem {
+    pub date: String,
+    pub title: String,
+    #[serde(default)]
+    pub description: Option<String>,
+    #[serde(default)]
+    pub status: Option<String>,
+}
+
+/// Project phases / milestone timeline
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Timeline {
+    pub items: Vec<TimelineItem>,
+    #[serde(default)]
+    pub title: Option<String>,
+}
+
+impl Timeline {
+    pub fn new(items: Vec<TimelineItem>) -> Self {
+        Self { items, title: None }
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+}
+
+impl Component for Timeline {
+    fn component_id(&self) -> &'static str {
+        "timeline"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// A step in a conversion funnel
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FunnelStep {
+    pub label: String,
+    pub value: String,
+    #[serde(default)]
+    pub unit: Option<String>,
+    #[serde(default)]
+    pub color: Option<String>,
+}
+
+/// Conversion funnel visualization
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Funnel {
+    pub steps: Vec<FunnelStep>,
+    #[serde(default)]
+    pub title: Option<String>,
+}
+
+impl Funnel {
+    pub fn new(steps: Vec<FunnelStep>) -> Self {
+        Self { steps, title: None }
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+}
+
+impl Component for Funnel {
+    fn component_id(&self) -> &'static str {
+        "funnel"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Two-part problem/solution block
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProblemSolution {
+    pub problem: String,
+    pub solution: String,
+    #[serde(default)]
+    pub title: Option<String>,
+    #[serde(default)]
+    pub problem_label: Option<String>,
+    #[serde(default)]
+    pub solution_label: Option<String>,
+    #[serde(default)]
+    pub impact: Option<String>,
+    #[serde(default)]
+    pub effort: Option<String>,
+}
+
+impl ProblemSolution {
+    pub fn new(problem: impl Into<String>, solution: impl Into<String>) -> Self {
+        Self {
+            problem: problem.into(),
+            solution: solution.into(),
+            title: None,
+            problem_label: None,
+            solution_label: None,
+            impact: None,
+            effort: None,
+        }
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+
+    pub fn with_labels(mut self, problem: impl Into<String>, solution: impl Into<String>) -> Self {
+        self.problem_label = Some(problem.into());
+        self.solution_label = Some(solution.into());
+        self
+    }
+
+    pub fn with_impact(mut self, impact: impl Into<String>) -> Self {
+        self.impact = Some(impact.into());
+        self
+    }
+
+    pub fn with_effort(mut self, effort: impl Into<String>) -> Self {
+        self.effort = Some(effort.into());
+        self
+    }
+}
+
+impl Component for ProblemSolution {
+    fn component_id(&self) -> &'static str {
+        "problem-solution"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Before/after comparison block
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BeforeAfter {
+    pub before: String,
+    pub after: String,
+    #[serde(default)]
+    pub label_before: Option<String>,
+    #[serde(default)]
+    pub label_after: Option<String>,
+    #[serde(default)]
+    pub title: Option<String>,
+    #[serde(default)]
+    pub note: Option<String>,
+}
+
+impl BeforeAfter {
+    pub fn new(before: impl Into<String>, after: impl Into<String>) -> Self {
+        Self {
+            before: before.into(),
+            after: after.into(),
+            label_before: None,
+            label_after: None,
+            title: None,
+            note: None,
+        }
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+
+    pub fn with_labels(mut self, before: impl Into<String>, after: impl Into<String>) -> Self {
+        self.label_before = Some(before.into());
+        self.label_after = Some(after.into());
+        self
+    }
+
+    pub fn with_note(mut self, note: impl Into<String>) -> Self {
+        self.note = Some(note.into());
+        self
+    }
+}
+
+impl Component for BeforeAfter {
+    fn component_id(&self) -> &'static str {
+        "before-after"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Context / relevance block for storytelling
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WhyItMatters {
+    pub body: String,
+    #[serde(default)]
+    pub title: Option<String>,
+    #[serde(default)]
+    pub evidence: Option<String>,
+    #[serde(default)]
+    pub urgency: Option<String>,
+}
+
+impl WhyItMatters {
+    pub fn new(body: impl Into<String>) -> Self {
+        Self {
+            body: body.into(),
+            title: None,
+            evidence: None,
+            urgency: None,
+        }
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+
+    pub fn with_evidence(mut self, evidence: impl Into<String>) -> Self {
+        self.evidence = Some(evidence.into());
+        self
+    }
+
+    pub fn with_urgency(mut self, urgency: impl Into<String>) -> Self {
+        self.urgency = Some(urgency.into());
+        self
+    }
+}
+
+impl Component for WhyItMatters {
+    fn component_id(&self) -> &'static str {
+        "why-it-matters"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Inline info/fact box
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FactBox {
+    pub body: String,
+    #[serde(default)]
+    pub label: Option<String>,
+    #[serde(default)]
+    pub variant: Option<String>,
+}
+
+impl FactBox {
+    pub fn new(body: impl Into<String>) -> Self {
+        Self { body: body.into(), label: None, variant: None }
+    }
+
+    pub fn info(body: impl Into<String>) -> Self {
+        Self { body: body.into(), label: None, variant: Some("info".into()) }
+    }
+
+    pub fn tip(body: impl Into<String>) -> Self {
+        Self { body: body.into(), label: None, variant: Some("tip".into()) }
+    }
+
+    pub fn warning(body: impl Into<String>) -> Self {
+        Self { body: body.into(), label: None, variant: Some("warning".into()) }
+    }
+
+    pub fn stat(body: impl Into<String>) -> Self {
+        Self { body: body.into(), label: None, variant: Some("stat".into()) }
+    }
+
+    pub fn with_label(mut self, label: impl Into<String>) -> Self {
+        self.label = Some(label.into());
+        self
+    }
+}
+
+impl Component for FactBox {
+    fn component_id(&self) -> &'static str {
+        "fact-box"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+/// Quote / pull quote block
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct QuoteBlock {
+    pub quote: String,
+    #[serde(default)]
+    pub author: Option<String>,
+    #[serde(default)]
+    pub emphasis: Option<bool>,
+}
+
+impl QuoteBlock {
+    pub fn new(quote: impl Into<String>) -> Self {
+        Self { quote: quote.into(), author: None, emphasis: None }
+    }
+
+    pub fn with_author(mut self, author: impl Into<String>) -> Self {
+        self.author = Some(author.into());
+        self
+    }
+
+    pub fn emphasized(mut self) -> Self {
+        self.emphasis = Some(true);
+        self
+    }
+}
+
+impl Component for QuoteBlock {
+    fn component_id(&self) -> &'static str {
+        "quote-block"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+// SpotlightCard is defined and exported from advanced.rs

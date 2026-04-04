@@ -719,18 +719,18 @@ impl Component for PhaseBlock {
     }
 }
 
-// ─── DiagnosisPanel ──────────────────────────────────────────────────────────
+// ─── ChecklistPanel ──────────────────────────────────────────────────────────
 
-/// A single row in a DiagnosisPanel
+/// A single row in a ChecklistPanel
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DiagnosisRow {
+pub struct ChecklistRow {
     pub label: String,
     pub diagnosis: String,
     #[serde(default)]
     pub status: Option<String>,
 }
 
-impl DiagnosisRow {
+impl ChecklistRow {
     pub fn new(label: impl Into<String>, diagnosis: impl Into<String>) -> Self {
         Self {
             label: label.into(),
@@ -747,14 +747,14 @@ impl DiagnosisRow {
 
 /// Card showing label–diagnosis pairs
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DiagnosisPanel {
+pub struct ChecklistPanel {
     #[serde(default)]
     pub title: Option<String>,
-    pub rows: Vec<DiagnosisRow>,
+    pub rows: Vec<ChecklistRow>,
 }
 
-impl DiagnosisPanel {
-    pub fn new(rows: Vec<DiagnosisRow>) -> Self {
+impl ChecklistPanel {
+    pub fn new(rows: Vec<ChecklistRow>) -> Self {
         Self { title: None, rows }
     }
 
@@ -764,9 +764,9 @@ impl DiagnosisPanel {
     }
 }
 
-impl Component for DiagnosisPanel {
+impl Component for ChecklistPanel {
     fn component_id(&self) -> &'static str {
-        "diagnosis-panel"
+        "checklist-panel"
     }
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
@@ -843,11 +843,11 @@ impl Component for MetricStrip {
     }
 }
 
-// ─── ImpactTriad ─────────────────────────────────────────────────────────────
+// ─── ImpactGrid ──────────────────────────────────────────────────────────────
 
-/// A single card inside an ImpactTriad
+/// A single card inside an ImpactGrid
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ImpactCard {
+pub struct ImpactGridCard {
     pub label: String,
     pub headline: String,
     pub body: String,
@@ -857,7 +857,7 @@ pub struct ImpactCard {
     pub icon: Option<String>,
 }
 
-impl ImpactCard {
+impl ImpactGridCard {
     pub fn new(
         label: impl Into<String>,
         headline: impl Into<String>,
@@ -885,16 +885,16 @@ impl ImpactCard {
 
 /// Three-column impact card layout (user / risk / conversion)
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ImpactTriad {
-    pub user: ImpactCard,
-    pub risk: ImpactCard,
-    pub conversion: ImpactCard,
+pub struct ImpactGrid {
+    pub user: ImpactGridCard,
+    pub risk: ImpactGridCard,
+    pub conversion: ImpactGridCard,
     #[serde(default)]
     pub title: Option<String>,
 }
 
-impl ImpactTriad {
-    pub fn new(user: ImpactCard, risk: ImpactCard, conversion: ImpactCard) -> Self {
+impl ImpactGrid {
+    pub fn new(user: ImpactGridCard, risk: ImpactGridCard, conversion: ImpactGridCard) -> Self {
         Self { user, risk, conversion, title: None }
     }
 
@@ -904,60 +904,49 @@ impl ImpactTriad {
     }
 }
 
-impl Component for ImpactTriad {
+impl Component for ImpactGrid {
     fn component_id(&self) -> &'static str {
-        "impact-triad"
+        "impact-grid"
     }
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
 }
 
-// ─── DominantIssueSpotlight ──────────────────────────────────────────────────
+// ─── SpotlightCard ───────────────────────────────────────────────────────────
 
-/// Full-width spotlight for the most important finding
+/// General-purpose spotlight card with left severity stripe
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DominantIssueSpotlight {
+pub struct SpotlightCard {
     pub title: String,
-    pub severity: String,
     pub body: String,
-    pub user_impact: String,
-    pub recommendation: String,
+    #[serde(default)]
+    pub variant: Option<String>,
     #[serde(default)]
     pub eyebrow: Option<String>,
     #[serde(default)]
-    pub affected_count: Option<u32>,
+    pub metric: Option<String>,
+    #[serde(default)]
+    pub detail: Option<String>,
+    #[serde(default)]
+    pub action: Option<String>,
 }
 
-impl DominantIssueSpotlight {
-    pub fn new(
-        title: impl Into<String>,
-        severity: impl Into<String>,
-        body: impl Into<String>,
-    ) -> Self {
+impl SpotlightCard {
+    pub fn new(title: impl Into<String>, body: impl Into<String>) -> Self {
         Self {
             title: title.into(),
-            severity: severity.into(),
             body: body.into(),
-            user_impact: String::new(),
-            recommendation: String::new(),
+            variant: None,
             eyebrow: None,
-            affected_count: None,
+            metric: None,
+            detail: None,
+            action: None,
         }
     }
 
-    pub fn with_impact(mut self, impact: impl Into<String>) -> Self {
-        self.user_impact = impact.into();
-        self
-    }
-
-    pub fn with_recommendation(mut self, rec: impl Into<String>) -> Self {
-        self.recommendation = rec.into();
-        self
-    }
-
-    pub fn with_count(mut self, count: u32) -> Self {
-        self.affected_count = Some(count);
+    pub fn with_variant(mut self, variant: impl Into<String>) -> Self {
+        self.variant = Some(variant.into());
         self
     }
 
@@ -965,41 +954,69 @@ impl DominantIssueSpotlight {
         self.eyebrow = Some(eyebrow.into());
         self
     }
+
+    pub fn with_metric(mut self, metric: impl Into<String>) -> Self {
+        self.metric = Some(metric.into());
+        self
+    }
+
+    pub fn with_detail(mut self, detail: impl Into<String>) -> Self {
+        self.detail = Some(detail.into());
+        self
+    }
+
+    pub fn with_action(mut self, action: impl Into<String>) -> Self {
+        self.action = Some(action.into());
+        self
+    }
 }
 
-impl Component for DominantIssueSpotlight {
+impl Component for SpotlightCard {
     fn component_id(&self) -> &'static str {
-        "dominant-issue-spotlight"
+        "spotlight-card"
     }
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
 }
 
-// ─── WrongRightBlock ─────────────────────────────────────────────────────────
+// ─── ComparisonBlock ─────────────────────────────────────────────────────────
+
+fn default_label_left() -> String {
+    "Before".into()
+}
+fn default_label_right() -> String {
+    "After".into()
+}
 
 /// Before/after code or text comparison block
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct WrongRightBlock {
+pub struct ComparisonBlock {
     pub wrong: String,
     pub right: String,
     #[serde(default)]
     pub wrong_label: Option<String>,
     #[serde(default)]
     pub right_label: Option<String>,
+    #[serde(default = "default_label_left")]
+    pub label_left: String,
+    #[serde(default = "default_label_right")]
+    pub label_right: String,
     #[serde(default)]
     pub is_code: bool,
     #[serde(default)]
     pub note: Option<String>,
 }
 
-impl WrongRightBlock {
+impl ComparisonBlock {
     pub fn new(wrong: impl Into<String>, right: impl Into<String>) -> Self {
         Self {
             wrong: wrong.into(),
             right: right.into(),
             wrong_label: None,
             right_label: None,
+            label_left: "Before".into(),
+            label_right: "After".into(),
             is_code: false,
             note: None,
         }
@@ -1024,11 +1041,21 @@ impl WrongRightBlock {
         self.right_label = Some(right_label.into());
         self
     }
+
+    pub fn with_side_labels(
+        mut self,
+        label_left: impl Into<String>,
+        label_right: impl Into<String>,
+    ) -> Self {
+        self.label_left = label_left.into();
+        self.label_right = label_right.into();
+        self
+    }
 }
 
-impl Component for WrongRightBlock {
+impl Component for ComparisonBlock {
     fn component_id(&self) -> &'static str {
-        "wrong-right-block"
+        "comparison-block"
     }
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()

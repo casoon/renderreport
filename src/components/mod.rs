@@ -28,9 +28,9 @@ pub use standard::*;
 
 // Re-export new primitive and composite types
 pub use advanced::{
-    ComparisonCluster, ComparisonClusterItem, DiagnosisPanel, DiagnosisRow,
-    DominantIssueSpotlight, ImpactCard, ImpactTriad, MetricStrip, MetricStripItem,
-    PhaseBlock, SectionHeaderSplit, WrongRightBlock,
+    ChecklistPanel, ChecklistRow, ComparisonBlock, ComparisonCluster, ComparisonClusterItem,
+    ImpactGrid, ImpactGridCard, MetricStrip, MetricStripItem, PhaseBlock, SectionHeaderSplit,
+    SpotlightCard,
 };
 pub use text::Eyebrow;
 

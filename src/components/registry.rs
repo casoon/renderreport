@@ -201,13 +201,13 @@ impl ComponentRegistry {
         );
 
         self.register(
-            ComponentId::new("module-dashboard"),
-            include_str!("../../templates/components/module_dashboard.typ").to_string(),
+            ComponentId::new("card-dashboard"),
+            include_str!("../../templates/components/card_dashboard.typ").to_string(),
         );
 
         self.register(
-            ComponentId::new("action-roadmap"),
-            include_str!("../../templates/components/action_roadmap.typ").to_string(),
+            ComponentId::new("roadmap-block"),
+            include_str!("../../templates/components/roadmap_block.typ").to_string(),
         );
 
         self.register(
@@ -226,8 +226,8 @@ impl ComponentRegistry {
         );
 
         self.register(
-            ComponentId::new("benchmark-summary"),
-            include_str!("../../templates/components/benchmark_summary.typ").to_string(),
+            ComponentId::new("portfolio-summary"),
+            include_str!("../../templates/components/portfolio_summary.typ").to_string(),
         );
 
         self.register(
@@ -278,8 +278,8 @@ impl ComponentRegistry {
         );
 
         self.register(
-            ComponentId::new("diagnosis-panel"),
-            include_str!("../../templates/components/diagnosis_panel.typ").to_string(),
+            ComponentId::new("checklist-panel"),
+            include_str!("../../templates/components/checklist_panel.typ").to_string(),
         );
 
         self.register(
@@ -288,23 +288,79 @@ impl ComponentRegistry {
         );
 
         self.register(
-            ComponentId::new("impact-triad"),
-            include_str!("../../templates/components/impact_triad.typ").to_string(),
+            ComponentId::new("impact-grid"),
+            include_str!("../../templates/components/impact_grid.typ").to_string(),
         );
 
         self.register(
-            ComponentId::new("dominant-issue-spotlight"),
-            include_str!("../../templates/components/dominant_issue_spotlight.typ").to_string(),
+            ComponentId::new("spotlight-card"),
+            include_str!("../../templates/components/spotlight_card.typ").to_string(),
         );
 
         self.register(
-            ComponentId::new("wrong-right-block"),
-            include_str!("../../templates/components/wrong_right_block.typ").to_string(),
+            ComponentId::new("comparison-block"),
+            include_str!("../../templates/components/comparison_block.typ").to_string(),
         );
 
         self.register(
             ComponentId::new("comparison-cluster"),
             include_str!("../../templates/components/comparison_cluster.typ").to_string(),
+        );
+
+        // ─── Phase 3: Marketing / Narrative Components ────────────────────
+        self.register(
+            ComponentId::new("feature-grid"),
+            include_str!("../../templates/components/feature_grid.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("cta-box"),
+            include_str!("../../templates/components/cta_box.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("testimonial"),
+            include_str!("../../templates/components/testimonial.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("process-flow"),
+            include_str!("../../templates/components/process_flow.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("timeline"),
+            include_str!("../../templates/components/timeline.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("funnel"),
+            include_str!("../../templates/components/funnel.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("problem-solution"),
+            include_str!("../../templates/components/problem_solution.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("before-after"),
+            include_str!("../../templates/components/before_after.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("why-it-matters"),
+            include_str!("../../templates/components/why_it_matters.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("fact-box"),
+            include_str!("../../templates/components/fact_box.typ").to_string(),
+        );
+
+        self.register(
+            ComponentId::new("quote-block"),
+            include_str!("../../templates/components/quote_block.typ").to_string(),
         );
 
         // Grid component MUST be registered last — its template dispatches

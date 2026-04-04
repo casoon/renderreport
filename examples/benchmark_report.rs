@@ -1,7 +1,7 @@
 //! Benchmark Report Example
 //!
-//! A portfolio-level website audit comparison report using BenchmarkSummary,
-//! BenchmarkTable, ModuleComparison, SeverityOverview, Charts, and ActionRoadmap.
+//! A portfolio-level website audit comparison report using PortfolioSummary,
+//! BenchmarkTable, ModuleComparison, SeverityOverview, Charts, and RoadmapBlock.
 //!
 //! Run with: cargo run --example benchmark_report
 
@@ -36,7 +36,7 @@ fn main() -> renderreport::Result<()> {
         // ── Portfolio Summary ───────────────────────────────────────
         .add_component(Section::new("Portfolio Overview").with_level(1))
         .add_component(
-            BenchmarkSummary::new(8, 74)
+            PortfolioSummary::new(8, 74)
                 .with_best("shop.example.com", 93)
                 .with_worst("legacy.example.com", 41)
                 .with_issues(89, 12),
@@ -155,30 +155,30 @@ fn main() -> renderreport::Result<()> {
         )
         // ── Action Roadmap ──────────────────────────────────────────
         .add_component(Section::new("Portfolio Action Plan").with_level(1))
-        .add_component(ActionRoadmap::new(vec![
+        .add_component(RoadmapBlock::new(vec![
             RoadmapColumn {
                 title: "Quick Wins (Week 1-2)".into(),
                 accent_color: Some("#ef4444".into()),
                 items: vec![
-                    RoadmapItem { action: "Deploy CSP headers via CDN".into(), role: "DevOps".into(), priority: "High".into(), effort: Some("4 hours".into()), benefit: "XSS protection for 5 sites".into() },
-                    RoadmapItem { action: "Add alt text to critical images".into(), role: "Content".into(), priority: "High".into(), effort: Some("8 hours".into()), benefit: "Accessibility compliance".into() },
-                    RoadmapItem { action: "Enable HTTPS on legacy site".into(), role: "DevOps".into(), priority: "Critical".into(), effort: Some("2 hours".into()), benefit: "Basic security compliance".into() },
+                    ActionItem { action: "Deploy CSP headers via CDN".into(), role: "DevOps".into(), priority: "High".into(), effort: Some("4 hours".into()), benefit: "XSS protection for 5 sites".into() },
+                    ActionItem { action: "Add alt text to critical images".into(), role: "Content".into(), priority: "High".into(), effort: Some("8 hours".into()), benefit: "Accessibility compliance".into() },
+                    ActionItem { action: "Enable HTTPS on legacy site".into(), role: "DevOps".into(), priority: "Critical".into(), effort: Some("2 hours".into()), benefit: "Basic security compliance".into() },
                 ],
             },
             RoadmapColumn {
                 title: "Medium-term (Month 1-2)".into(),
                 accent_color: Some("#f59e0b".into()),
                 items: vec![
-                    RoadmapItem { action: "Image CDN for all properties".into(), role: "DevOps".into(), priority: "Medium".into(), effort: Some("2 weeks".into()), benefit: "Faster LCP across portfolio".into() },
-                    RoadmapItem { action: "CI/CD accessibility checks".into(), role: "Engineering".into(), priority: "Medium".into(), effort: Some("1 week".into()), benefit: "Prevent future regressions".into() },
+                    ActionItem { action: "Image CDN for all properties".into(), role: "DevOps".into(), priority: "Medium".into(), effort: Some("2 weeks".into()), benefit: "Faster LCP across portfolio".into() },
+                    ActionItem { action: "CI/CD accessibility checks".into(), role: "Engineering".into(), priority: "Medium".into(), effort: Some("1 week".into()), benefit: "Prevent future regressions".into() },
                 ],
             },
             RoadmapColumn {
                 title: "Strategic (Quarter 2)".into(),
                 accent_color: Some("#22c55e".into()),
                 items: vec![
-                    RoadmapItem { action: "Rebuild legacy.example.com".into(), role: "Engineering".into(), priority: "High".into(), effort: Some("8 weeks".into()), benefit: "Eliminate 18 critical issues".into() },
-                    RoadmapItem { action: "Unified design system rollout".into(), role: "Design / Eng".into(), priority: "Medium".into(), effort: Some("6 weeks".into()), benefit: "Consistent UX, easier maintenance".into() },
+                    ActionItem { action: "Rebuild legacy.example.com".into(), role: "Engineering".into(), priority: "High".into(), effort: Some("8 weeks".into()), benefit: "Eliminate 18 critical issues".into() },
+                    ActionItem { action: "Unified design system rollout".into(), role: "Design / Eng".into(), priority: "Medium".into(), effort: Some("6 weeks".into()), benefit: "Consistent UX, easier maintenance".into() },
                 ],
             },
         ]))

@@ -2,7 +2,7 @@
 //!
 //! Demonstrates a professional, multi-page SEO audit report using
 //! composite components: CoverPage, TableOfContents, HeroSummary,
-//! ModuleDashboard, SeverityOverview, Findings, ActionRoadmap, and ModuleComparison.
+//! CardDashboard, SeverityOverview, Findings, RoadmapBlock, and ModuleComparison.
 //!
 //! Run with: cargo run --example seo_audit
 
@@ -61,11 +61,11 @@ fn main() -> renderreport::Result<()> {
         // ── Module Dashboard ────────────────────────────────────────
         .add_component(Section::new("Module Overview").with_level(1))
         .add_component(
-            ModuleDashboard::new(vec![
-                DashboardModule { name: "SEO".into(), score: 72, interpretation: "Several meta tags missing, thin content on subpages".into(), good_threshold: 80, warn_threshold: 50 },
-                DashboardModule { name: "Accessibility".into(), score: 92, interpretation: "Excellent WCAG 2.1 AA compliance".into(), good_threshold: 80, warn_threshold: 50 },
-                DashboardModule { name: "Performance".into(), score: 68, interpretation: "LCP too slow, render-blocking resources".into(), good_threshold: 80, warn_threshold: 50 },
-                DashboardModule { name: "Security".into(), score: 85, interpretation: "Strong HTTPS setup, minor header improvements needed".into(), good_threshold: 80, warn_threshold: 50 },
+            CardDashboard::new(vec![
+                DashboardCard { name: "SEO".into(), score: 72, interpretation: "Several meta tags missing, thin content on subpages".into(), good_threshold: 80, warn_threshold: 50 },
+                DashboardCard { name: "Accessibility".into(), score: 92, interpretation: "Excellent WCAG 2.1 AA compliance".into(), good_threshold: 80, warn_threshold: 50 },
+                DashboardCard { name: "Performance".into(), score: 68, interpretation: "LCP too slow, render-blocking resources".into(), good_threshold: 80, warn_threshold: 50 },
+                DashboardCard { name: "Security".into(), score: 85, interpretation: "Strong HTTPS setup, minor header improvements needed".into(), good_threshold: 80, warn_threshold: 50 },
             ])
             .with_title("Module Scores"),
         )
@@ -169,31 +169,31 @@ fn main() -> renderreport::Result<()> {
         )
         // ── Action Roadmap ──────────────────────────────────────────
         .add_component(Section::new("Recommended Actions").with_level(1))
-        .add_component(ActionRoadmap::new(vec![
+        .add_component(RoadmapBlock::new(vec![
             RoadmapColumn {
                 title: "Immediate (Week 1-2)".into(),
                 accent_color: Some("#ef4444".into()),
                 items: vec![
-                    RoadmapItem { action: "Add missing meta descriptions".into(), role: "Content Team".into(), priority: "High".into(), effort: Some("4 hours".into()), benefit: "Higher CTR from search results".into() },
-                    RoadmapItem { action: "Add alt text to images".into(), role: "Content Team".into(), priority: "High".into(), effort: Some("2 hours".into()), benefit: "Accessibility compliance, image SEO".into() },
-                    RoadmapItem { action: "Compress hero image".into(), role: "Developer".into(), priority: "High".into(), effort: Some("1 hour".into()), benefit: "Faster LCP, better Core Web Vitals".into() },
+                    ActionItem { action: "Add missing meta descriptions".into(), role: "Content Team".into(), priority: "High".into(), effort: Some("4 hours".into()), benefit: "Higher CTR from search results".into() },
+                    ActionItem { action: "Add alt text to images".into(), role: "Content Team".into(), priority: "High".into(), effort: Some("2 hours".into()), benefit: "Accessibility compliance, image SEO".into() },
+                    ActionItem { action: "Compress hero image".into(), role: "Developer".into(), priority: "High".into(), effort: Some("1 hour".into()), benefit: "Faster LCP, better Core Web Vitals".into() },
                 ],
             },
             RoadmapColumn {
                 title: "Short-term (Week 3-4)".into(),
                 accent_color: Some("#f59e0b".into()),
                 items: vec![
-                    RoadmapItem { action: "Implement canonical tags".into(), role: "Developer".into(), priority: "Medium".into(), effort: Some("3 hours".into()), benefit: "Eliminate duplicate content issues".into() },
-                    RoadmapItem { action: "Defer render-blocking resources".into(), role: "Developer".into(), priority: "Medium".into(), effort: Some("4 hours".into()), benefit: "Faster initial page load".into() },
-                    RoadmapItem { action: "Add CSP header".into(), role: "DevOps".into(), priority: "Medium".into(), effort: Some("2 hours".into()), benefit: "XSS protection".into() },
+                    ActionItem { action: "Implement canonical tags".into(), role: "Developer".into(), priority: "Medium".into(), effort: Some("3 hours".into()), benefit: "Eliminate duplicate content issues".into() },
+                    ActionItem { action: "Defer render-blocking resources".into(), role: "Developer".into(), priority: "Medium".into(), effort: Some("4 hours".into()), benefit: "Faster initial page load".into() },
+                    ActionItem { action: "Add CSP header".into(), role: "DevOps".into(), priority: "Medium".into(), effort: Some("2 hours".into()), benefit: "XSS protection".into() },
                 ],
             },
             RoadmapColumn {
                 title: "Long-term (Month 2-3)".into(),
                 accent_color: Some("#22c55e".into()),
                 items: vec![
-                    RoadmapItem { action: "Fix duplicate title tags".into(), role: "Content Team".into(), priority: "Medium".into(), effort: Some("3 hours".into()), benefit: "Better search differentiation".into() },
-                    RoadmapItem { action: "Implement image CDN".into(), role: "DevOps".into(), priority: "Low".into(), effort: Some("8 hours".into()), benefit: "Faster global image delivery".into() },
+                    ActionItem { action: "Fix duplicate title tags".into(), role: "Content Team".into(), priority: "Medium".into(), effort: Some("3 hours".into()), benefit: "Better search differentiation".into() },
+                    ActionItem { action: "Implement image CDN".into(), role: "DevOps".into(), priority: "Low".into(), effort: Some("8 hours".into()), benefit: "Faster global image delivery".into() },
                 ],
             },
         ]))

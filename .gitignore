@@ -24,6 +24,9 @@
 # Documentation
 /target/doc/
 
+# Local planning notes
+todo.md
+
 # Node / npm
 node_modules/
 *.tgz

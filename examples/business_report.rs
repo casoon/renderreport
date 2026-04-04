@@ -1,8 +1,8 @@
 //! Business Report Example
 //!
 //! A comprehensive quarterly business performance report demonstrating
-//! CoverPage, TableOfContents, HeroSummary, ModuleDashboard, Charts,
-//! Gauges, Findings, ActionRoadmap, and ModuleComparison.
+//! CoverPage, TableOfContents, HeroSummary, CardDashboard, Charts,
+//! Gauges, Findings, RoadmapBlock, and ModuleComparison.
 //!
 //! Run with: cargo run --example business_report
 
@@ -59,11 +59,11 @@ fn main() -> renderreport::Result<()> {
         // ── Department Dashboard ────────────────────────────────────
         .add_component(Section::new("Department Performance").with_level(1))
         .add_component(
-            ModuleDashboard::new(vec![
-                DashboardModule { name: "Sales".into(), score: 88, interpretation: "Exceeded Q4 target by 12%, strong enterprise pipeline".into(), good_threshold: 80, warn_threshold: 60 },
-                DashboardModule { name: "Marketing".into(), score: 75, interpretation: "Lead quality improved, CAC slightly above target".into(), good_threshold: 80, warn_threshold: 60 },
-                DashboardModule { name: "Engineering".into(), score: 90, interpretation: "All roadmap items delivered, 99.95% uptime".into(), good_threshold: 80, warn_threshold: 60 },
-                DashboardModule { name: "Support".into(), score: 72, interpretation: "Response time improved, ticket backlog growing".into(), good_threshold: 80, warn_threshold: 60 },
+            CardDashboard::new(vec![
+                DashboardCard { name: "Sales".into(), score: 88, interpretation: "Exceeded Q4 target by 12%, strong enterprise pipeline".into(), good_threshold: 80, warn_threshold: 60 },
+                DashboardCard { name: "Marketing".into(), score: 75, interpretation: "Lead quality improved, CAC slightly above target".into(), good_threshold: 80, warn_threshold: 60 },
+                DashboardCard { name: "Engineering".into(), score: 90, interpretation: "All roadmap items delivered, 99.95% uptime".into(), good_threshold: 80, warn_threshold: 60 },
+                DashboardCard { name: "Support".into(), score: 72, interpretation: "Response time improved, ticket backlog growing".into(), good_threshold: 80, warn_threshold: 60 },
             ]),
         )
         // ── Financial Overview ──────────────────────────────────────
@@ -169,29 +169,29 @@ fn main() -> renderreport::Result<()> {
         )
         // ── Strategic Roadmap ───────────────────────────────────────
         .add_component(Section::new("Q1 2026 Strategic Roadmap").with_level(1))
-        .add_component(ActionRoadmap::new(vec![
+        .add_component(RoadmapBlock::new(vec![
             RoadmapColumn {
                 title: "January".into(),
                 accent_color: Some("#ef4444".into()),
                 items: vec![
-                    RoadmapItem { action: "Fix payment scaling".into(), role: "Engineering".into(), priority: "Critical".into(), effort: Some("3 weeks".into()), benefit: "Eliminate revenue loss during peaks".into() },
-                    RoadmapItem { action: "Hire 2 support engineers".into(), role: "HR / Support".into(), priority: "High".into(), effort: Some("4 weeks".into()), benefit: "Reduce response time to <2h".into() },
+                    ActionItem { action: "Fix payment scaling".into(), role: "Engineering".into(), priority: "Critical".into(), effort: Some("3 weeks".into()), benefit: "Eliminate revenue loss during peaks".into() },
+                    ActionItem { action: "Hire 2 support engineers".into(), role: "HR / Support".into(), priority: "High".into(), effort: Some("4 weeks".into()), benefit: "Reduce response time to <2h".into() },
                 ],
             },
             RoadmapColumn {
                 title: "February".into(),
                 accent_color: Some("#f59e0b".into()),
                 items: vec![
-                    RoadmapItem { action: "Launch Enterprise Tier".into(), role: "Product / Sales".into(), priority: "High".into(), effort: Some("6 weeks".into()), benefit: "Capture €1.2M pipeline".into() },
-                    RoadmapItem { action: "Implement AI ticket triage".into(), role: "Engineering".into(), priority: "Medium".into(), effort: Some("3 weeks".into()), benefit: "40% faster ticket routing".into() },
+                    ActionItem { action: "Launch Enterprise Tier".into(), role: "Product / Sales".into(), priority: "High".into(), effort: Some("6 weeks".into()), benefit: "Capture €1.2M pipeline".into() },
+                    ActionItem { action: "Implement AI ticket triage".into(), role: "Engineering".into(), priority: "Medium".into(), effort: Some("3 weeks".into()), benefit: "40% faster ticket routing".into() },
                 ],
             },
             RoadmapColumn {
                 title: "March".into(),
                 accent_color: Some("#22c55e".into()),
                 items: vec![
-                    RoadmapItem { action: "Marketing automation rollout".into(), role: "Marketing".into(), priority: "Medium".into(), effort: Some("4 weeks".into()), benefit: "Reduce CAC by 20%".into() },
-                    RoadmapItem { action: "SOC 2 compliance audit".into(), role: "Security / Legal".into(), priority: "Medium".into(), effort: Some("8 weeks".into()), benefit: "Enterprise sales enablement".into() },
+                    ActionItem { action: "Marketing automation rollout".into(), role: "Marketing".into(), priority: "Medium".into(), effort: Some("4 weeks".into()), benefit: "Reduce CAC by 20%".into() },
+                    ActionItem { action: "SOC 2 compliance audit".into(), role: "Security / Legal".into(), priority: "Medium".into(), effort: Some("8 weeks".into()), benefit: "Enterprise sales enablement".into() },
                 ],
             },
         ]))

@@ -166,10 +166,19 @@ fn main() -> renderreport::Result<()> {
 
         .add_component(Section::new("2.7 StatPair").with_level(2))
         .add_component(TextBlock::new("Two stats side by side."))
-        .add_component(StatPair::new( // @id: stat-pair
-            StatPairEntry::new("Before", "58"),
-            StatPairEntry::new("After", "79"),
-        ))
+        .add_component(
+            Grid::new(2)
+                .add_item(serde_json::json!({ "type": "stat-pair", // @id: stat-pair
+                    "data": StatPair::new(
+                        StatPairEntry::new("Before", "58"),
+                        StatPairEntry::new("After", "79"),
+                    ).to_data() }))
+                .add_item(serde_json::json!({ "type": "stat-pair",
+                    "data": StatPair::new(
+                        StatPairEntry::new("Score", "79").with_unit("/100"),
+                        StatPairEntry::new("Delta", "+21").with_accent("#22c55e"),
+                    ).to_data() })),
+        )
 
         .add_component(Section::new("2.8 MetricStrip").with_level(2))
         .add_component(TextBlock::new(
@@ -201,12 +210,12 @@ fn main() -> renderreport::Result<()> {
             ComparisonModule::new("Security", 41),
         ]))
 
-        .add_component(Section::new("2.11 BenchmarkSummary").with_level(2))
+        .add_component(Section::new("2.11 PortfolioSummary").with_level(2))
         .add_component(TextBlock::new(
             "Portfolio-level overview card for batch benchmark reports.",
         ))
-        .add_component( // @id: benchmark-summary
-            BenchmarkSummary::new(8, 74)
+        .add_component( // @id: portfolio-summary
+            PortfolioSummary::new(8, 74)
                 .with_best("shop.example.com", 93)
                 .with_worst("legacy.example.com", 41)
                 .with_issues(89, 12),
@@ -247,26 +256,26 @@ fn main() -> renderreport::Result<()> {
                 ]),
         )
 
-        .add_component(Section::new("3.2 ModuleDashboard").with_level(2))
+        .add_component(Section::new("3.2 CardDashboard").with_level(2))
         .add_component(TextBlock::new(
             "Grid of module score cards with interpretation text.",
         ))
-        .add_component(ModuleDashboard::new(vec![ // @id: module-dashboard
-            DashboardModule {
+        .add_component(CardDashboard::new(vec![ // @id: card-dashboard
+            DashboardCard {
                 name: "Accessibility".into(),
                 score: 94,
                 interpretation: "Excellent. Only minor contrast issues remain.".into(),
                 good_threshold: 80,
                 warn_threshold: 60,
             },
-            DashboardModule {
+            DashboardCard {
                 name: "Performance".into(),
                 score: 67,
                 interpretation: "Below target. LCP and CLS need improvement.".into(),
                 good_threshold: 80,
                 warn_threshold: 60,
             },
-            DashboardModule {
+            DashboardCard {
                 name: "Security".into(),
                 score: 41,
                 interpretation: "Critical: outdated headers, open redirects.".into(),
@@ -374,57 +383,57 @@ fn main() -> renderreport::Result<()> {
             "Hero text uses #888888 on white — contrast ratio 3.5:1.",
         ))
 
-        .add_component(Section::new("5.2 DominantIssueSpotlight").with_level(2))
+        .add_component(Section::new("5.2 SpotlightCard").with_level(2))
         .add_component(TextBlock::new(
             "Full-width spotlight block for the single most impactful finding.",
         ))
-        .add_component( // @id: dominant-issue-spotlight
-            DominantIssueSpotlight::new(
+        .add_component( // @id: spotlight-card
+            SpotlightCard::new(
                 "Missing alternative text",
-                "critical",
                 "14 images across 8 pages have no alt attribute, blocking screen reader users \
                  from perceiving visual content.",
             )
-            .with_impact("Affects all screen reader users — estimated 15% of visitors.")
-            .with_recommendation("Add descriptive alt attributes to all meaningful images.")
-            .with_count(14)
-            .with_eyebrow("Top Finding"),
+            .with_variant("critical")
+            .with_eyebrow("Top Finding")
+            .with_metric("14")
+            .with_detail("Affects all screen reader users — estimated 15% of visitors.")
+            .with_action("Add descriptive alt attributes to all meaningful images"),
         )
 
-        .add_component(Section::new("5.3 ImpactTriad").with_level(2))
+        .add_component(Section::new("5.3 ImpactGrid").with_level(2))
         .add_component(TextBlock::new(
             "Three-panel impact overview: user, risk, conversion.",
         ))
-        .add_component( // @id: impact-triad
-            ImpactTriad::new(
-                ImpactCard::new("User Impact", "Screen readers blocked", "14 images with no alt text prevent assistive technology users from accessing content.").with_status("bad"),
-                ImpactCard::new("Risk Level", "Compliance risk", "WCAG 2.1 AA non-compliance may trigger legal obligations in the EU and US.").with_status("warn"),
-                ImpactCard::new("Conversion", "Trust signal", "Accessibility issues correlate with higher bounce rates on mobile.").with_status("warn"),
+        .add_component( // @id: impact-grid
+            ImpactGrid::new(
+                ImpactGridCard::new("User Impact", "Screen readers blocked", "14 images with no alt text prevent assistive technology users from accessing content.").with_status("bad"),
+                ImpactGridCard::new("Risk Level", "Compliance risk", "WCAG 2.1 AA non-compliance may trigger legal obligations in the EU and US.").with_status("warn"),
+                ImpactGridCard::new("Conversion", "Trust signal", "Accessibility issues correlate with higher bounce rates on mobile.").with_status("warn"),
             )
             .with_title("Issue Impact"),
         )
 
-        .add_component(Section::new("5.4 DiagnosisPanel").with_level(2))
+        .add_component(Section::new("5.4 ChecklistPanel").with_level(2))
         .add_component(TextBlock::new(
             "Checklist-style diagnosis rows with status indicators.",
         ))
-        .add_component( // @id: diagnosis-panel
-            DiagnosisPanel::new(vec![
-                DiagnosisRow::new("Alt text", "14 violations found").with_status("bad"),
-                DiagnosisRow::new("Colour contrast", "7 violations found").with_status("warn"),
-                DiagnosisRow::new("Keyboard focus", "All interactive elements reachable").with_status("good"),
-                DiagnosisRow::new("ARIA labels", "No violations detected").with_status("good"),
-                DiagnosisRow::new("Skip links", "Missing on 3 pages").with_status("warn"),
+        .add_component( // @id: checklist-panel
+            ChecklistPanel::new(vec![
+                ChecklistRow::new("Alt text", "14 violations found").with_status("bad"),
+                ChecklistRow::new("Colour contrast", "7 violations found").with_status("warn"),
+                ChecklistRow::new("Keyboard focus", "All interactive elements reachable").with_status("good"),
+                ChecklistRow::new("ARIA labels", "No violations detected").with_status("good"),
+                ChecklistRow::new("Skip links", "Missing on 3 pages").with_status("warn"),
             ])
             .with_title("Accessibility Diagnosis"),
         )
 
-        .add_component(Section::new("5.5 WrongRightBlock").with_level(2))
+        .add_component(Section::new("5.5 ComparisonBlock").with_level(2))
         .add_component(TextBlock::new(
             "Before/after comparison showing incorrect vs correct implementation.",
         ))
-        .add_component( // @id: wrong-right-block
-            WrongRightBlock::new(
+        .add_component( // @id: comparison-block
+            ComparisonBlock::new(
                 r#"<img src="hero.jpg">"#,
                 r#"<img src="hero.jpg" alt="Team collaborating in a modern office">"#,
             )
@@ -541,13 +550,13 @@ fn main() -> renderreport::Result<()> {
                 .add("Analytics", "Plausible"),
         )
 
-        .add_component(Section::new("7.3 ActionRoadmap").with_level(2))
-        .add_component(ActionRoadmap::new(vec![ // @id: action-roadmap
+        .add_component(Section::new("7.3 RoadmapBlock").with_level(2))
+        .add_component(RoadmapBlock::new(vec![ // @id: roadmap-block
             RoadmapColumn {
                 title: "Quick Wins".into(),
                 accent_color: Some("#38a169".into()),
                 items: vec![
-                    RoadmapItem {
+                    ActionItem {
                         action: "Add alt text to images".into(),
                         role: "Developer".into(),
                         priority: "high".into(),
@@ -560,7 +569,7 @@ fn main() -> renderreport::Result<()> {
                 title: "Short-term".into(),
                 accent_color: Some("#d69e2e".into()),
                 items: vec![
-                    RoadmapItem {
+                    ActionItem {
                         action: "Increase colour contrast".into(),
                         role: "Designer".into(),
                         priority: "medium".into(),
@@ -573,7 +582,7 @@ fn main() -> renderreport::Result<()> {
                 title: "Long-term".into(),
                 accent_color: None,
                 items: vec![
-                    RoadmapItem {
+                    ActionItem {
                         action: "Redesign navigation for keyboard users".into(),
                         role: "Design + Dev".into(),
                         priority: "low".into(),
@@ -711,8 +720,120 @@ fn main() -> renderreport::Result<()> {
             "Embeds an image from the assets map. Centred by default. \
              Supports caption and width.",
         ))
-        // @id: image — not rendered here (no asset path available in catalog context),
-        // but the component is covered. Usage: Image::new(\"path/to/file.png\").with_width(\"50%\")
+        .asset("placeholder.svg", "examples/assets/placeholder.svg")
+        .add_component( // @id: image
+            Image::new("placeholder.svg")
+                .with_caption("Example image with caption")
+                .with_width("60%"),
+        )
+        .add_component(PageBreak::new())
+
+        // ── 11. Marketing & Narrative ─────────────────────────────────────────
+        .add_component(Section::new("11. Marketing & Narrative").with_level(1))
+
+        .add_component(Section::new("11.1 FeatureGrid").with_level(2))
+        .add_component(TextBlock::new("Marketing feature/benefit grid with optional icons."))
+        .add_component( // @id: feature-grid
+            FeatureGrid::new(vec![
+                FeatureGridItem { title: "Fast Rendering".into(), description: Some("PDF output in under a second.".into()), icon: Some("⚡".into()), status: Some("highlight".into()) },
+                FeatureGridItem { title: "Type-safe".into(), description: Some("All components are Rust structs.".into()), icon: Some("🦀".into()), status: Some("positive".into()) },
+                FeatureGridItem { title: "Themeable".into(), description: Some("Custom tokens per report.".into()), icon: Some("🎨".into()), status: None },
+                FeatureGridItem { title: "Extensible".into(), description: Some("Add custom Typst templates.".into()), icon: Some("🔧".into()), status: None },
+            ])
+            .with_columns(2)
+            .with_title("Why renderreport?"),
+        )
+
+        .add_component(Section::new("11.2 CTABox").with_level(2))
+        .add_component(TextBlock::new("Call-to-action block. Tones: primary, urgent, neutral."))
+        .add_component( // @id: cta-box
+            CTABox::new("Start your first report today")
+                .with_body("renderreport is open source and ready to embed in your pipeline.")
+                .with_action("View on GitHub", "https://github.com/casoon/renderreport")
+                .with_tone("primary"),
+        )
+
+        .add_component(Section::new("11.3 Testimonial").with_level(2))
+        .add_component( // @id: testimonial
+            Testimonial::new(
+                "renderreport saved us hours every sprint — our PDF reports now build in CI automatically.",
+                "Engineering Lead",
+            )
+            .with_company("Example Corp"),
+        )
+
+        .add_component(Section::new("11.4 ProcessFlow").with_level(2))
+        .add_component(TextBlock::new("Linear process with numbered steps. Direction: horizontal or vertical."))
+        .add_component( // @id: process-flow
+            ProcessFlow::new(vec![
+                ProcessStep { label: "Collect Data".into(), description: Some("Pull metrics from APIs.".into()), icon: None },
+                ProcessStep { label: "Run renderreport".into(), description: Some("Render Rust structs to PDF.".into()), icon: None },
+                ProcessStep { label: "Deliver PDF".into(), description: Some("Email or S3 upload.".into()), icon: None },
+            ])
+            .with_title("Report Pipeline"),
+        )
+
+        .add_component(Section::new("11.5 Timeline").with_level(2))
+        .add_component( // @id: timeline
+            Timeline::new(vec![
+                TimelineItem { date: "Q1 2026".into(), title: "v0.1 alpha".into(), description: Some("Core engine + standard components.".into()), status: Some("good".into()) },
+                TimelineItem { date: "Q2 2026".into(), title: "v0.2 beta".into(), description: Some("Pack system + theming.".into()), status: Some("warn".into()) },
+                TimelineItem { date: "Q3 2026".into(), title: "v1.0 stable".into(), description: None, status: None },
+            ])
+            .with_title("Release Timeline"),
+        )
+
+        .add_component(Section::new("11.6 Funnel").with_level(2))
+        .add_component( // @id: funnel
+            Funnel::new(vec![
+                FunnelStep { label: "Visitors".into(), value: "10,000".into(), unit: Some("sessions".into()), color: None },
+                FunnelStep { label: "Signups".into(), value: "1,200".into(), unit: Some("users".into()), color: None },
+                FunnelStep { label: "Activated".into(), value: "430".into(), unit: Some("users".into()), color: None },
+                FunnelStep { label: "Paying".into(), value: "88".into(), unit: Some("users".into()), color: None },
+            ])
+            .with_title("Conversion Funnel"),
+        )
+
+        .add_component(Section::new("11.7 ProblemSolution").with_level(2))
+        .add_component( // @id: problem-solution
+            ProblemSolution::new(
+                "Generating PDFs manually is slow, error-prone, and hard to maintain.",
+                "renderreport lets you declare report components as Rust structs and render to PDF automatically.",
+            )
+            .with_labels("The Problem", "The Solution"),
+        )
+
+        .add_component(Section::new("11.8 BeforeAfter").with_level(2))
+        .add_component( // @id: before-after
+            BeforeAfter::new(
+                "Hand-written PDF layout in LaTeX — 300 lines of fragile code.",
+                "renderreport: 30 lines of Rust, fully type-safe, CI-friendly.",
+            )
+            .with_labels("Before", "After"),
+        )
+
+        .add_component(Section::new("11.9 WhyItMatters").with_level(2))
+        .add_component( // @id: why-it-matters
+            WhyItMatters::new(
+                "Automated, reproducible reports eliminate human error and free engineers \
+                 to focus on insights rather than formatting.",
+            )
+            .with_title("Why automation matters"),
+        )
+
+        .add_component(Section::new("11.10 FactBox").with_level(2))
+        .add_component( // @id: fact-box
+            FactBox::new("renderreport renders a 20-page PDF in under 500 ms on a standard CI runner.")
+                .with_label("Performance fact"),
+        )
+
+        .add_component(Section::new("11.11 QuoteBlock").with_level(2))
+        .add_component( // @id: quote-block
+            QuoteBlock::new(
+                "Good tools shape good reports. renderreport gives your data the presentation it deserves.",
+            )
+            .with_author("renderreport team"),
+        )
 
         .build();
 
