@@ -3,7 +3,7 @@
 
 #let diagnosis-panel(data) = {
   theme-card[
-    #if data.title != none [
+    #if data.at("title", default: none) != none [
       #text(weight: "bold", size: font-size-sm, fill: color-text)[#data.title]
       #v(spacing-3)
     ]
@@ -18,7 +18,7 @@
         stack(
           dir: ltr,
           spacing: 4pt,
-          if row.status != none {
+          if row.at("status", default: none) != none {
             let dot-color = if row.status == "good" { color-ok }
               else if row.status == "warn" { color-warn }
               else if row.status == "bad"  { color-bad }

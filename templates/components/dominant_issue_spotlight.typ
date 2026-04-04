@@ -35,7 +35,7 @@
           // ── Left: eyebrow, title, badge, body ─────────────────
           stack(
             spacing: spacing-2,
-            if data.eyebrow != none {
+            if data.at("eyebrow", default: none) != none {
               text(
                 size: font-size-xs,
                 weight: "bold",
@@ -46,7 +46,7 @@
             },
             text(size: font-size-lg, weight: "bold", fill: color-text)[#data.title],
             badge-for-severity(data.severity),
-            if data.affected_count != none {
+            if data.at("affected_count", default: none) != none {
               small-text(str(data.affected_count) + " affected elements")
             },
             par(justify: true)[#text(size: font-size-sm, fill: color-text)[#data.body]],

@@ -561,7 +561,7 @@ pub struct TableOfContents {
     /// Maximum heading depth to include
     pub depth: u8,
     /// Font size for TOC entries (e.g. "9pt", "10pt")
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub font_size: Option<String>,
 }
 
@@ -1144,13 +1144,13 @@ pub struct SideLabel {
     /// Section heading shown in the left column
     pub heading: String,
     /// Optional smaller subheading below the main heading
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub subheading: Option<String>,
     /// Bullet items shown in the right column (preferred for lists)
     #[serde(default)]
     pub items: Vec<String>,
     /// Plain text shown in the right column when no items are provided
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub text: Option<String>,
     /// Whether to render a horizontal divider below this block
     #[serde(default)]
@@ -1767,7 +1767,7 @@ impl Component for GlossaryList {
 pub struct DiagnosisRow {
     pub label: String,
     pub diagnosis: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub status: Option<String>,
 }
 
@@ -1790,7 +1790,7 @@ impl DiagnosisRow {
 /// For: Technical overview, module diagnosis, quick health checks
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DiagnosisPanel {
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub title: Option<String>,
     pub rows: Vec<DiagnosisRow>,
 }
@@ -1826,9 +1826,9 @@ pub struct DominantIssueSpotlight {
     pub body: String,
     pub user_impact: String,
     pub recommendation: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub eyebrow: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub affected_count: Option<u32>,
 }
 
@@ -1879,13 +1879,13 @@ impl Component for DominantIssueSpotlight {
 pub struct WrongRightBlock {
     pub wrong: String,
     pub right: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub wrong_label: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub right_label: Option<String>,
     #[serde(default)]
     pub is_code: bool,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub note: Option<String>,
 }
 
