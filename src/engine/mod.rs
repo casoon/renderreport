@@ -311,14 +311,24 @@ impl Engine {
 
             // Generate component call
             let fn_name = component_function_name(component_type);
-            content.push_str(&format!(
-                "#{}(json.decode(\"{}\"))\n\n#v(spacing-4)\n\n",
-                fn_name,
-                serde_json::to_string(&data)
-                    .unwrap_or_default()
-                    .replace('\\', "\\\\")
-                    .replace('"', "\\\"")
-            ));
+            let escaped_data = serde_json::to_string(&data)
+                .unwrap_or_default()
+                .replace('\\', "\\\\")
+                .replace('"', "\\\"");
+
+            // Section and page-break components manage their own spacing;
+            // omitting the gap keeps headings bonded to the following content.
+            if matches!(component_type, "section" | "page-break") {
+                content.push_str(&format!(
+                    "#{}(json.decode(\"{}\"))\n\n",
+                    fn_name, escaped_data
+                ));
+            } else {
+                content.push_str(&format!(
+                    "#{}(json.decode(\"{}\"))\n\n#v(spacing-4)\n\n",
+                    fn_name, escaped_data
+                ));
+            }
         }
 
         Ok(content)
