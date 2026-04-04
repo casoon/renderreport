@@ -1,6 +1,6 @@
 {
   "name": "@casoon/renderreport",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Data-driven report generation with Typst as embedded render engine",
   "license": "MIT OR Apache-2.0",
   "repository": {
