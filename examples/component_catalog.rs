@@ -44,6 +44,7 @@ fn main() -> renderreport::Result<()> {
                 ])
                 .with_cta("View on GitHub", "https://github.com/casoon/renderreport"),
         )
+        .add_component(PageBreak::new())
         // @id: table-of-contents
         .add_component(TableOfContents::new().with_title("Contents").with_depth(2))
         // @id: page-break
