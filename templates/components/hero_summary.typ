@@ -79,7 +79,7 @@
 
   // ── Positive aspects ───────────────────────────────────────
   if data.positive_aspects.len() > 0 {
-    text(size: font-size-xl, weight: "bold", fill: color-ok)[Stärken]
+    text(size: font-size-xl, weight: "bold", fill: color-ok)[Strengths]
     v(spacing-3)
     for aspect in data.positive_aspects {
       text(size: font-size-base)[#text(fill: color-ok)[✓ ]#aspect]

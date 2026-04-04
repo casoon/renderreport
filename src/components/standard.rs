@@ -1040,7 +1040,7 @@ pub struct SeverityOverview {
 impl SeverityOverview {
     pub fn new(critical: u32, serious: u32, moderate: u32, minor: u32) -> Self {
         Self {
-            title: Some("Problemübersicht".into()),
+            title: Some("Issue Overview".into()),
             critical,
             serious,
             moderate,

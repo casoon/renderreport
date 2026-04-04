@@ -12,14 +12,14 @@
 
     // Total sites
     theme-card[
-      #label-text([Geprüfte Websites])
+      #label-text([Sites Audited])
       #v(spacing-2)
       #text(size: font-size-2xl, weight: "bold")[#data.total_sites]
     ],
 
     // Average score
     theme-card[
-      #label-text([Durchschnitt])
+      #label-text([Average])
       #v(spacing-2)
       #text(size: font-size-2xl, weight: "bold", fill: avg-color)[#data.average_score]
       #v(spacing-2)
@@ -28,7 +28,7 @@
 
     // Best
     theme-card[
-      #label-text([Beste Website])
+      #label-text([Best Site])
       #v(spacing-2)
       #text(size: font-size-2xl, weight: "bold", fill: color-ok)[#data.best_score]
       #v(spacing-2)
@@ -37,7 +37,7 @@
 
     // Worst
     theme-card[
-      #label-text([Schwächste Website])
+      #label-text([Weakest Site])
       #v(spacing-2)
       #text(size: font-size-2xl, weight: "bold", fill: color-bad)[#data.worst_score]
       #v(spacing-2)
@@ -53,13 +53,13 @@
     column-gutter: spacing-3,
 
     theme-card[
-      #label-text([Verstöße gesamt])
+      #label-text([Total Issues])
       #v(spacing-2)
       #text(size: font-size-2xl, weight: "bold")[#data.total_issues]
     ],
 
     theme-card[
-      #label-text([Kritische Verstöße])
+      #label-text([Critical Issues])
       #v(spacing-2)
       #text(size: font-size-2xl, weight: "bold", fill: color-bad)[#data.critical_issues]
     ],
