@@ -22,8 +22,8 @@ fn main() -> renderreport::Result<()> {
 
     let report = engine
         .report("default")
-        .title("renderreport — Component Catalog")
-        .subtitle("Visual reference of all registered components")
+        .title("")
+        .subtitle("")
         .metadata("author", "renderreport")
         .metadata("date", env!("CARGO_PKG_VERSION"))
         .metadata("footer_prefix", "renderreport")
