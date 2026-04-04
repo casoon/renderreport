@@ -105,10 +105,15 @@ fn main() -> renderreport::Result<()> {
 
         .add_component(Section::new("1.6 Watermark").with_level(2))
         .add_component(TextBlock::new(
-            "Diagonal background text. Built-in presets: draft(), confidential().",
+            "Diagonal background text. Built-in presets: draft(), confidential(). \
+             Placed as overlay on the current page.",
         ))
-        .add_component(Watermark::draft()) // @id: watermark
-        .add_component(PageBreak::new())
+        .add_component({ // @id: watermark
+            let mut w = Watermark::new("DRAFT");
+            w.opacity = 0.15;
+            w.size = "72pt".into();
+            w
+        })
 
         // ── 2. Score & Metrics ───────────────────────────────────────────────
         .add_component(Section::new("2. Score & Metrics").with_level(1))
