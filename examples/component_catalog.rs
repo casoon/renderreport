@@ -31,7 +31,7 @@ fn main() -> renderreport::Result<()> {
         // ── Cover ────────────────────────────────────────────────────────────
         // @id: cover-page
         .add_component(
-            CoverPage::new("Component Catalog", "github.com/casoon/renderreport", 100, "A+")
+            CoverPage::new("renderreport", "Type-safe PDF reports from Rust", 51, "Complete")
                 .with_brand("renderreport")
                 .with_date(env!("CARGO_PKG_VERSION")),
         )
