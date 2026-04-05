@@ -74,6 +74,6 @@
     let high-count = data.critical + data.serious
     theme-severity-strip(high-count, data.moderate, data.minor)
     v(spacing-2)
-    small-text([#total Problemgruppen insgesamt])
+    small-text([#total Verstöße insgesamt])
   }
 }

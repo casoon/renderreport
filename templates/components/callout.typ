@@ -28,6 +28,7 @@
       inset: spacing-4,
       radius: component-callout-radius,
       fill: style.border,
+      breakable: false,
     )[
       #set text(fill: white)
 
@@ -45,6 +46,7 @@
       radius: component-callout-radius,
       fill: style.bg,
       stroke: (left: (paint: style.border, thickness: 3pt)),
+      breakable: false,
     )[
       #set text(fill: color-text)
 

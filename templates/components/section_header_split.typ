@@ -38,5 +38,9 @@
     ] else [
       #v(spacing-3)
     ]
+
+    // Invisible minimum follow-up space to prevent orphaned headers
+    // (header alone at page bottom with content on next page)
+    #v(4em)
   ]
 }
