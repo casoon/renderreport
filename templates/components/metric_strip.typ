@@ -32,7 +32,7 @@
           #stack(
             dir: ltr,
             spacing: 3pt,
-            text(size: font-size-xl, weight: "bold", fill: accent)[#item.value],
+            text(size: if data.compact { font-size-sm } else { font-size-xl }, weight: "bold", fill: accent)[#item.value],
             if item.unit != none [
               #pad(top: 3pt)[#small-text(item.unit)]
             ],

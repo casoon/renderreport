@@ -14,6 +14,7 @@
   stroke: (paint: color-border, thickness: component-card-border-width),
   radius: 10pt,
   inset: (x: spacing-4, y: spacing-4),
+  breakable: false,
   body,
 )
 
