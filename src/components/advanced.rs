@@ -1502,11 +1502,11 @@ pub struct DevicePreview {
 }
 
 fn default_device_preview_height() -> f64 {
-    180.0
+    195.0
 }
 
 fn default_desktop_ratio() -> f64 {
-    0.75
+    0.70
 }
 
 impl DevicePreview {
