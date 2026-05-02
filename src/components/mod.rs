@@ -29,7 +29,7 @@ pub use standard::*;
 // Re-export new primitive and composite types
 pub use advanced::{
     BenefitStrip, BigNumber, ChecklistPanel, ChecklistRow, Columns, ComparisonBlock,
-    ComparisonCluster, ComparisonClusterItem, DiagnosisPanel, DiagnosisRow,
+    ComparisonCluster, ComparisonClusterItem, DevicePreview, DiagnosisPanel, DiagnosisRow,
     DominantIssueSpotlight, FaqList, FaqItem, GlossaryList, GlossaryItem,
     ImpactGrid, ImpactGridCard, LogoStrip, MetricStrip, MetricStripItem, PhaseBlock, PricingCard,
     PullQuote, RecommendationCard, SectionHeaderSplit, SpotlightCard, StepCardRow, UseCaseCard,

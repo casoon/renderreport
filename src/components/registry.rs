@@ -395,6 +395,11 @@ impl ComponentRegistry {
         );
 
         self.register(
+            ComponentId::new("device-preview"),
+            include_str!("../../templates/components/device_preview.typ").to_string(),
+        );
+
+        self.register(
             ComponentId::new("faq-list"),
             include_str!("../../templates/components/faq_list.typ").to_string(),
         );

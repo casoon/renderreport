@@ -1484,6 +1484,56 @@ impl Component for Columns {
     }
 }
 
+/// Device preview component for PDF cover pages.
+/// Shows a desktop screenshot (3/4 width) and a mobile screenshot (1/4 width)
+/// side by side with Apple-style device frames.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DevicePreview {
+    /// Asset key for the desktop screenshot (registered via builder.asset())
+    pub desktop_src: String,
+    /// Asset key for the mobile screenshot (registered via builder.asset())
+    pub mobile_src: String,
+    /// Height of the mockup block in points
+    #[serde(default = "default_device_preview_height")]
+    pub height_pt: f64,
+    /// Desktop column ratio 0.0–1.0 (defaults to 0.75 for 3/4 layout)
+    #[serde(default = "default_desktop_ratio")]
+    pub desktop_ratio: f64,
+}
+
+fn default_device_preview_height() -> f64 {
+    180.0
+}
+
+fn default_desktop_ratio() -> f64 {
+    0.75
+}
+
+impl DevicePreview {
+    pub fn new(desktop_src: impl Into<String>, mobile_src: impl Into<String>) -> Self {
+        Self {
+            desktop_src: desktop_src.into(),
+            mobile_src: mobile_src.into(),
+            height_pt: default_device_preview_height(),
+            desktop_ratio: default_desktop_ratio(),
+        }
+    }
+
+    pub fn with_height(mut self, height_pt: f64) -> Self {
+        self.height_pt = height_pt;
+        self
+    }
+}
+
+impl Component for DevicePreview {
+    fn component_id(&self) -> &'static str {
+        "device-preview"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
 /// FAQ list component
 /// Question-answer pairs for FAQs, knowledge bases, product docs
 #[derive(Debug, Clone, Serialize, Deserialize)]
