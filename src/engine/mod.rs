@@ -169,13 +169,19 @@ impl Engine {
             .get("footer_prefix")
             .map(|s| s.as_str())
             .unwrap_or("");
+        let footer_tagline = request
+            .metadata
+            .get("footer_tagline")
+            .map(|s| s.as_str())
+            .unwrap_or("");
         source.push_str(&format!(
-            "#let report-title = \"{}\"\n#let report-date = \"{}\"\n#let report-author = \"{}\"\n#let report-footer-link-url = \"{}\"\n#let report-footer-prefix = \"{}\"\n\n",
+            "#let report-title = \"{}\"\n#let report-date = \"{}\"\n#let report-author = \"{}\"\n#let report-footer-link-url = \"{}\"\n#let report-footer-prefix = \"{}\"\n#let report-footer-tagline = \"{}\"\n\n",
             title_str.replace('"', "\\\""),
             date_str.replace('"', "\\\""),
             author_str.replace('"', "\\\""),
             footer_link_url.replace('"', "\\\""),
             footer_prefix.replace('"', "\\\""),
+            footer_tagline.replace('"', "\\\""),
         ));
 
         // Add page setup
@@ -228,7 +234,7 @@ impl Engine {
       #line(length: 100%, stroke: (paint: color-border, thickness: 0.5pt))
       #v(3pt)
       #grid(
-        columns: (1fr, auto),
+        columns: (1fr, auto, 1fr),
         gutter: spacing-3,
         [#text(size: font-size-xs, fill: color-text-muted)[
           #if report-footer-prefix != "" { report-footer-prefix + " " }
@@ -238,7 +244,8 @@ impl Engine {
             text(weight: "semibold")[#report-author]
           }
         ]],
-        [#text(size: font-size-xs, fill: color-text-muted)[#counter(page).display("1 / 1", both: true)]]
+        [#text(size: font-size-xs, fill: color-text-muted)[#counter(page).display("1 / 1", both: true)]],
+        align(right)[#text(size: font-size-xs, fill: color-text-muted)[#report-footer-tagline]]
       )
     ]
   },
