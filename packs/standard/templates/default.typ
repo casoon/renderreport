@@ -63,7 +63,7 @@
         align(center)[#text(size: font-size-sm, fill: color-text-muted)[
           Page #counter(page).display() of #locate(loc => counter(page).final(loc).first())
         ]],
-        align(right)[]
+        align(right)[#text(size: font-size-sm, fill: color-text-muted)[A technical auditing platform by casoon.de]]
       )
     }
   )
