@@ -1018,6 +1018,23 @@ fn main() -> renderreport::Result<()> {
                 .add_item("Typst", "A markup-based typesetting language used for rendering."),
         )
 
+        .add_component(Section::new("12.12 TagCloud").with_level(2))
+        .add_component(TextBlock::new("Coloured tag badges for status, labels, or keyword sets."))
+        .add_component( // @id: tag-cloud
+            TagCloud::new()
+                .with_title("WCAG Coverage")
+                .add("WCAG 1.1.1", "pass")
+                .add("WCAG 1.3.1", "pass")
+                .add("WCAG 2.4.3", "warn")
+                .add("WCAG 4.1.2", "fail"),
+        )
+
+        .add_component(Section::new("12.13 DevicePreview").with_level(2))
+        .add_component(TextBlock::new("Side-by-side desktop / mobile screenshot comparison."))
+        .add_component( // @id: device-preview
+            DevicePreview::new("desktop.png", "mobile.png"),
+        )
+
         // ── 13. Report Patterns ──────────────────────────────────────────────────
         .add_component(PageBreak::new())
         .add_component(Section::new("13. Report Patterns").with_level(1))
