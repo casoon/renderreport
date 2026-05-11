@@ -263,8 +263,9 @@ impl Engine {
 #set heading(numbering: none)
 #show heading: set par(justify: false)
 #show heading.where(level: 1): set text(size: font-size-2xl, weight: "bold", fill: color-text)
-#show heading.where(level: 2): set text(size: font-size-xl, weight: "bold", fill: color-text)
+#show heading.where(level: 2): set text(size: font-size-xl, weight: "bold", fill: color-primary)
 #show heading.where(level: 3): set text(size: font-size-lg, weight: "bold", fill: color-text)
+#show heading.where(level: 4): set text(size: font-size-base, weight: "bold", fill: color-text-muted)
 "#
         .to_string()
     }
