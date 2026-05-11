@@ -10,10 +10,8 @@
 
   let accent = if data.accent_color != none { rgb(data.accent_color) } else { default-color }
 
-  stack(
-    spacing: spacing-2,
-
-    // Header block
+  // Header stays with at least the start of the items list
+  block(width: 100%, breakable: false, below: 0pt)[
     block(
       width: 100%,
       fill: accent,
@@ -34,10 +32,14 @@
           text(size: font-size-xs, fill: white.transparentize(20%))[#data.description],
         ),
       )
-    ],
+    ]
+    v(spacing-2)
+    box(height: 3em, width: 0pt)[]
+  ]
+  v(spacing-2 - 3em)
 
-    // Items list
-    block(
+  // Items list (breakable — can span pages for long lists)
+  block(
       width: 100%,
       fill: color-surface,
       stroke: (paint: color-border, thickness: component-card-border-width),
@@ -54,6 +56,5 @@
         )
         #if i < data.items.len() - 1 [ #v(3pt) ]
       ]
-    ],
-  )
+    ]
 }

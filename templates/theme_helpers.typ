@@ -112,13 +112,16 @@
 
 // ── Orphan-safe component title ─────────────────────────────
 // Wraps a title with a breakable:false guard so it is never
-// left alone at the bottom of a page. spacing controls the
-// gap between title and the component body below.
-#let component-title(content, spacing: spacing-3) = {
+// left alone at the bottom of a page.
+// spacing: gap between title and component body.
+// min-body: minimum body height to reserve after the title.
+//   Use 2em for text/list bodies, 4em for table/grid bodies
+//   (table rows are ~3-4em tall including padding).
+#let component-title(content, spacing: spacing-3, min-body: 4em) = {
   block(width: 100%, breakable: false, below: 0pt)[
     #content
     #v(spacing)
-    #box(height: 2em, width: 0pt)[]
+    #box(height: min-body, width: 0pt)[]
   ]
-  v(-2em)
+  v(-min-body)
 }
