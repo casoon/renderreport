@@ -34,5 +34,5 @@
     #v(spacing-4)
     #box(height: 2em, width: 0pt)[]
   ]
-  #v(-2em)
+  v(-2em)
 }
