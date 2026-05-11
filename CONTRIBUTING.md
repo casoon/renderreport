@@ -78,6 +78,58 @@ cargo run --example seo_audit
 - Ensure all tests pass before submitting a PR
 - Aim for >80% code coverage
 
+The test suite includes a **Typst compile smoke test** (`tests/compile_smoke.rs`) that
+renders a minimal PDF through the full Typst engine. It catches syntax errors in `.typ`
+component templates (e.g. invalid `#` usage in code-mode blocks) that the Rust compiler
+cannot see. Run it with:
+
+```bash
+cargo test --test compile_smoke
+```
+
+This test must pass before any renderreport release.
+
+## Adding a New Component
+
+A component consists of three parts:
+
+1. **Rust struct** in `src/components/standard.rs` or `advanced.rs` — derive `Serialize`,
+   implement `Component` (`component_id()` + `to_data()`).
+2. **Typst template** in `templates/components/<name>.typ` — a `#let` function named with
+   hyphens matching the component ID.
+3. **Registry entry** in `src/components/registry.rs` — `self.register(ComponentId::new("name"), include_str!(...))`.
+
+### Optional title — use `component-title()`
+
+If your component has an optional title field, render it with the `component-title()`
+helper defined in `templates/theme_helpers.typ`:
+
+```typst
+if data.title != none {
+  component-title(text(size: font-size-xl, weight: "bold")[#data.title])
+}
+```
+
+**Do not** inline the orphan-protection block manually. `component-title()` keeps the
+title attached to the component body across page breaks, so it is never left alone at the
+bottom of a page.
+
+The `spacing` parameter defaults to `spacing-3`; pass a different value when the
+component body needs more breathing room:
+
+```typst
+component-title(text(...)[#data.title], spacing: spacing-4)
+```
+
+### Catalog entry
+
+Every registered component must appear in `examples/component_catalog.rs` with a
+`// @id: <component-id>` comment. The `catalog_completeness` test enforces this:
+
+```bash
+cargo test --test catalog_completeness
+```
+
 ## Areas for Contribution
 
 ### High Priority
