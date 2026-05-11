@@ -25,6 +25,7 @@
     else if comp-type == "severity-overview" { severity-overview(comp-data) }
     else if comp-type == "list" { list(comp-data) }
     else if comp-type == "divider" { divider(comp-data) }
+    else if comp-type == "tag-cloud" { tag-cloud(comp-data) }
     else if comp-type == "side-label" { side-label(comp-data) }
     else if comp-type == "grid-component" { grid-component(comp-data) }
     else if comp-type == "flow-group" { flow-group(comp-data) }

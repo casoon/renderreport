@@ -553,6 +553,63 @@ impl Component for StatusPill {
     }
 }
 
+/// Wrapping cloud of status-pill badges (flows inline, auto-wraps)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TagCloud {
+    pub items: Vec<TagCloudItem>,
+    #[serde(default)]
+    pub title: Option<String>,
+    #[serde(default = "default_tag_gap")]
+    pub gap: String,
+}
+
+fn default_tag_gap() -> String {
+    "4pt".into()
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TagCloudItem {
+    pub label: String,
+    #[serde(default = "default_neutral")]
+    pub status: String,
+}
+
+impl TagCloud {
+    pub fn new() -> Self {
+        Self { items: Vec::new(), title: None, gap: "4pt".into() }
+    }
+
+    pub fn with_title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+
+    pub fn with_gap(mut self, gap: impl Into<String>) -> Self {
+        self.gap = gap.into();
+        self
+    }
+
+    pub fn add(mut self, label: impl Into<String>, status: impl Into<String>) -> Self {
+        self.items.push(TagCloudItem { label: label.into(), status: status.into() });
+        self
+    }
+}
+
+impl Default for TagCloud {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Component for TagCloud {
+    fn component_id(&self) -> &'static str {
+        "tag-cloud"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
 /// Single KPI stat with optional trend indicator
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Stat {

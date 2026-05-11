@@ -252,6 +252,11 @@ impl ComponentRegistry {
         );
 
         self.register(
+            ComponentId::new("tag-cloud"),
+            include_str!("../../templates/components/tag_cloud.typ").to_string(),
+        );
+
+        self.register(
             ComponentId::new("stat"),
             include_str!("../../templates/components/stat.typ").to_string(),
         );
