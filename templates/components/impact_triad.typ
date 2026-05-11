@@ -43,12 +43,7 @@
 #let impact-triad(data) = {
   block(width: 100%)[
     #if data.title != none [
-      #block(width: 100%, breakable: false, below: 0pt)[
-      #text(weight: "bold", size: font-size-sm, fill: color-text)[#data.title]
-        #v(spacing-3)
-        #box(height: 2em, width: 0pt)[]
-      ]
-      #v(-2em)
+      #component-title(text(weight: "bold", size: font-size-sm, fill: color-text)[#data.title])
     ]
     #grid(
       columns: (1fr, 1fr, 1fr),

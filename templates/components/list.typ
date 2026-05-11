@@ -27,12 +27,7 @@
 #let list(data) = {
   box(width: 100%)[
     #if data.title != none [
-      #block(width: 100%, breakable: false, below: 0pt)[
-      #text(weight: "semibold", size: font-size-base)[#data.title]
-        #v(spacing-3)
-        #box(height: 2em, width: 0pt)[]
-      ]
-      #v(-2em)
+      #component-title(text(weight: "semibold", size: font-size-base)[#data.title])
     ]
     
     #if data.layout == "grid" [

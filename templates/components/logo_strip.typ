@@ -4,12 +4,7 @@
 #let logo-strip(data) = {
   block(width: 100%)[
     #if data.title != none [
-      #block(width: 100%, breakable: false, below: 0pt)[
-      #text(size: font-size-sm, weight: "bold", fill: color-text-muted, tracking: 0.06em)[#upper(data.title)]
-        #v(spacing-3)
-        #box(height: 2em, width: 0pt)[]
-      ]
-      #v(-2em)
+      #component-title(text(size: font-size-sm, weight: "bold", fill: color-text-muted, tracking: 0.06em)[#upper(data.title)])
     ]
 
     #grid(

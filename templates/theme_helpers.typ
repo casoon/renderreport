@@ -109,3 +109,16 @@
   else if score >= 50 { color-warn }
   else { color-bad }
 }
+
+// ── Orphan-safe component title ─────────────────────────────
+// Wraps a title with a breakable:false guard so it is never
+// left alone at the bottom of a page. spacing controls the
+// gap between title and the component body below.
+#let component-title(content, spacing: spacing-3) = {
+  block(width: 100%, breakable: false, below: 0pt)[
+    #content
+    #v(spacing)
+    #box(height: 2em, width: 0pt)[]
+  ]
+  v(-2em)
+}
