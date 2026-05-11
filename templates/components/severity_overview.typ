@@ -3,8 +3,12 @@
 
 #let severity-overview(data) = {
   if data.title != none {
-    text(size: font-size-xl, weight: "bold")[#data.title]
-    v(spacing-3)
+    block(width: 100%, breakable: false, below: 0pt)[
+      #text(size: font-size-xl, weight: "bold")[#data.title]
+      #v(spacing-3)
+      #box(height: 2em, width: 0pt)[]
+    ]
+    v(-2em)
   }
 
   // Severity cards row

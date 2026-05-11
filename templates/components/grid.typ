@@ -60,8 +60,12 @@
 #let grid-component(data) = {
   box(width: 100%)[
     #if data.title != none [
+      #block(width: 100%, breakable: false, below: 0pt)[
       #text(weight: "semibold", size: font-size-lg)[#data.title]
-      #v(spacing-4)
+        #v(spacing-4)
+        #box(height: 2em, width: 0pt)[]
+      ]
+      #v(-2em)
     ]
 
     #let col-widths = (1fr,) * data.columns

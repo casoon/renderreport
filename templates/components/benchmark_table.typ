@@ -3,8 +3,12 @@
 
 #let benchmark-table(data) = {
   if data.title != none {
+    block(width: 100%, breakable: false, below: 0pt)[
     text(size: font-size-xl, weight: "bold")[#data.title]
-    v(spacing-4)
+        #v(spacing-4)
+        #box(height: 2em, width: 0pt)[]
+    ]
+    v(-2em)
   }
 
   // Header

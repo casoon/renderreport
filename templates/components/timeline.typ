@@ -10,8 +10,12 @@
 #let timeline(data) = {
   block(width: 100%)[
     #if data.title != none [
+      #block(width: 100%, breakable: false, below: 0pt)[
       #text(weight: "semibold", size: font-size-lg)[#data.title]
-      #v(spacing-3)
+        #v(spacing-3)
+        #box(height: 2em, width: 0pt)[]
+      ]
+      #v(-2em)
     ]
 
     #for (i, item) in data.items.enumerate() [
