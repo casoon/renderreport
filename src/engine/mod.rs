@@ -108,7 +108,25 @@ impl Engine {
 
     /// Render a report
     pub fn render(&self, request: &RenderRequest) -> Result<RenderOutput> {
-        // Merge themes: default -> pack -> request
+        let theme = self.resolve_theme(request);
+        let typst_source = self.generate_typst_source(request, &theme)?;
+        let pdf_bytes = self.compile_typst(&typst_source, request)?;
+        Ok(RenderOutput::Pdf(pdf_bytes))
+    }
+
+    /// Render a report to its intermediate Typst source.
+    ///
+    /// Returns the full `.typ` source that would be compiled by [`render`] /
+    /// [`render_pdf`]. Useful for snapshot testing, lint/format pipelines
+    /// (e.g. `typstyle`), and downstream tooling that wants to inspect or
+    /// post-process the source before compilation.
+    pub fn render_typ(&self, request: &RenderRequest) -> Result<String> {
+        let theme = self.resolve_theme(request);
+        self.generate_typst_source(request, &theme)
+    }
+
+    /// Merge themes: default -> pack -> request
+    fn resolve_theme(&self, request: &RenderRequest) -> Theme {
         let mut theme = self.default_theme.clone();
 
         if let Some(pack_id) = &request.pack_id {
@@ -123,13 +141,7 @@ impl Engine {
             theme.merge(request_theme);
         }
 
-        // Generate Typst source
-        let typst_source = self.generate_typst_source(request, &theme)?;
-
-        // Compile with Typst
-        let pdf_bytes = self.compile_typst(&typst_source, request)?;
-
-        Ok(RenderOutput::Pdf(pdf_bytes))
+        theme
     }
 
     /// Generate Typst source from request
