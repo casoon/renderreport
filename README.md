@@ -51,7 +51,19 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-renderreport = "0.1"
+renderreport = "0.2"
+```
+
+## Inspecting the generated Typst source
+
+`Engine::render_typ()` returns the intermediate `.typ` source that would
+be compiled to PDF. Useful for snapshot tests, custom lint/format
+pipelines (e.g. `typstyle`), or downstream tooling that wants to
+post-process the source before compilation.
+
+```rust
+let source: String = engine.render_typ(&report)?;
+std::fs::write("report.typ", &source)?;
 ```
 
 ## Components

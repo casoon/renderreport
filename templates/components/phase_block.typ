@@ -10,9 +10,11 @@
 
   let accent = if data.accent_color != none { rgb(data.accent_color) } else { default-color }
 
-  // Header stays with at least the start of the items list
+  // Header stays with at least the start of the items list.
+  // Note: inside content blocks (`[...]`) every function call must be `#`-prefixed,
+  // otherwise it is rendered as literal text. See issue auditmysite#239.
   block(width: 100%, breakable: false, below: 0pt)[
-    block(
+    #block(
       width: 100%,
       fill: accent,
       radius: 8pt,
@@ -33,8 +35,8 @@
         ),
       )
     ]
-    v(spacing-2)
-    box(height: 3em, width: 0pt)[]
+    #v(spacing-2)
+    #box(height: 3em, width: 0pt)[]
   ]
   v(spacing-2 - 3em)
 
