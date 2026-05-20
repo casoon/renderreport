@@ -1032,7 +1032,7 @@ fn main() -> renderreport::Result<()> {
         .add_component(Section::new("12.13 DevicePreview").with_level(2))
         .add_component(TextBlock::new("Side-by-side desktop / mobile screenshot comparison."))
         .add_component( // @id: device-preview
-            DevicePreview::new("desktop.png", "mobile.png"),
+            DevicePreview::new("examples/assets/desktop.png", "examples/assets/mobile.png"),
         )
 
         // ── 13. Report Patterns ──────────────────────────────────────────────────
