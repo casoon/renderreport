@@ -95,6 +95,7 @@ jobs:
           path: |
             ${{ env.ARCHIVE_NAME }}
             ${{ env.ARCHIVE_NAME }}.sha256
+          retention-days: 1
 
   catalog:
     runs-on: ubuntu-latest
@@ -113,6 +114,7 @@ jobs:
         with:
           name: component-catalog
           path: examples/output/component_catalog.pdf
+          retention-days: 1
 
   release:
     needs: [build, catalog]
