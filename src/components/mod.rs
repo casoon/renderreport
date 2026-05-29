@@ -43,7 +43,7 @@ use std::collections::HashMap;
 /// Trait for all report components
 pub trait Component: Send + Sync {
     /// Get the component type ID
-    fn component_id(&self) -> &'static str;
+    fn component_id(&self) -> &str;
 
     /// Serialize component data for template rendering
     fn to_data(&self) -> serde_json::Value;
@@ -83,9 +83,8 @@ impl DynamicComponent {
 }
 
 impl Component for DynamicComponent {
-    fn component_id(&self) -> &'static str {
-        // This is a bit of a hack, but necessary for dynamic components
-        Box::leak(self.component_type.clone().into_boxed_str())
+    fn component_id(&self) -> &str {
+        &self.component_type
     }
 
     fn to_data(&self) -> serde_json::Value {

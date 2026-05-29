@@ -188,12 +188,12 @@ impl Engine {
             .unwrap_or("");
         source.push_str(&format!(
             "#let report-title = \"{}\"\n#let report-date = \"{}\"\n#let report-author = \"{}\"\n#let report-footer-link-url = \"{}\"\n#let report-footer-prefix = \"{}\"\n#let report-footer-tagline = \"{}\"\n\n",
-            title_str.replace('"', "\\\""),
-            date_str.replace('"', "\\\""),
-            author_str.replace('"', "\\\""),
-            footer_link_url.replace('"', "\\\""),
-            footer_prefix.replace('"', "\\\""),
-            footer_tagline.replace('"', "\\\""),
+            escape_for_typst_string(title_str),
+            escape_for_typst_string(date_str),
+            escape_for_typst_string(author_str),
+            escape_for_typst_string(footer_link_url),
+            escape_for_typst_string(footer_prefix),
+            escape_for_typst_string(footer_tagline),
         ));
 
         // Add page setup
@@ -310,10 +310,10 @@ impl Engine {
 #pagebreak()
 
 "#,
-                title = title.replace('"', "\\\""),
-                subtitle = subtitle.replace('"', "\\\""),
-                author = author.replace('"', "\\\""),
-                date = date.replace('"', "\\\""),
+                title = escape_for_typst_markup(title),
+                subtitle = escape_for_typst_markup(subtitle),
+                author = escape_for_typst_markup(author),
+                date = escape_for_typst_markup(date),
             ));
         }
 
@@ -331,10 +331,9 @@ impl Engine {
 
             // Generate component call
             let fn_name = component_function_name(component_type);
-            let escaped_data = serde_json::to_string(&data)
-                .unwrap_or_default()
-                .replace('\\', "\\\\")
-                .replace('"', "\\\"");
+            let escaped_data = escape_for_typst_string(
+                &serde_json::to_string(&data).unwrap_or_default(),
+            );
 
             // Section and page-break components manage their own spacing;
             // omitting the gap keeps headings bonded to the following content.
@@ -360,6 +359,37 @@ impl Engine {
 
         typst_compile::compile_to_pdf(source, &self.config, request)
     }
+}
+
+/// Escape a string for embedding inside a Typst string literal `"..."`.
+fn escape_for_typst_string(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    for ch in s.chars() {
+        match ch {
+            '\\' => out.push_str("\\\\"),
+            '"' => out.push_str("\\\""),
+            '\n' => out.push_str("\\n"),
+            '\r' => out.push_str("\\r"),
+            '\t' => out.push_str("\\t"),
+            c => out.push(c),
+        }
+    }
+    out
+}
+
+/// Escape a string for embedding inside a Typst content block `[...]`.
+fn escape_for_typst_markup(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    for ch in s.chars() {
+        match ch {
+            '#' | '[' | ']' | '\\' => {
+                out.push('\\');
+                out.push(ch);
+            }
+            c => out.push(c),
+        }
+    }
+    out
 }
 
 fn component_function_name(component_type: &str) -> &str {
