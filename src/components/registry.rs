@@ -51,8 +51,32 @@ impl ComponentRegistry {
         registry
     }
 
-    /// Register standard built-in components
+    /// Register standard built-in components from the [`ComponentCatalog`].
+    ///
+    /// Dispatcher templates (`grid-component`, `flow-group`) are registered
+    /// last because their Typst bodies reference all other component functions.
     pub fn register_standard_components(&mut self) {
+        use crate::components::catalog::ComponentCatalog;
+
+        const DISPATCHERS: &[&str] = &["grid-component", "flow-group"];
+
+        // Register all non-dispatcher components first.
+        for desc in ComponentCatalog::all() {
+            if !DISPATCHERS.contains(&desc.id) {
+                self.register(ComponentId::new(desc.id), desc.template.to_string());
+            }
+        }
+        // Register dispatchers last so all other functions are already defined.
+        for id in DISPATCHERS {
+            if let Some(desc) = ComponentCatalog::get(id) {
+                self.register(ComponentId::new(desc.id), desc.template.to_string());
+            }
+        }
+    }
+
+    /// Kept for backwards-compatibility; new code should use the catalog.
+    #[allow(dead_code)]
+    fn _register_standard_components_legacy(&mut self) {
         // Standard Components
         self.register(
             ComponentId::new("score-card"),

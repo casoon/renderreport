@@ -1,0 +1,251 @@
+# Component manifest — source of truth for the Typst dispatcher generators.
+#
+# build.rs reads this file and generates the _flow-dispatch / _grid-dispatch
+# functions in $OUT_DIR/flow_group.typ and $OUT_DIR/grid.typ.
+#
+# Fields:
+#   id  — component type ID (matches ComponentRegistry / ComponentCatalog)
+#   fn  — Typst function name (defaults to `id`; override when names differ)
+#
+# Rules:
+#   - grid-component and flow-group MUST appear last (they dispatch to all others)
+#   - When adding a new component, append it BEFORE the last two entries
+
+[[component]]
+id = "score-card"
+
+[[component]]
+id = "finding"
+
+[[component]]
+id = "audit-table"
+
+[[component]]
+id = "section"
+
+[[component]]
+id = "image"
+fn = "report-image"
+
+[[component]]
+id = "callout"
+
+[[component]]
+id = "summary-box"
+
+[[component]]
+id = "list"
+
+[[component]]
+id = "divider"
+
+[[component]]
+id = "progress-bar"
+
+[[component]]
+id = "key-value-list"
+
+[[component]]
+id = "watermark"
+
+[[component]]
+id = "page-break"
+
+[[component]]
+id = "chart"
+
+[[component]]
+id = "sparkline"
+
+[[component]]
+id = "gauge"
+
+[[component]]
+id = "crosstab"
+
+[[component]]
+id = "pivot-table"
+
+[[component]]
+id = "barcode"
+
+[[component]]
+id = "label"
+
+[[component]]
+id = "textblock"
+
+[[component]]
+id = "number-field"
+
+[[component]]
+id = "date-field"
+
+[[component]]
+id = "resource-field"
+
+[[component]]
+id = "side-label"
+
+[[component]]
+id = "table-of-contents"
+
+[[component]]
+id = "metric-card"
+
+[[component]]
+id = "hero-summary"
+
+[[component]]
+id = "product-hero"
+
+[[component]]
+id = "card-dashboard"
+
+[[component]]
+id = "roadmap-block"
+
+[[component]]
+id = "severity-overview"
+
+[[component]]
+id = "cover-page"
+
+[[component]]
+id = "module-comparison"
+
+[[component]]
+id = "portfolio-summary"
+
+[[component]]
+id = "benchmark-table"
+
+[[component]]
+id = "eyebrow"
+
+[[component]]
+id = "status-pill"
+
+[[component]]
+id = "tag-cloud"
+
+[[component]]
+id = "stat"
+
+[[component]]
+id = "stat-pair"
+
+[[component]]
+id = "score-band"
+
+[[component]]
+id = "trend-tile"
+
+[[component]]
+id = "section-header-split"
+
+[[component]]
+id = "phase-block"
+
+[[component]]
+id = "checklist-panel"
+
+[[component]]
+id = "metric-strip"
+
+[[component]]
+id = "impact-grid"
+
+[[component]]
+id = "spotlight-card"
+
+[[component]]
+id = "comparison-block"
+
+[[component]]
+id = "comparison-cluster"
+
+[[component]]
+id = "feature-grid"
+
+[[component]]
+id = "cta-box"
+
+[[component]]
+id = "testimonial"
+
+[[component]]
+id = "process-flow"
+
+[[component]]
+id = "timeline"
+
+[[component]]
+id = "funnel"
+
+[[component]]
+id = "problem-solution"
+
+[[component]]
+id = "before-after"
+
+[[component]]
+id = "why-it-matters"
+
+[[component]]
+id = "fact-box"
+
+[[component]]
+id = "quote-block"
+
+[[component]]
+id = "benefit-strip"
+
+[[component]]
+id = "pricing-card"
+
+[[component]]
+id = "recommendation-card"
+
+[[component]]
+id = "step-card-row"
+
+[[component]]
+id = "columns"
+
+[[component]]
+id = "device-preview"
+
+[[component]]
+id = "faq-list"
+
+[[component]]
+id = "use-case-card"
+
+[[component]]
+id = "logo-strip"
+
+[[component]]
+id = "pull-quote"
+
+[[component]]
+id = "big-number"
+
+[[component]]
+id = "glossary-list"
+
+[[component]]
+id = "diagnosis-panel"
+
+[[component]]
+id = "dominant-issue-spotlight"
+
+[[component]]
+id = "wrong-right-block"
+
+# Dispatchers — must be last
+[[component]]
+id = "grid-component"
+
+[[component]]
+id = "flow-group"

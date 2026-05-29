@@ -27,7 +27,10 @@ pub mod vfs;
 
 mod error;
 
-pub use components::{Component, ComponentId, ComponentRegistry};
+pub use components::{
+    Component, ComponentCatalog, ComponentCategory, ComponentDescriptor, ComponentId,
+    ComponentRegistry, LayoutHint,
+};
 pub use engine::{Engine, ReportBuilder};
 pub use error::{Error, Result};
 pub use pack::{Pack, PackId, PackLoader, PackManifest};

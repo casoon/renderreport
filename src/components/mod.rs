@@ -17,12 +17,15 @@
 
 pub mod advanced;
 pub mod barcode;
+pub mod catalog;
 pub mod charts;
 pub mod crosstab;
+mod descriptors;
 mod registry;
 mod standard;
 pub mod text;
 
+pub use catalog::{ComponentCatalog, ComponentCategory, ComponentDescriptor, LayoutHint};
 pub use registry::{ComponentId, ComponentRegistry};
 pub use standard::*;
 

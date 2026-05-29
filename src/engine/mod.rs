@@ -11,6 +11,7 @@ pub use builder::ReportBuilder;
 pub use config::EngineConfig;
 pub use world::ReportWorld;
 
+use crate::components::catalog::LayoutHint;
 use crate::components::ComponentRegistry;
 use crate::pack::{Pack, PackId, PackLoader};
 use crate::render::{RenderOutput, RenderRequest};
@@ -333,20 +334,34 @@ impl Engine {
                 .and_then(|v| v.as_str())
                 .unwrap_or("unknown");
 
-            // Auto-bind: wrap a section heading + its first following non-structural
-            // component in a keep-together block to prevent orphaned headings.
-            if component_type == "section" {
+            use crate::components::catalog::ComponentCatalog;
+
+            let layout_hint = ComponentCatalog::get(component_type)
+                .map(|d| d.layout_hint)
+                .unwrap_or(LayoutHint::KeepTogether);
+
+            // AlwaysNewPage: emit a page break before the component.
+            if layout_hint == LayoutHint::AlwaysNewPage {
+                content.push_str("#pagebreak()\n\n");
+            }
+
+            // KeepWithNext: wrap this component and the immediately following
+            // non-structural sibling in a keep-together block.
+            if layout_hint == LayoutHint::KeepWithNext {
                 let next = components.get(i + 1);
                 let next_type = next
                     .and_then(|n| n.get("type"))
                     .and_then(|v| v.as_str())
                     .unwrap_or("");
-                let next_is_content =
-                    !next_type.is_empty() && !matches!(next_type, "section" | "page-break");
+                let next_hint = ComponentCatalog::get(next_type)
+                    .map(|d| d.layout_hint)
+                    .unwrap_or(LayoutHint::KeepTogether);
+                let next_is_content = !next_type.is_empty()
+                    && !matches!(next_hint, LayoutHint::AlwaysNewPage | LayoutHint::KeepWithNext);
 
                 if next_is_content {
                     let next = next.unwrap();
-                    let section_data = component
+                    let cur_data = component
                         .get("data")
                         .cloned()
                         .unwrap_or_else(|| component.clone());
@@ -354,15 +369,16 @@ impl Engine {
                         .get("data")
                         .cloned()
                         .unwrap_or_else(|| next.clone());
+                    let cur_fn = component_function_name(component_type);
                     let next_fn = component_function_name(next_type);
-                    let section_escaped = escape_for_typst_string(
-                        &serde_json::to_string(&section_data).unwrap_or_default(),
+                    let cur_escaped = escape_for_typst_string(
+                        &serde_json::to_string(&cur_data).unwrap_or_default(),
                     );
                     let next_escaped = escape_for_typst_string(
                         &serde_json::to_string(&next_data).unwrap_or_default(),
                     );
                     content.push_str(&format!(
-                        "#block(breakable: false)[\n  #section(json.decode(\"{section_escaped}\"))\n  #v(spacing-3)\n  #{next_fn}(json.decode(\"{next_escaped}\"))\n]\n\n#v(spacing-4)\n\n"
+                        "#block(breakable: false)[\n  #{cur_fn}(json.decode(\"{cur_escaped}\"))\n  #v(spacing-3)\n  #{next_fn}(json.decode(\"{next_escaped}\"))\n]\n\n#v(spacing-4)\n\n"
                     ));
                     i += 2;
                     continue;
@@ -380,9 +396,12 @@ impl Engine {
                 &serde_json::to_string(&data).unwrap_or_default(),
             );
 
-            // Section and page-break components manage their own spacing;
-            // omitting the gap keeps headings bonded to the following content.
-            if matches!(component_type, "section" | "page-break") {
+            // Layout / structural components manage their own spacing.
+            let is_structural = matches!(
+                layout_hint,
+                LayoutHint::AlwaysNewPage | LayoutHint::KeepWithNext
+            ) || component_type == "page-break";
+            if is_structural {
                 content.push_str(&format!(
                     "#{}(json.decode(\"{}\"))\n\n",
                     fn_name, escaped_data
