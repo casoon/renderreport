@@ -2,5 +2,5 @@
 // Inspired by BIRT Page Setup
 
 #let page-break(data) = {
-  pagebreak()
+  pagebreak(weak: true)
 }
