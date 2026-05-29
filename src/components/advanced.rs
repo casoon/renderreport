@@ -1218,6 +1218,12 @@ fn default_benefit_columns() -> usize {
     3
 }
 
+impl Default for BenefitStrip {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl BenefitStrip {
     pub fn new() -> Self {
         Self {
@@ -1242,7 +1248,7 @@ impl BenefitStrip {
     }
 
     pub fn with_columns(mut self, columns: usize) -> Self {
-        self.columns = columns.max(2).min(5);
+        self.columns = columns.clamp(2, 5);
         self
     }
 }
@@ -1403,6 +1409,12 @@ fn default_step_columns() -> usize {
     3
 }
 
+impl Default for StepCardRow {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl StepCardRow {
     pub fn new() -> Self {
         Self {
@@ -1419,7 +1431,7 @@ impl StepCardRow {
     }
 
     pub fn with_columns(mut self, columns: usize) -> Self {
-        self.columns = columns.max(2).min(4);
+        self.columns = columns.clamp(2, 4);
         self
     }
 }
@@ -1465,7 +1477,7 @@ impl Columns {
     }
 
     pub fn with_ratio(mut self, left_width: f64) -> Self {
-        self.left_width = left_width.max(0.2).min(0.8);
+        self.left_width = left_width.clamp(0.2, 0.8);
         self
     }
 
@@ -1551,6 +1563,12 @@ pub struct FaqItem {
     pub question: String,
     /// Answer
     pub answer: String,
+}
+
+impl Default for FaqList {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl FaqList {
@@ -1652,6 +1670,12 @@ fn default_logo_columns() -> usize {
     4
 }
 
+impl Default for LogoStrip {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl LogoStrip {
     pub fn new() -> Self {
         Self {
@@ -1667,7 +1691,7 @@ impl LogoStrip {
     }
 
     pub fn with_columns(mut self, columns: usize) -> Self {
-        self.columns = columns.max(2).min(6);
+        self.columns = columns.clamp(2, 6);
         self
     }
 
@@ -1777,6 +1801,12 @@ pub struct GlossaryItem {
     pub term: String,
     /// Definition
     pub definition: String,
+}
+
+impl Default for GlossaryList {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl GlossaryList {

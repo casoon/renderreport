@@ -96,7 +96,7 @@ impl Component for ScoreCard {
         if let serde_json::Value::Object(ref mut map) = data {
             map.insert(
                 "computed_status".into(),
-                serde_json::to_value(self.computed_status()).unwrap(),
+                serde_json::to_value(self.computed_status()).unwrap_or(serde_json::Value::Null),
             );
         }
         data

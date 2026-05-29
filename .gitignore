@@ -17,6 +17,7 @@
 
 # Test outputs
 /tests/output/
+fixtures/snapshots/*.actual
 
 # Pack cache
 .pack-cache/

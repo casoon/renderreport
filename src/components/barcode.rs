@@ -232,35 +232,34 @@ impl Component for Barcode {
 
     fn to_data(&self) -> serde_json::Value {
         let mut val = serde_json::to_value(self).unwrap_or_default();
-        let obj = val.as_object_mut().unwrap();
-
-        match self.format {
-            BarcodeFormat::QrCode => {
-                if let Some((matrix, width)) = self.encode_qr() {
-                    obj.insert("encoding_2d".into(), serde_json::json!(matrix));
-                    obj.insert("qr_width".into(), serde_json::json!(width));
+        if let Some(obj) = val.as_object_mut() {
+            match self.format {
+                BarcodeFormat::QrCode => {
+                    if let Some((matrix, width)) = self.encode_qr() {
+                        obj.insert("encoding_2d".into(), serde_json::json!(matrix));
+                        obj.insert("qr_width".into(), serde_json::json!(width));
+                    }
                 }
-            }
-            BarcodeFormat::DataMatrix => {
-                if let Some((matrix, cols, rows)) = self.encode_data_matrix() {
-                    obj.insert("encoding_2d".into(), serde_json::json!(matrix));
-                    obj.insert("qr_width".into(), serde_json::json!(cols));
-                    obj.insert("qr_height".into(), serde_json::json!(rows));
+                BarcodeFormat::DataMatrix => {
+                    if let Some((matrix, cols, rows)) = self.encode_data_matrix() {
+                        obj.insert("encoding_2d".into(), serde_json::json!(matrix));
+                        obj.insert("qr_width".into(), serde_json::json!(cols));
+                        obj.insert("qr_height".into(), serde_json::json!(rows));
+                    }
                 }
-            }
-            BarcodeFormat::Pdf417 => {
-                // No stable Rust crate available; template will show placeholder
-                obj.insert("unsupported".into(), serde_json::json!(true));
-            }
-            _ => {
-                if let Some(bars) = self.encode_1d() {
-                    let bars_json: Vec<serde_json::Value> =
-                        bars.iter().map(|&b| serde_json::json!(b)).collect();
-                    obj.insert("encoding".into(), serde_json::json!(bars_json));
+                BarcodeFormat::Pdf417 => {
+                    // No stable Rust crate available; template will show placeholder
+                    obj.insert("unsupported".into(), serde_json::json!(true));
+                }
+                _ => {
+                    if let Some(bars) = self.encode_1d() {
+                        let bars_json: Vec<serde_json::Value> =
+                            bars.iter().map(|&b| serde_json::json!(b)).collect();
+                        obj.insert("encoding".into(), serde_json::json!(bars_json));
+                    }
                 }
             }
         }
-
         val
     }
 }

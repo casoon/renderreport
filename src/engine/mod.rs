@@ -360,7 +360,7 @@ impl Engine {
                     && !matches!(next_hint, LayoutHint::AlwaysNewPage | LayoutHint::KeepWithNext);
 
                 if next_is_content {
-                    let next = next.unwrap();
+                    let next = next.expect("next_type non-empty implies next is Some");
                     let cur_data = component
                         .get("data")
                         .cloned()
