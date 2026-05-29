@@ -200,12 +200,18 @@ impl Engine {
         source.push_str(&self.generate_page_setup(theme));
         source.push_str("\n\n");
 
-        // Add component functions
+        // Add component functions — only those actually used in this request.
+        // When flow-group or grid-component is present their dispatchers
+        // reference every component function, so we fall back to including all.
         source.push_str("// Component Functions\n");
+        let used_types = collect_used_component_types(&request.components);
+        let needs_all = used_types.contains("flow-group") || used_types.contains("grid-component");
         for component_id in self.components.list_components() {
-            if let Some(template) = self.components.get_template(component_id) {
-                source.push_str(template);
-                source.push_str("\n\n");
+            if needs_all || used_types.contains(component_id.0.as_str()) {
+                if let Some(template) = self.components.get_template(component_id) {
+                    source.push_str(template);
+                    source.push_str("\n\n");
+                }
             }
         }
 
@@ -318,11 +324,50 @@ impl Engine {
         }
 
         // Components
-        for component in &request.components {
+        let components = &request.components;
+        let mut i = 0;
+        while i < components.len() {
+            let component = &components[i];
             let component_type = component
                 .get("type")
                 .and_then(|v| v.as_str())
                 .unwrap_or("unknown");
+
+            // Auto-bind: wrap a section heading + its first following non-structural
+            // component in a keep-together block to prevent orphaned headings.
+            if component_type == "section" {
+                let next = components.get(i + 1);
+                let next_type = next
+                    .and_then(|n| n.get("type"))
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("");
+                let next_is_content =
+                    !next_type.is_empty() && !matches!(next_type, "section" | "page-break");
+
+                if next_is_content {
+                    let next = next.unwrap();
+                    let section_data = component
+                        .get("data")
+                        .cloned()
+                        .unwrap_or_else(|| component.clone());
+                    let next_data = next
+                        .get("data")
+                        .cloned()
+                        .unwrap_or_else(|| next.clone());
+                    let next_fn = component_function_name(next_type);
+                    let section_escaped = escape_for_typst_string(
+                        &serde_json::to_string(&section_data).unwrap_or_default(),
+                    );
+                    let next_escaped = escape_for_typst_string(
+                        &serde_json::to_string(&next_data).unwrap_or_default(),
+                    );
+                    content.push_str(&format!(
+                        "#block(breakable: false)[\n  #section(json.decode(\"{section_escaped}\"))\n  #v(spacing-3)\n  #{next_fn}(json.decode(\"{next_escaped}\"))\n]\n\n#v(spacing-4)\n\n"
+                    ));
+                    i += 2;
+                    continue;
+                }
+            }
 
             let data = component
                 .get("data")
@@ -348,6 +393,7 @@ impl Engine {
                     fn_name, escaped_data
                 ));
             }
+            i += 1;
         }
 
         Ok(content)
@@ -390,6 +436,35 @@ fn escape_for_typst_markup(s: &str) -> String {
         }
     }
     out
+}
+
+/// Collect all component type IDs referenced anywhere in a component list,
+/// including deeply nested items inside flow-group and grid-component.
+fn collect_used_component_types(components: &[serde_json::Value]) -> std::collections::HashSet<String> {
+    let mut used = std::collections::HashSet::new();
+    for c in components {
+        collect_types_in_value(c, &mut used);
+    }
+    used
+}
+
+fn collect_types_in_value(v: &serde_json::Value, used: &mut std::collections::HashSet<String>) {
+    match v {
+        serde_json::Value::Object(obj) => {
+            if let Some(t) = obj.get("type").and_then(|t| t.as_str()) {
+                used.insert(t.to_string());
+            }
+            for val in obj.values() {
+                collect_types_in_value(val, used);
+            }
+        }
+        serde_json::Value::Array(arr) => {
+            for item in arr {
+                collect_types_in_value(item, used);
+            }
+        }
+        _ => {}
+    }
 }
 
 fn component_function_name(component_type: &str) -> &str {
