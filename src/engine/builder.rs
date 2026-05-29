@@ -8,6 +8,13 @@ use crate::theme::Theme;
 use std::collections::HashMap;
 use std::path::PathBuf;
 
+/// Pending section opened via [`ReportBuilder::section`].
+#[derive(Debug, Clone)]
+struct SectionContext {
+    heading: serde_json::Value,
+    items: Vec<serde_json::Value>,
+}
+
 /// Fluent builder for creating reports
 #[derive(Debug, Clone)]
 pub struct ReportBuilder {
@@ -19,6 +26,8 @@ pub struct ReportBuilder {
     components: Vec<serde_json::Value>,
     assets: HashMap<String, PathBuf>,
     metadata: HashMap<String, String>,
+    /// Nested section stack; non-empty while inside `.section()`/`.end_section()` calls.
+    section_stack: Vec<SectionContext>,
 }
 
 impl ReportBuilder {
@@ -33,6 +42,7 @@ impl ReportBuilder {
             components: Vec::new(),
             assets: HashMap::new(),
             metadata: HashMap::new(),
+            section_stack: Vec::new(),
         }
     }
 
@@ -60,30 +70,88 @@ impl ReportBuilder {
         self
     }
 
-    /// Add a component to the report
+    /// Add a component to the current scope (root or active section).
     pub fn add_component(mut self, component: impl Component) -> Self {
-        self.components.push(serde_json::json!({
+        let value = serde_json::json!({
             "type": component.component_id(),
             "data": component.to_data()
-        }));
+        });
+        self.push_to_current_scope(value);
         self
     }
 
-    /// Add a raw component (JSON)
+    /// Add a raw component (JSON) to the current scope.
     pub fn add_raw_component(mut self, component: serde_json::Value) -> Self {
-        self.components.push(component);
+        self.push_to_current_scope(component);
         self
     }
 
-    /// Add multiple components
+    /// Add multiple components to the current scope.
     pub fn add_components(mut self, components: impl IntoIterator<Item = impl Component>) -> Self {
         for component in components {
-            self.components.push(serde_json::json!({
+            let value = serde_json::json!({
                 "type": component.component_id(),
                 "data": component.to_data()
-            }));
+            });
+            self.push_to_current_scope(value);
         }
         self
+    }
+
+    /// Open a new section. All components added until [`end_section`] are
+    /// wrapped together with the section heading in a `flow-group` with
+    /// soft keep-together behavior.
+    ///
+    /// Sections may be nested: calling `section()` again before `end_section()`
+    /// creates a child section inside the current one.
+    pub fn section(mut self, title: impl Into<String>, level: u8) -> Self {
+        let heading = serde_json::json!({
+            "type": "section",
+            "data": {
+                "title": title.into(),
+                "level": level.clamp(1, 6),
+                "content": []
+            }
+        });
+        self.section_stack.push(SectionContext {
+            heading,
+            items: Vec::new(),
+        });
+        self
+    }
+
+    /// Close the current section and emit a `flow-group` containing the section
+    /// heading followed by all components added since [`section`] was called.
+    ///
+    /// Panics in debug mode if called without a matching `section()`.
+    pub fn end_section(mut self) -> Self {
+        let ctx = self
+            .section_stack
+            .pop()
+            .expect("end_section called without a matching section()");
+
+        let mut items = vec![ctx.heading];
+        items.extend(ctx.items);
+
+        let flow_group = serde_json::json!({
+            "type": "flow-group",
+            "data": {
+                "items": items,
+                "spacing": null,
+                "keep_together_if_under": null
+            }
+        });
+
+        self.push_to_current_scope(flow_group);
+        self
+    }
+
+    fn push_to_current_scope(&mut self, value: serde_json::Value) {
+        if let Some(ctx) = self.section_stack.last_mut() {
+            ctx.items.push(value);
+        } else {
+            self.components.push(value);
+        }
     }
 
     /// Register an asset (image, file, etc.)
