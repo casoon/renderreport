@@ -117,8 +117,8 @@ impl Engine {
 
     /// Render a report to its intermediate Typst source.
     ///
-    /// Returns the full `.typ` source that would be compiled by [`render`] /
-    /// [`render_pdf`]. Useful for snapshot testing, lint/format pipelines
+    /// Returns the full `.typ` source that would be compiled by [`Self::render`] /
+    /// [`Self::render_pdf`]. Useful for snapshot testing, lint/format pipelines
     /// (e.g. `typstyle`), and downstream tooling that wants to inspect or
     /// post-process the source before compilation.
     pub fn render_typ(&self, request: &RenderRequest) -> Result<String> {
@@ -298,8 +298,16 @@ impl Engine {
         if has_title {
             let title = request.title.as_deref().unwrap_or("");
             let subtitle = request.subtitle.as_deref().unwrap_or("");
-            let author = request.metadata.get("author").map(|s| s.as_str()).unwrap_or("");
-            let date = request.metadata.get("date").map(|s| s.as_str()).unwrap_or("");
+            let author = request
+                .metadata
+                .get("author")
+                .map(|s| s.as_str())
+                .unwrap_or("");
+            let date = request
+                .metadata
+                .get("date")
+                .map(|s| s.as_str())
+                .unwrap_or("");
 
             content.push_str(&format!(
                 r#"#block(width: 100%, height: 100%, breakable: false)[
@@ -357,7 +365,10 @@ impl Engine {
                     .map(|d| d.layout_hint)
                     .unwrap_or(LayoutHint::KeepTogether);
                 let next_is_content = !next_type.is_empty()
-                    && !matches!(next_hint, LayoutHint::AlwaysNewPage | LayoutHint::KeepWithNext);
+                    && !matches!(
+                        next_hint,
+                        LayoutHint::AlwaysNewPage | LayoutHint::KeepWithNext
+                    );
 
                 if next_is_content {
                     let next = next.expect("next_type non-empty implies next is Some");
@@ -365,10 +376,7 @@ impl Engine {
                         .get("data")
                         .cloned()
                         .unwrap_or_else(|| component.clone());
-                    let next_data = next
-                        .get("data")
-                        .cloned()
-                        .unwrap_or_else(|| next.clone());
+                    let next_data = next.get("data").cloned().unwrap_or_else(|| next.clone());
                     let cur_fn = component_function_name(component_type);
                     let next_fn = component_function_name(next_type);
                     let cur_escaped = escape_for_typst_string(
@@ -392,9 +400,8 @@ impl Engine {
 
             // Generate component call
             let fn_name = component_function_name(component_type);
-            let escaped_data = escape_for_typst_string(
-                &serde_json::to_string(&data).unwrap_or_default(),
-            );
+            let escaped_data =
+                escape_for_typst_string(&serde_json::to_string(&data).unwrap_or_default());
 
             // Layout / structural components manage their own spacing.
             let is_structural = matches!(
@@ -459,7 +466,9 @@ fn escape_for_typst_markup(s: &str) -> String {
 
 /// Collect all component type IDs referenced anywhere in a component list,
 /// including deeply nested items inside flow-group and grid-component.
-fn collect_used_component_types(components: &[serde_json::Value]) -> std::collections::HashSet<String> {
+fn collect_used_component_types(
+    components: &[serde_json::Value],
+) -> std::collections::HashSet<String> {
     let mut used = std::collections::HashSet::new();
     for c in components {
         collect_types_in_value(c, &mut used);

@@ -53,7 +53,12 @@ fn list_components(markdown: bool, category_filter: Option<&str>) {
     let mut descriptors: Vec<_> = ComponentCatalog::all()
         .filter(|d| {
             category_filter
-                .map(|f| d.category.label().to_lowercase().contains(&f.to_lowercase()))
+                .map(|f| {
+                    d.category
+                        .label()
+                        .to_lowercase()
+                        .contains(&f.to_lowercase())
+                })
                 .unwrap_or(true)
         })
         .collect();
@@ -88,7 +93,13 @@ fn list_components(markdown: bool, category_filter: Option<&str>) {
                 LayoutHint::AlwaysNewPage => "always-new-page",
                 LayoutHint::KeepWithNext => "keep-with-next",
             };
-            println!("{:30} {:25} {:18} {}", d.id, d.category.label(), hint, d.description);
+            println!(
+                "{:30} {:25} {:18} {}",
+                d.id,
+                d.category.label(),
+                hint,
+                d.description
+            );
         }
         println!("\n{} component(s)", descriptors.len());
     }

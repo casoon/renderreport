@@ -607,9 +607,15 @@ impl Component for TableOfContents {
 
 // ─── SectionHeaderSplit ──────────────────────────────────────────────────────
 
-fn default_level_two() -> u8 { 2 }
-fn default_outlined() -> bool { true }
-fn default_divider_below() -> bool { true }
+fn default_level_two() -> u8 {
+    2
+}
+fn default_outlined() -> bool {
+    true
+}
+fn default_divider_below() -> bool {
+    true
+}
 
 /// Section header with 1/3 title and 2/3 body text side-by-side
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -679,11 +685,7 @@ pub struct PhaseBlock {
 }
 
 impl PhaseBlock {
-    pub fn new(
-        number: u8,
-        label: impl Into<String>,
-        description: impl Into<String>,
-    ) -> Self {
+    pub fn new(number: u8, label: impl Into<String>, description: impl Into<String>) -> Self {
         Self {
             phase_number: number,
             phase_label: label.into(),
@@ -825,7 +827,10 @@ pub struct MetricStrip {
 
 impl MetricStrip {
     pub fn new(items: Vec<MetricStripItem>) -> Self {
-        Self { items, compact: false }
+        Self {
+            items,
+            compact: false,
+        }
     }
 
     pub fn compact(mut self) -> Self {
@@ -895,7 +900,12 @@ pub struct ImpactGrid {
 
 impl ImpactGrid {
     pub fn new(user: ImpactGridCard, risk: ImpactGridCard, conversion: ImpactGridCard) -> Self {
-        Self { user, risk, conversion, title: None }
+        Self {
+            user,
+            risk,
+            conversion,
+            title: None,
+        }
     }
 
     pub fn with_title(mut self, title: impl Into<String>) -> Self {
@@ -1096,7 +1106,9 @@ impl ComparisonClusterItem {
     }
 }
 
-fn default_three() -> usize { 3 }
+fn default_three() -> usize {
+    3
+}
 
 /// Grid of comparison items with optional title
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1110,7 +1122,11 @@ pub struct ComparisonCluster {
 
 impl ComparisonCluster {
     pub fn new(items: Vec<ComparisonClusterItem>) -> Self {
-        Self { items, title: None, columns: 3 }
+        Self {
+            items,
+            title: None,
+            columns: 3,
+        }
     }
 
     pub fn with_title(mut self, title: impl Into<String>) -> Self {
@@ -1240,7 +1256,12 @@ impl BenefitStrip {
         self
     }
 
-    pub fn add_benefit_with_icon(mut self, icon: impl Into<String>, title: impl Into<String>, description: impl Into<String>) -> Self {
+    pub fn add_benefit_with_icon(
+        mut self,
+        icon: impl Into<String>,
+        title: impl Into<String>,
+        description: impl Into<String>,
+    ) -> Self {
         self.titles.push(title.into());
         self.descriptions.push(description.into());
         self.icons.push(icon.into());

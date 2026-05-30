@@ -33,9 +33,9 @@ pub use standard::*;
 pub use advanced::{
     BenefitStrip, BigNumber, ChecklistPanel, ChecklistRow, Columns, ComparisonBlock,
     ComparisonCluster, ComparisonClusterItem, DevicePreview, DiagnosisPanel, DiagnosisRow,
-    DominantIssueSpotlight, FaqList, FaqItem, GlossaryList, GlossaryItem,
-    ImpactGrid, ImpactGridCard, LogoStrip, MetricStrip, MetricStripItem, PhaseBlock, PricingCard,
-    PullQuote, RecommendationCard, SectionHeaderSplit, SpotlightCard, StepCardRow, UseCaseCard,
+    DominantIssueSpotlight, FaqItem, FaqList, GlossaryItem, GlossaryList, ImpactGrid,
+    ImpactGridCard, LogoStrip, MetricStrip, MetricStripItem, PhaseBlock, PricingCard, PullQuote,
+    RecommendationCard, SectionHeaderSplit, SpotlightCard, StepCardRow, UseCaseCard,
     WrongRightBlock,
 };
 pub use text::Eyebrow;

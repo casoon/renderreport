@@ -18,16 +18,14 @@ fn main() {
     println!("cargo:rerun-if-changed=templates/components/flow_group_body.typ");
     println!("cargo:rerun-if-changed=templates/components/grid_body.typ");
 
-    let manifest_src =
-        fs::read_to_string("components.toml").expect("components.toml not found");
+    let manifest_src = fs::read_to_string("components.toml").expect("components.toml not found");
     let entries = parse_manifest(&manifest_src);
 
     let out_dir = PathBuf::from(env::var("OUT_DIR").expect("OUT_DIR not set"));
 
     // Generate flow_group.typ
-    let flow_body =
-        fs::read_to_string("templates/components/flow_group_body.typ")
-            .expect("flow_group_body.typ not found");
+    let flow_body = fs::read_to_string("templates/components/flow_group_body.typ")
+        .expect("flow_group_body.typ not found");
     let flow_group_typ = format!(
         "// Flow Group Component\n// AUTO-GENERATED dispatch + static body — do not edit the dispatch section.\n\n{}\n\n{}",
         generate_flow_dispatch(&entries),
@@ -38,8 +36,7 @@ fn main() {
 
     // Generate grid.typ
     let grid_body =
-        fs::read_to_string("templates/components/grid_body.typ")
-            .expect("grid_body.typ not found");
+        fs::read_to_string("templates/components/grid_body.typ").expect("grid_body.typ not found");
     let grid_typ = format!(
         "// Grid Component\n// AUTO-GENERATED dispatch + static body — do not edit the dispatch section.\n\n{}\n\n{}",
         generate_grid_dispatch(&entries),

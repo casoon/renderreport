@@ -8,12 +8,12 @@
 use serde_json::Value;
 
 pub mod audit;
-pub mod marketing;
 pub mod executive;
+pub mod marketing;
 
 pub use audit::AuditPattern;
-pub use marketing::MarketingPattern;
 pub use executive::ExecutivePattern;
+pub use marketing::MarketingPattern;
 
 /// Base pattern: logical report structure
 ///

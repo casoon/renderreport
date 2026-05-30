@@ -34,7 +34,7 @@ pub use components::{
 pub use engine::{Engine, ReportBuilder};
 pub use error::{Error, Result};
 pub use pack::{Pack, PackId, PackLoader, PackManifest};
-pub use patterns::{AuditPattern, MarketingPattern, ExecutivePattern, BasePattern};
+pub use patterns::{AuditPattern, BasePattern, ExecutivePattern, MarketingPattern};
 pub use render::{RenderOutput, RenderRequest};
 pub use theme::{Theme, ThemeTokens, TokenValue};
 

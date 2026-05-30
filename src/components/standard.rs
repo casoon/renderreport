@@ -528,19 +528,39 @@ fn default_neutral() -> String {
 
 impl StatusPill {
     pub fn good(label: impl Into<String>) -> Self {
-        Self { label: label.into(), status: "good".into(), uppercase: false }
+        Self {
+            label: label.into(),
+            status: "good".into(),
+            uppercase: false,
+        }
     }
     pub fn warn(label: impl Into<String>) -> Self {
-        Self { label: label.into(), status: "warn".into(), uppercase: false }
+        Self {
+            label: label.into(),
+            status: "warn".into(),
+            uppercase: false,
+        }
     }
     pub fn bad(label: impl Into<String>) -> Self {
-        Self { label: label.into(), status: "bad".into(), uppercase: false }
+        Self {
+            label: label.into(),
+            status: "bad".into(),
+            uppercase: false,
+        }
     }
     pub fn neutral(label: impl Into<String>) -> Self {
-        Self { label: label.into(), status: "neutral".into(), uppercase: false }
+        Self {
+            label: label.into(),
+            status: "neutral".into(),
+            uppercase: false,
+        }
     }
     pub fn info(label: impl Into<String>) -> Self {
-        Self { label: label.into(), status: "info".into(), uppercase: false }
+        Self {
+            label: label.into(),
+            status: "info".into(),
+            uppercase: false,
+        }
     }
 }
 
@@ -576,7 +596,11 @@ pub struct TagCloudItem {
 
 impl TagCloud {
     pub fn new() -> Self {
-        Self { items: Vec::new(), title: None, gap: "4pt".into() }
+        Self {
+            items: Vec::new(),
+            title: None,
+            gap: "4pt".into(),
+        }
     }
 
     pub fn with_title(mut self, title: impl Into<String>) -> Self {
@@ -590,7 +614,10 @@ impl TagCloud {
     }
 
     pub fn add(mut self, label: impl Into<String>, status: impl Into<String>) -> Self {
-        self.items.push(TagCloudItem { label: label.into(), status: status.into() });
+        self.items.push(TagCloudItem {
+            label: label.into(),
+            status: status.into(),
+        });
         self
     }
 }
@@ -706,7 +733,11 @@ pub struct StatPair {
 
 impl StatPair {
     pub fn new(left: StatPairEntry, right: StatPairEntry) -> Self {
-        Self { left, right, divider: true }
+        Self {
+            left,
+            right,
+            divider: true,
+        }
     }
 }
 
@@ -719,8 +750,12 @@ impl Component for StatPair {
     }
 }
 
-fn default_seventy() -> u32 { 70 }
-fn default_fifty() -> u32 { 50 }
+fn default_seventy() -> u32 {
+    70
+}
+fn default_fifty() -> u32 {
+    50
+}
 
 /// Horizontal score band with color-coded segments and marker
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -787,13 +822,31 @@ fn default_stable() -> String {
 
 impl TrendTile {
     pub fn up(label: impl Into<String>, delta: impl Into<String>) -> Self {
-        Self { label: label.into(), delta: delta.into(), direction: "up".into(), reference: None, positive_is_up: true }
+        Self {
+            label: label.into(),
+            delta: delta.into(),
+            direction: "up".into(),
+            reference: None,
+            positive_is_up: true,
+        }
     }
     pub fn down(label: impl Into<String>, delta: impl Into<String>) -> Self {
-        Self { label: label.into(), delta: delta.into(), direction: "down".into(), reference: None, positive_is_up: true }
+        Self {
+            label: label.into(),
+            delta: delta.into(),
+            direction: "down".into(),
+            reference: None,
+            positive_is_up: true,
+        }
     }
     pub fn stable(label: impl Into<String>, delta: impl Into<String>) -> Self {
-        Self { label: label.into(), delta: delta.into(), direction: "stable".into(), reference: None, positive_is_up: true }
+        Self {
+            label: label.into(),
+            delta: delta.into(),
+            direction: "stable".into(),
+            reference: None,
+            positive_is_up: true,
+        }
     }
     pub fn with_reference(mut self, reference: impl Into<String>) -> Self {
         self.reference = Some(reference.into());
@@ -1458,7 +1511,11 @@ pub struct FeatureGrid {
 
 impl FeatureGrid {
     pub fn new(items: Vec<FeatureGridItem>) -> Self {
-        Self { items, columns: None, title: None }
+        Self {
+            items,
+            columns: None,
+            title: None,
+        }
     }
 
     pub fn with_columns(mut self, columns: usize) -> Self {
@@ -1595,7 +1652,11 @@ pub struct ProcessFlow {
 
 impl ProcessFlow {
     pub fn new(steps: Vec<ProcessStep>) -> Self {
-        Self { steps, title: None, direction: None }
+        Self {
+            steps,
+            title: None,
+            direction: None,
+        }
     }
 
     pub fn with_title(mut self, title: impl Into<String>) -> Self {
@@ -1869,23 +1930,43 @@ pub struct FactBox {
 
 impl FactBox {
     pub fn new(body: impl Into<String>) -> Self {
-        Self { body: body.into(), label: None, variant: None }
+        Self {
+            body: body.into(),
+            label: None,
+            variant: None,
+        }
     }
 
     pub fn info(body: impl Into<String>) -> Self {
-        Self { body: body.into(), label: None, variant: Some("info".into()) }
+        Self {
+            body: body.into(),
+            label: None,
+            variant: Some("info".into()),
+        }
     }
 
     pub fn tip(body: impl Into<String>) -> Self {
-        Self { body: body.into(), label: None, variant: Some("tip".into()) }
+        Self {
+            body: body.into(),
+            label: None,
+            variant: Some("tip".into()),
+        }
     }
 
     pub fn warning(body: impl Into<String>) -> Self {
-        Self { body: body.into(), label: None, variant: Some("warning".into()) }
+        Self {
+            body: body.into(),
+            label: None,
+            variant: Some("warning".into()),
+        }
     }
 
     pub fn stat(body: impl Into<String>) -> Self {
-        Self { body: body.into(), label: None, variant: Some("stat".into()) }
+        Self {
+            body: body.into(),
+            label: None,
+            variant: Some("stat".into()),
+        }
     }
 
     pub fn with_label(mut self, label: impl Into<String>) -> Self {
@@ -1915,7 +1996,11 @@ pub struct QuoteBlock {
 
 impl QuoteBlock {
     pub fn new(quote: impl Into<String>) -> Self {
-        Self { quote: quote.into(), author: None, emphasis: None }
+        Self {
+            quote: quote.into(),
+            author: None,
+            emphasis: None,
+        }
     }
 
     pub fn with_author(mut self, author: impl Into<String>) -> Self {

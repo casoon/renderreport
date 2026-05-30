@@ -1,7 +1,7 @@
 //! Static component catalog with inventory-based registration.
 //!
 //! Each component type self-registers a [`ComponentDescriptor`] via the
-//! [`component_catalog!`] macro.  The [`ComponentCatalog`] struct provides
+//! [`macro@crate::component_catalog`] macro.  The [`ComponentCatalog`] struct provides
 //! query methods over all registered descriptors at runtime.
 //!
 //! # Example
@@ -19,7 +19,7 @@
 /// Metadata and Typst template for a single component type.
 ///
 /// Instances are registered globally at program startup via
-/// `inventory::submit!`.  Use the [`component_catalog!`] macro to create
+/// `inventory::submit!`.  Use the [`macro@crate::component_catalog`] macro to create
 /// and submit a descriptor.
 pub struct ComponentDescriptor {
     /// Stable component type ID (e.g. `"finding"`, `"score-card"`).
@@ -106,7 +106,7 @@ impl ComponentCatalog {
     }
 }
 
-/// Register a component with the global [`ComponentCatalog`].
+/// Register a component with the global [`crate::ComponentCatalog`].
 ///
 /// # Example
 ///

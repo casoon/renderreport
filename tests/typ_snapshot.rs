@@ -25,9 +25,7 @@ fn assert_snapshot(name: &str, actual: &str) {
         std::fs::create_dir_all(path.parent().unwrap()).unwrap();
         std::fs::write(&path, actual).expect("failed to write snapshot");
         if !update {
-            panic!(
-                "snapshot {name} did not exist — wrote it now. Re-run the test to confirm."
-            );
+            panic!("snapshot {name} did not exist — wrote it now. Re-run the test to confirm.");
         }
         return;
     }

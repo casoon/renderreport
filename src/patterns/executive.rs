@@ -8,7 +8,7 @@
 //! 5. Actions (ownership, timeline, budget)
 //! 6. CTA (schedule meeting, approval)
 
-use super::{BasePattern, component_json};
+use super::{component_json, BasePattern};
 use serde_json::Value;
 
 pub struct ExecutivePattern {

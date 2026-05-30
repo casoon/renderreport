@@ -8,7 +8,7 @@
 //! 5. Actions (testimonials, case studies, use cases)
 //! 6. CTA (pricing, demo request, signup)
 
-use super::{BasePattern, component_json};
+use super::{component_json, BasePattern};
 use serde_json::Value;
 
 pub struct MarketingPattern {
@@ -37,25 +37,33 @@ impl MarketingPattern {
 
     /// Add feature grid or benefits
     pub fn add_features(mut self, data: Value) -> Self {
-        self.base.analysis.push(component_json("feature-grid", data));
+        self.base
+            .analysis
+            .push(component_json("feature-grid", data));
         self
     }
 
     /// Add benefit strip
     pub fn add_benefits(mut self, data: Value) -> Self {
-        self.base.analysis.push(component_json("benefit-strip", data));
+        self.base
+            .analysis
+            .push(component_json("benefit-strip", data));
         self
     }
 
     /// Add comparison (vs. competitors, old vs. new)
     pub fn add_comparison(mut self, data: Value) -> Self {
-        self.base.analysis.push(component_json("comparison-block", data));
+        self.base
+            .analysis
+            .push(component_json("comparison-block", data));
         self
     }
 
     /// Add process flow (how it works)
     pub fn add_process_flow(mut self, data: Value) -> Self {
-        self.base.solution.push(component_json("process-flow", data));
+        self.base
+            .solution
+            .push(component_json("process-flow", data));
         self
     }
 
@@ -67,7 +75,9 @@ impl MarketingPattern {
 
     /// Add use case card
     pub fn add_use_case(mut self, data: Value) -> Self {
-        self.base.actions.push(component_json("use-case-card", data));
+        self.base
+            .actions
+            .push(component_json("use-case-card", data));
         self
     }
 

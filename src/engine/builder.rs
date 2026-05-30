@@ -98,7 +98,7 @@ impl ReportBuilder {
         self
     }
 
-    /// Open a new section. All components added until [`end_section`] are
+    /// Open a new section. All components added until [`Self::end_section`] are
     /// wrapped together with the section heading in a `flow-group` with
     /// soft keep-together behavior.
     ///
@@ -121,7 +121,7 @@ impl ReportBuilder {
     }
 
     /// Close the current section and emit a `flow-group` containing the section
-    /// heading followed by all components added since [`section`] was called.
+    /// heading followed by all components added since [`Self::section`] was called.
     ///
     /// Panics in debug mode if called without a matching `section()`.
     pub fn end_section(mut self) -> Self {

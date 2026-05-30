@@ -13,7 +13,9 @@ use renderreport::components::advanced::*;
 use renderreport::components::barcode::Barcode;
 use renderreport::components::charts::{Chart, Gauge, Sparkline};
 use renderreport::components::crosstab::{Crosstab, PivotTable};
-use renderreport::components::text::{DateField, Eyebrow, Label, NumberField, ResourceField, TextBlock};
+use renderreport::components::text::{
+    DateField, Eyebrow, Label, NumberField, ResourceField, TextBlock,
+};
 use renderreport::prelude::*;
 use std::collections::HashMap;
 

@@ -8,7 +8,7 @@
 //! 5. Actions (implementation steps)
 //! 6. CTA (contact/next steps)
 
-use super::{BasePattern, component_json};
+use super::{component_json, BasePattern};
 use serde_json::Value;
 
 pub struct AuditPattern {
@@ -49,13 +49,17 @@ impl AuditPattern {
 
     /// Add checkpoints/verification
     pub fn add_checklist(mut self, data: Value) -> Self {
-        self.base.analysis.push(component_json("checklist-panel", data));
+        self.base
+            .analysis
+            .push(component_json("checklist-panel", data));
         self
     }
 
     /// Add roadmap (phased remediation)
     pub fn add_roadmap(mut self, data: Value) -> Self {
-        self.base.solution.push(component_json("roadmap-block", data));
+        self.base
+            .solution
+            .push(component_json("roadmap-block", data));
         self
     }
 

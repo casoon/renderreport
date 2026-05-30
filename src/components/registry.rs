@@ -51,7 +51,7 @@ impl ComponentRegistry {
         registry
     }
 
-    /// Register standard built-in components from the [`ComponentCatalog`].
+    /// Register standard built-in components from the [`crate::ComponentCatalog`].
     ///
     /// Dispatcher templates (`grid-component`, `flow-group`) are registered
     /// last because their Typst bodies reference all other component functions.
