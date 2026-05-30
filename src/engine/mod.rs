@@ -364,10 +364,17 @@ impl Engine {
                 let next_hint = ComponentCatalog::get(next_type)
                     .map(|d| d.layout_hint)
                     .unwrap_or(LayoutHint::KeepTogether);
+                // A `Breakable` next component (e.g. a long audit table) must be
+                // allowed to span pages. Pairing it into a `breakable: false`
+                // keep-together block traps it and makes it overflow the page
+                // instead of breaking, overwriting content below (#366). So a
+                // heading is only kept together with a non-breakable sibling.
                 let next_is_content = !next_type.is_empty()
                     && !matches!(
                         next_hint,
-                        LayoutHint::AlwaysNewPage | LayoutHint::KeepWithNext
+                        LayoutHint::AlwaysNewPage
+                            | LayoutHint::KeepWithNext
+                            | LayoutHint::Breakable
                     );
 
                 if next_is_content {
