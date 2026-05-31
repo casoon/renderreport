@@ -427,10 +427,7 @@ impl Engine {
             if is_structural {
                 content.push_str(&format!("#{}({})\n\n", fn_name, data_lit));
             } else {
-                content.push_str(&format!(
-                    "#{}({})\n\n#v(spacing-4)\n\n",
-                    fn_name, data_lit
-                ));
+                content.push_str(&format!("#{}({})\n\n#v(spacing-4)\n\n", fn_name, data_lit));
             }
             i += 1;
         }
@@ -505,9 +502,20 @@ pub fn to_typst_dict(value: &serde_json::Value) -> String {
 
 /// Returns true if `s` is a valid Typst identifier.
 ///
+/// Typst keywords that cannot be used as bare dictionary keys.
+const TYPST_KEYWORDS: &[&str] = &[
+    "none", "auto", "true", "false", "not", "and", "or", "let", "set", "show", "context", "if",
+    "else", "for", "in", "while", "break", "continue", "return", "import", "include", "as",
+];
+
+/// Returns true if `s` is a valid Typst identifier that can be used as a bare dict key.
+///
 /// Typst identifiers start with a letter or underscore and continue with
-/// letters, digits, underscores, or hyphens.
+/// letters, digits, underscores, or hyphens — but keywords must be quoted.
 fn is_typst_ident(s: &str) -> bool {
+    if TYPST_KEYWORDS.contains(&s) {
+        return false;
+    }
     let mut chars = s.chars();
     match chars.next() {
         Some(c) if c.is_ascii_alphabetic() || c == '_' => {
@@ -654,5 +662,13 @@ mod tests {
         assert!(!is_typst_ident("2xl"));
         assert!(!is_typst_ident(""));
         assert!(!is_typst_ident("has space"));
+        // Typst keywords must not be bare keys
+        assert!(!is_typst_ident("context"));
+        assert!(!is_typst_ident("none"));
+        assert!(!is_typst_ident("true"));
+        assert!(!is_typst_ident("false"));
+        assert!(!is_typst_ident("let"));
+        assert!(!is_typst_ident("set"));
+        assert!(!is_typst_ident("in"));
     }
 }

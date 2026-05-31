@@ -523,7 +523,10 @@ impl Component for Callout {
         let mut data = serde_json::to_value(self).unwrap_or_default();
         // Ensure callout_type reflects the typed variant when both are set
         if let (Some(v), serde_json::Value::Object(ref mut map)) = (self.variant, &mut data) {
-            map.insert("callout_type".into(), serde_json::Value::String(v.as_str().to_string()));
+            map.insert(
+                "callout_type".into(),
+                serde_json::Value::String(v.as_str().to_string()),
+            );
         }
         data
     }
