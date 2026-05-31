@@ -47,7 +47,7 @@
     // Affected resource
     #if data.affected != none [
       #v(spacing-2)
-      #label-text([Betroffen: ])
+      #label-text([#data.at("label_affected", default: "Affected:") ])
       #mono-text(data.affected)
     ]
 
@@ -61,7 +61,7 @@
         fill: color-ok-soft,
         stroke: (paint: color-ok, thickness: 0.5pt),
       )[
-        #label-text([Recommendation])
+        #label-text([#data.at("label_recommendation", default: "Recommendation")])
         #v(spacing-2)
         #text(size: font-size-base)[#data.recommendation]
       ]

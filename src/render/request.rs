@@ -7,6 +7,47 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
 
+fn default_true() -> bool {
+    true
+}
+
+/// Page layout configuration for a render request.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PageSetup {
+    /// Paper format: "a4" | "a3" | "letter" | "legal" (default: "a4")
+    #[serde(default)]
+    pub paper: Option<String>,
+    /// Page orientation: "portrait" | "landscape" (default: "portrait")
+    #[serde(default)]
+    pub orientation: Option<String>,
+    /// Margin override as a raw Typst expression, e.g. `"20pt"` or `"(top: 24pt)"`.
+    /// When absent the theme's `page.margin*` tokens are used.
+    #[serde(default)]
+    pub margin: Option<String>,
+    /// Show running header on content pages (default: true)
+    #[serde(default = "default_true")]
+    pub show_header: bool,
+    /// Show running footer on content pages (default: true)
+    #[serde(default = "default_true")]
+    pub show_footer: bool,
+    /// Custom header logo asset name
+    #[serde(default)]
+    pub header_logo: Option<String>,
+}
+
+impl Default for PageSetup {
+    fn default() -> Self {
+        Self {
+            paper: None,
+            orientation: None,
+            margin: None,
+            show_header: true,
+            show_footer: true,
+            header_logo: None,
+        }
+    }
+}
+
 /// Request to render a report
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RenderRequest {
@@ -33,6 +74,9 @@ pub struct RenderRequest {
     /// Additional metadata
     #[serde(default)]
     pub metadata: HashMap<String, String>,
+    /// Page layout configuration
+    #[serde(default)]
+    pub page_setup: PageSetup,
 }
 
 impl RenderRequest {
@@ -47,6 +91,7 @@ impl RenderRequest {
             components: Vec::new(),
             assets: HashMap::new(),
             metadata: HashMap::new(),
+            page_setup: PageSetup::default(),
         }
     }
 }

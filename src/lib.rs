@@ -35,7 +35,7 @@ pub use engine::{Engine, ReportBuilder};
 pub use error::{Error, Result};
 pub use pack::{Pack, PackId, PackLoader, PackManifest};
 pub use patterns::{AuditPattern, BasePattern, ExecutivePattern, MarketingPattern};
-pub use render::{RenderOutput, RenderRequest};
+pub use render::{PageSetup, RenderOutput, RenderRequest};
 pub use theme::{Theme, ThemeTokens, TokenValue};
 
 /// Re-export commonly used types

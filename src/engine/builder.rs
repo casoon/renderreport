@@ -2,7 +2,7 @@
 
 use crate::components::Component;
 use crate::pack::PackId;
-use crate::render::RenderRequest;
+use crate::render::{PageSetup, RenderRequest};
 use crate::theme::Theme;
 
 use std::collections::HashMap;
@@ -26,6 +26,7 @@ pub struct ReportBuilder {
     components: Vec<serde_json::Value>,
     assets: HashMap<String, PathBuf>,
     metadata: HashMap<String, String>,
+    page_setup: PageSetup,
     /// Nested section stack; non-empty while inside `.section()`/`.end_section()` calls.
     section_stack: Vec<SectionContext>,
 }
@@ -42,6 +43,7 @@ impl ReportBuilder {
             components: Vec::new(),
             assets: HashMap::new(),
             metadata: HashMap::new(),
+            page_setup: PageSetup::default(),
             section_stack: Vec::new(),
         }
     }
@@ -67,6 +69,12 @@ impl ReportBuilder {
     /// Set the theme
     pub fn theme(mut self, theme: Theme) -> Self {
         self.theme = Some(theme);
+        self
+    }
+
+    /// Set the page layout configuration
+    pub fn page_setup(mut self, page_setup: PageSetup) -> Self {
+        self.page_setup = page_setup;
         self
     }
 
@@ -177,6 +185,7 @@ impl ReportBuilder {
             components: self.components,
             assets: self.assets,
             metadata: self.metadata,
+            page_setup: self.page_setup,
         }
     }
 }

@@ -568,7 +568,7 @@ pub struct TableOfContents {
 impl TableOfContents {
     pub fn new() -> Self {
         Self {
-            title: "Inhaltsverzeichnis".to_string(),
+            title: "Table of Contents".to_string(),
             depth: 3,
             font_size: None,
         }
@@ -925,6 +925,28 @@ impl Component for ImpactGrid {
 
 // ─── SpotlightCard ───────────────────────────────────────────────────────────
 
+/// Visual variant for a spotlight card.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, Default, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum SpotlightCardVariant {
+    Critical,
+    #[default]
+    Info,
+    Feature,
+    Opportunity,
+}
+
+impl SpotlightCardVariant {
+    fn as_str(self) -> &'static str {
+        match self {
+            Self::Critical => "critical",
+            Self::Info => "info",
+            Self::Feature => "feature",
+            Self::Opportunity => "opportunity",
+        }
+    }
+}
+
 /// General-purpose spotlight card with left severity stripe
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SpotlightCard {
@@ -955,8 +977,15 @@ impl SpotlightCard {
         }
     }
 
+    /// Set variant from a string (legacy convenience).
     pub fn with_variant(mut self, variant: impl Into<String>) -> Self {
         self.variant = Some(variant.into());
+        self
+    }
+
+    /// Set variant from the typed enum.
+    pub fn variant(mut self, variant: SpotlightCardVariant) -> Self {
+        self.variant = Some(variant.as_str().to_string());
         self
     }
 

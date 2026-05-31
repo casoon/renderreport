@@ -21,6 +21,8 @@ use crate::Result;
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use world::FontCache;
+
 /// The main rendering engine
 pub struct Engine {
     /// Engine configuration
@@ -33,6 +35,8 @@ pub struct Engine {
     default_theme: Theme,
     /// Pack loader
     pack_loader: PackLoader,
+    /// Cached font data, built once at construction time
+    font_cache: Arc<FontCache>,
 }
 
 impl Engine {
@@ -45,6 +49,7 @@ impl Engine {
     pub fn with_config(config: EngineConfig) -> Result<Self> {
         let components = ComponentRegistry::with_standard_components();
         let pack_loader = PackLoader::new(&config.pack_paths);
+        let font_cache = Arc::new(FontCache::new(&config));
 
         Ok(Self {
             config,
@@ -52,7 +57,15 @@ impl Engine {
             components,
             default_theme: Theme::default_theme(),
             pack_loader,
+            font_cache,
         })
+    }
+
+    /// Rebuild the font cache from the current configuration.
+    ///
+    /// Call this if font paths or system font availability change at runtime.
+    pub fn reload_fonts(&mut self) {
+        self.font_cache = Arc::new(FontCache::new(&self.config));
     }
 
     /// Set the default theme
@@ -198,7 +211,7 @@ impl Engine {
         ));
 
         // Add page setup
-        source.push_str(&self.generate_page_setup(theme));
+        source.push_str(&self.generate_page_setup(theme, &request.page_setup));
         source.push_str("\n\n");
 
         // Add component functions — only those actually used in this request.
@@ -224,17 +237,18 @@ impl Engine {
     }
 
     /// Generate page setup Typst code
-    fn generate_page_setup(&self, _theme: &Theme) -> String {
-        r#"#set page(
-  paper: "a4",
-  fill: color-background,
-  margin: (
-    top: page-margin-top,
-    bottom: page-margin-bottom,
-    left: page-margin,
-    right: page-margin,
-  ),
-  header: context {
+    fn generate_page_setup(&self, _theme: &Theme, page_setup: &crate::render::PageSetup) -> String {
+        let paper = page_setup.paper.as_deref().unwrap_or("a4");
+        let flipped = page_setup.orientation.as_deref() == Some("landscape");
+
+        let margin_block = if let Some(m) = &page_setup.margin {
+            format!("  margin: {},\n", m)
+        } else {
+            "  margin: (\n    top: page-margin-top,\n    bottom: page-margin-bottom,\n    left: page-margin,\n    right: page-margin,\n  ),\n".to_string()
+        };
+
+        let header_block = if page_setup.show_header {
+            r#"  header: context {
     if counter(page).get().first() > 1 [
       #set text(size: font-size-xs, fill: color-text-muted)
       #grid(
@@ -247,7 +261,13 @@ impl Engine {
       #line(length: 100%, stroke: (paint: color-border, thickness: 0.7pt))
     ]
   },
-  footer: context {
+"#
+        } else {
+            ""
+        };
+
+        let footer_block = if page_setup.show_footer {
+            r#"  footer: context {
     if counter(page).get().first() > 1 [
       #v(1pt)
       #line(length: 100%, stroke: (paint: color-border, thickness: 0.5pt))
@@ -268,25 +288,19 @@ impl Engine {
       )
     ]
   },
-)
-
-#set text(
-  font: (font-body, "Arial", "Liberation Sans", "Noto Sans"),
-  size: font-size-base,
-  fill: color-text,
-)
-
-#set text(hyphenate: true)
-#set par(justify: false, leading: 0.75em)
-
-#set heading(numbering: none)
-#show heading: set par(justify: false)
-#show heading.where(level: 1): set text(size: font-size-2xl, weight: "bold", fill: color-text)
-#show heading.where(level: 2): set text(size: font-size-xl, weight: "bold", fill: color-text)
-#show heading.where(level: 3): set text(size: font-size-lg, weight: "bold", fill: color-text)
-#show heading.where(level: 4): set text(size: font-size-base, weight: "bold", fill: color-text-muted)
 "#
-        .to_string()
+        } else {
+            ""
+        };
+
+        format!(
+            "#set page(\n  paper: \"{}\",{}\n  fill: color-background,\n{}{}{})\n\n#set text(\n  font: (font-body, \"Arial\", \"Liberation Sans\", \"Noto Sans\"),\n  size: font-size-base,\n  fill: color-text,\n)\n\n#set text(hyphenate: true)\n#set par(justify: false, leading: 0.75em)\n\n#set heading(numbering: none)\n#show heading: set par(justify: false)\n#show heading.where(level: 1): set text(size: font-size-2xl, weight: \"bold\", fill: color-text)\n#show heading.where(level: 2): set text(size: font-size-xl, weight: \"bold\", fill: color-text)\n#show heading.where(level: 3): set text(size: font-size-lg, weight: \"bold\", fill: color-text)\n#show heading.where(level: 4): set text(size: font-size-base, weight: \"bold\", fill: color-text-muted)\n",
+            paper,
+            if flipped { "\n  flipped: true," } else { "" },
+            margin_block,
+            header_block,
+            footer_block,
+        )
     }
 
     /// Generate report content
@@ -386,14 +400,10 @@ impl Engine {
                     let next_data = next.get("data").cloned().unwrap_or_else(|| next.clone());
                     let cur_fn = component_function_name(component_type);
                     let next_fn = component_function_name(next_type);
-                    let cur_escaped = escape_for_typst_string(
-                        &serde_json::to_string(&cur_data).unwrap_or_default(),
-                    );
-                    let next_escaped = escape_for_typst_string(
-                        &serde_json::to_string(&next_data).unwrap_or_default(),
-                    );
+                    let cur_lit = to_typst_dict(&cur_data);
+                    let next_lit = to_typst_dict(&next_data);
                     content.push_str(&format!(
-                        "#block(breakable: false)[\n  #{cur_fn}(json.decode(\"{cur_escaped}\"))\n  #v(spacing-3)\n  #{next_fn}(json.decode(\"{next_escaped}\"))\n]\n\n#v(spacing-4)\n\n"
+                        "#block(breakable: false)[\n  #{cur_fn}({cur_lit})\n  #v(spacing-3)\n  #{next_fn}({next_lit})\n]\n\n#v(spacing-4)\n\n"
                     ));
                     i += 2;
                     continue;
@@ -407,8 +417,7 @@ impl Engine {
 
             // Generate component call
             let fn_name = component_function_name(component_type);
-            let escaped_data =
-                escape_for_typst_string(&serde_json::to_string(&data).unwrap_or_default());
+            let data_lit = to_typst_dict(&data);
 
             // Layout / structural components manage their own spacing.
             let is_structural = matches!(
@@ -416,14 +425,11 @@ impl Engine {
                 LayoutHint::AlwaysNewPage | LayoutHint::KeepWithNext
             ) || component_type == "page-break";
             if is_structural {
-                content.push_str(&format!(
-                    "#{}(json.decode(\"{}\"))\n\n",
-                    fn_name, escaped_data
-                ));
+                content.push_str(&format!("#{}({})\n\n", fn_name, data_lit));
             } else {
                 content.push_str(&format!(
-                    "#{}(json.decode(\"{}\"))\n\n#v(spacing-4)\n\n",
-                    fn_name, escaped_data
+                    "#{}({})\n\n#v(spacing-4)\n\n",
+                    fn_name, data_lit
                 ));
             }
             i += 1;
@@ -436,7 +442,78 @@ impl Engine {
     fn compile_typst(&self, source: &str, request: &RenderRequest) -> Result<Vec<u8>> {
         use crate::render::typst_compile;
 
-        typst_compile::compile_to_pdf(source, &self.config, request)
+        typst_compile::compile_to_pdf(source, &self.font_cache, request)
+    }
+}
+
+/// Convert a JSON value to a Typst literal expression.
+///
+/// - `null` → `none`
+/// - booleans / numbers → their Typst equivalents
+/// - strings → `"..."` with proper escape sequences
+/// - arrays → `(item, ...)` with trailing comma for single-element arrays
+/// - objects → `(key: val, ...)` with string-quoted keys for non-identifiers
+pub fn to_typst_dict(value: &serde_json::Value) -> String {
+    match value {
+        serde_json::Value::Null => "none".to_string(),
+        serde_json::Value::Bool(b) => b.to_string(),
+        serde_json::Value::Number(n) => n.to_string(),
+        serde_json::Value::String(s) => {
+            let mut out = String::with_capacity(s.len() + 2);
+            out.push('"');
+            for ch in s.chars() {
+                match ch {
+                    '\\' => out.push_str("\\\\"),
+                    '"' => out.push_str("\\\""),
+                    '\n' => out.push_str("\\n"),
+                    '\r' => out.push_str("\\r"),
+                    '\t' => out.push_str("\\t"),
+                    c => out.push(c),
+                }
+            }
+            out.push('"');
+            out
+        }
+        serde_json::Value::Array(arr) => {
+            let items: Vec<String> = arr.iter().map(to_typst_dict).collect();
+            match items.len() {
+                0 => "()".to_string(),
+                // Single-element: needs trailing comma to be an array, not parenthesized value
+                1 => format!("({},)", items[0]),
+                _ => format!("({})", items.join(", ")),
+            }
+        }
+        serde_json::Value::Object(obj) => {
+            if obj.is_empty() {
+                return "(:)".to_string();
+            }
+            let entries: Vec<String> = obj
+                .iter()
+                .map(|(k, v)| {
+                    if is_typst_ident(k) {
+                        format!("{}: {}", k, to_typst_dict(v))
+                    } else {
+                        let escaped_key = k.replace('\\', "\\\\").replace('"', "\\\"");
+                        format!("\"{}\": {}", escaped_key, to_typst_dict(v))
+                    }
+                })
+                .collect();
+            format!("({})", entries.join(", "))
+        }
+    }
+}
+
+/// Returns true if `s` is a valid Typst identifier.
+///
+/// Typst identifiers start with a letter or underscore and continue with
+/// letters, digits, underscores, or hyphens.
+fn is_typst_ident(s: &str) -> bool {
+    let mut chars = s.chars();
+    match chars.next() {
+        Some(c) if c.is_ascii_alphabetic() || c == '_' => {
+            chars.all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-')
+        }
+        _ => false,
     }
 }
 
@@ -523,5 +600,59 @@ impl std::fmt::Debug for Engine {
             .field("packs", &self.packs.keys().collect::<Vec<_>>())
             .field("default_theme", &self.default_theme.id)
             .finish()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn test_to_typst_dict_primitives() {
+        assert_eq!(to_typst_dict(&json!(null)), "none");
+        assert_eq!(to_typst_dict(&json!(true)), "true");
+        assert_eq!(to_typst_dict(&json!(false)), "false");
+        assert_eq!(to_typst_dict(&json!(42)), "42");
+        assert_eq!(to_typst_dict(&json!(3.14)), "3.14");
+        assert_eq!(to_typst_dict(&json!("hello")), "\"hello\"");
+    }
+
+    #[test]
+    fn test_to_typst_dict_string_escaping() {
+        assert_eq!(to_typst_dict(&json!("a\"b")), r#""a\"b""#);
+        assert_eq!(to_typst_dict(&json!("a\nb")), "\"a\\nb\"");
+        assert_eq!(to_typst_dict(&json!("a\tb")), "\"a\\tb\"");
+        assert_eq!(to_typst_dict(&json!("a\\b")), "\"a\\\\b\"");
+    }
+
+    #[test]
+    fn test_to_typst_dict_arrays() {
+        assert_eq!(to_typst_dict(&json!([])), "()");
+        assert_eq!(to_typst_dict(&json!([1])), "(1,)");
+        assert_eq!(to_typst_dict(&json!([1, 2])), "(1, 2)");
+    }
+
+    #[test]
+    fn test_to_typst_dict_objects() {
+        assert_eq!(to_typst_dict(&json!({})), "(:)");
+        // Note: serde_json preserves insertion order for objects created via json!()
+        assert_eq!(to_typst_dict(&json!({"score": 85})), "(score: 85)");
+    }
+
+    #[test]
+    fn test_to_typst_dict_non_ident_key() {
+        assert_eq!(to_typst_dict(&json!({"2xl": "val"})), "(\"2xl\": \"val\")");
+    }
+
+    #[test]
+    fn test_is_typst_ident() {
+        assert!(is_typst_ident("score"));
+        assert!(is_typst_ident("max_score"));
+        assert!(is_typst_ident("chart-type"));
+        assert!(is_typst_ident("_private"));
+        assert!(!is_typst_ident("2xl"));
+        assert!(!is_typst_ident(""));
+        assert!(!is_typst_ident("has space"));
     }
 }

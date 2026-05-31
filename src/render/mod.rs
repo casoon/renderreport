@@ -3,4 +3,4 @@
 mod request;
 pub mod typst_compile;
 
-pub use request::{RenderOutput, RenderRequest};
+pub use request::{PageSetup, RenderOutput, RenderRequest};

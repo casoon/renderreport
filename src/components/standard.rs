@@ -3,6 +3,21 @@
 use super::{Component, ScoreStatus, Severity};
 use serde::{Deserialize, Serialize};
 
+/// Visual layout variant for a score card.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, Default, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+pub enum ScoreCardVariant {
+    /// Standard bordered card with progress bar (default)
+    #[default]
+    Standard,
+    /// Left accent strip with larger score number; requires an explicit height
+    Tall,
+    /// Colored background with white text
+    Inverted,
+    /// No progress bar, reduced padding
+    Compact,
+}
+
 /// Score card component for displaying metrics
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ScoreCard {
@@ -28,9 +43,12 @@ pub struct ScoreCard {
     /// Optional card height (e.g. "100%", "120pt")
     #[serde(default)]
     pub height: Option<String>,
-    /// Inverted: colored background with white text
+    /// Inverted: colored background with white text (deprecated — use `variant`)
     #[serde(default)]
     pub inverted: bool,
+    /// Explicit visual variant; takes precedence over `inverted`/`height`
+    #[serde(default)]
+    pub variant: ScoreCardVariant,
 }
 
 fn default_max_score() -> u32 {
@@ -55,6 +73,7 @@ impl ScoreCard {
             warn_threshold: 50,
             height: None,
             inverted: false,
+            variant: ScoreCardVariant::Standard,
         }
     }
 
@@ -74,6 +93,13 @@ impl ScoreCard {
         self
     }
 
+    /// Set an explicit visual variant.
+    pub fn variant(mut self, variant: ScoreCardVariant) -> Self {
+        self.variant = variant;
+        self
+    }
+
+    /// Deprecated: use `.variant(ScoreCardVariant::Inverted)` instead.
     pub fn inverted(mut self) -> Self {
         self.inverted = true;
         self
@@ -83,6 +109,22 @@ impl ScoreCard {
         self.status.unwrap_or_else(|| {
             ScoreStatus::from_score(self.score, self.good_threshold, self.warn_threshold)
         })
+    }
+
+    /// Resolve the effective variant, taking legacy `inverted`/`height` fields into account.
+    pub fn effective_variant(&self) -> ScoreCardVariant {
+        match self.variant {
+            ScoreCardVariant::Standard => {
+                if self.inverted {
+                    ScoreCardVariant::Inverted
+                } else if self.height.is_some() {
+                    ScoreCardVariant::Tall
+                } else {
+                    ScoreCardVariant::Standard
+                }
+            }
+            v => v,
+        }
     }
 }
 
@@ -97,6 +139,11 @@ impl Component for ScoreCard {
             map.insert(
                 "computed_status".into(),
                 serde_json::to_value(self.computed_status()).unwrap_or(serde_json::Value::Null),
+            );
+            // Always expose the resolved variant so the template dispatches correctly
+            map.insert(
+                "variant".into(),
+                serde_json::to_value(self.effective_variant()).unwrap_or_default(),
             );
         }
         data
@@ -121,6 +168,12 @@ pub struct Finding {
     /// Category/tag
     #[serde(default)]
     pub category: Option<String>,
+    /// Label for the "Affected:" line (default: "Affected:")
+    #[serde(default)]
+    pub label_affected: Option<String>,
+    /// Label for the "Recommendation" section header (default: "Recommendation")
+    #[serde(default)]
+    pub label_recommendation: Option<String>,
 }
 
 impl Finding {
@@ -136,6 +189,8 @@ impl Finding {
             recommendation: None,
             affected: None,
             category: None,
+            label_affected: None,
+            label_recommendation: None,
         }
     }
 
@@ -364,14 +419,43 @@ impl Component for Image {
     }
 }
 
+/// Visual style variant for a callout admonition.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, Default, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum CalloutVariant {
+    #[default]
+    Info,
+    Warning,
+    Error,
+    Success,
+    Tip,
+    Neutral,
+}
+
+impl CalloutVariant {
+    fn as_str(self) -> &'static str {
+        match self {
+            Self::Info => "info",
+            Self::Warning => "warning",
+            Self::Error => "error",
+            Self::Success => "success",
+            Self::Tip => "tip",
+            Self::Neutral => "neutral",
+        }
+    }
+}
+
 /// Callout/admonition component
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Callout {
     /// Callout content
     pub content: String,
-    /// Callout type (info, warning, error, success, tip, neutral)
+    /// Callout type string used by the Typst template (kept for backward compat)
     #[serde(default = "default_callout_type")]
     pub callout_type: String,
+    /// Typed variant; takes precedence over `callout_type` when set
+    #[serde(default)]
+    pub variant: Option<CalloutVariant>,
     /// Optional title
     #[serde(default)]
     pub title: Option<String>,
@@ -385,49 +469,38 @@ fn default_callout_type() -> String {
 }
 
 impl Callout {
-    pub fn info(content: impl Into<String>) -> Self {
+    fn with_variant(content: impl Into<String>, variant: CalloutVariant) -> Self {
         Self {
             content: content.into(),
-            callout_type: "info".into(),
+            callout_type: variant.as_str().to_string(),
+            variant: Some(variant),
             title: None,
             inverted: false,
         }
+    }
+
+    pub fn info(content: impl Into<String>) -> Self {
+        Self::with_variant(content, CalloutVariant::Info)
     }
 
     pub fn warning(content: impl Into<String>) -> Self {
-        Self {
-            content: content.into(),
-            callout_type: "warning".into(),
-            title: None,
-            inverted: false,
-        }
+        Self::with_variant(content, CalloutVariant::Warning)
     }
 
     pub fn error(content: impl Into<String>) -> Self {
-        Self {
-            content: content.into(),
-            callout_type: "error".into(),
-            title: None,
-            inverted: false,
-        }
+        Self::with_variant(content, CalloutVariant::Error)
     }
 
     pub fn success(content: impl Into<String>) -> Self {
-        Self {
-            content: content.into(),
-            callout_type: "success".into(),
-            title: None,
-            inverted: false,
-        }
+        Self::with_variant(content, CalloutVariant::Success)
+    }
+
+    pub fn tip(content: impl Into<String>) -> Self {
+        Self::with_variant(content, CalloutVariant::Tip)
     }
 
     pub fn neutral(content: impl Into<String>) -> Self {
-        Self {
-            content: content.into(),
-            callout_type: "neutral".into(),
-            title: None,
-            inverted: false,
-        }
+        Self::with_variant(content, CalloutVariant::Neutral)
     }
 
     pub fn with_title(mut self, title: impl Into<String>) -> Self {
@@ -447,7 +520,12 @@ impl Component for Callout {
     }
 
     fn to_data(&self) -> serde_json::Value {
-        serde_json::to_value(self).unwrap_or_default()
+        let mut data = serde_json::to_value(self).unwrap_or_default();
+        // Ensure callout_type reflects the typed variant when both are set
+        if let (Some(v), serde_json::Value::Object(ref mut map)) = (self.variant, &mut data) {
+            map.insert("callout_type".into(), serde_json::Value::String(v.as_str().to_string()));
+        }
+        data
     }
 }
 

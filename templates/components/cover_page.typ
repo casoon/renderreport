@@ -63,7 +63,7 @@
         #v(spacing-2)
         #text(size: 28pt, weight: "bold", fill: status-color)[#data.grade]
         #v(spacing-3)
-        #text(size: font-size-sm, fill: color-text-muted)[von 100 Punkten]
+        #text(size: font-size-sm, fill: color-text-muted)[#data.at("label_of_max", default: "of 100")]
       ],
       // Issues column
       [
@@ -83,7 +83,7 @@
             fill: color-ok-soft,
             radius: 4pt,
             inset: (x: 6pt, y: 3pt),
-            text(size: font-size-xs, weight: "bold", fill: color-ok)[none critical]
+            text(size: font-size-xs, weight: "bold", fill: color-ok)[#data.at("label_no_critical", default: "none critical")]
           )
         ]
       ],

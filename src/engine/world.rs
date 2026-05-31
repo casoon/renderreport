@@ -6,7 +6,7 @@
 use std::cell::OnceCell;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::sync::{OnceLock, RwLock};
+use std::sync::{Arc, OnceLock, RwLock};
 
 use fontdb::Database;
 use typst::diag::{FileError, FileResult};
@@ -17,16 +17,69 @@ use typst::{Library, World};
 
 use crate::engine::EngineConfig;
 
+/// Cached font data, built once at engine construction time.
+pub struct FontCache {
+    pub book: typst::utils::LazyHash<FontBook>,
+    pub fonts: Vec<Font>,
+}
+
+impl FontCache {
+    /// Build font cache from engine configuration.
+    pub fn new(config: &EngineConfig) -> Self {
+        let mut fontdb = Database::new();
+
+        if config.use_system_fonts {
+            fontdb.load_system_fonts();
+        }
+
+        for path in &config.font_paths {
+            if path.is_dir() {
+                fontdb.load_fonts_dir(path);
+            } else if path.is_file() {
+                let _ = fontdb.load_font_file(path);
+            }
+        }
+
+        let mut book = FontBook::new();
+        let mut fonts = Vec::new();
+
+        for face in fontdb.faces() {
+            let source_data: Option<Vec<u8>> = match &face.source {
+                fontdb::Source::File(path) => std::fs::read(path).ok(),
+                fontdb::Source::Binary(data) => {
+                    let slice: &[u8] = data.as_ref().as_ref();
+                    Some(slice.to_vec())
+                }
+                fontdb::Source::SharedFile(_, data) => {
+                    let slice: &[u8] = data.as_ref().as_ref();
+                    Some(slice.to_vec())
+                }
+            };
+
+            if let Some(data) = source_data {
+                let buffer = Bytes::new(data);
+                for font in Font::iter(buffer) {
+                    book.push(font.info().clone());
+                    fonts.push(font);
+                }
+            }
+        }
+
+        Self {
+            book: typst::utils::LazyHash::new(book),
+            fonts,
+        }
+    }
+}
+
 /// Typst World implementation for RenderReport
 pub struct ReportWorld {
     /// The main source file
     main: Source,
     /// The standard library
     library: typst::utils::LazyHash<Library>,
-    /// Font book
-    book: typst::utils::LazyHash<FontBook>,
-    /// Loaded fonts
-    fonts: Vec<Font>,
+    /// Shared font cache
+    font_cache: Arc<FontCache>,
     /// File slots for virtual filesystem
     slots: RwLock<HashMap<FileId, FileSlot>>,
     /// Root path for file resolution
@@ -55,57 +108,17 @@ unsafe impl Send for FileSlot {}
 unsafe impl Sync for FileSlot {}
 
 impl ReportWorld {
-    /// Create a new world with the given source
-    pub fn new(source: String, config: &EngineConfig) -> Self {
-        let main = Source::detached(source);
+    /// Create a new world using a pre-built font cache.
+    pub fn new(source: String, font_cache: Arc<FontCache>) -> Self {
+        let path = VirtualPath::new("report.typ");
+        let id = FileId::new(None, path);
+        let main = Source::new(id, source);
         let library = typst::utils::LazyHash::new(Library::default());
-
-        // Initialize font database
-        let mut fontdb = Database::new();
-
-        if config.use_system_fonts {
-            fontdb.load_system_fonts();
-        }
-
-        for path in &config.font_paths {
-            if path.is_dir() {
-                fontdb.load_fonts_dir(path);
-            } else if path.is_file() {
-                let _ = fontdb.load_font_file(path);
-            }
-        }
-
-        // Convert fontdb to Typst fonts
-        let mut book = FontBook::new();
-        let mut fonts = Vec::new();
-
-        for face in fontdb.faces() {
-            let source_data: Option<Vec<u8>> = match &face.source {
-                fontdb::Source::File(path) => std::fs::read(path).ok(),
-                fontdb::Source::Binary(data) => {
-                    let slice: &[u8] = data.as_ref().as_ref();
-                    Some(slice.to_vec())
-                }
-                fontdb::Source::SharedFile(_, data) => {
-                    let slice: &[u8] = data.as_ref().as_ref();
-                    Some(slice.to_vec())
-                }
-            };
-
-            if let Some(data) = source_data {
-                let buffer = Bytes::new(data);
-                for font in Font::iter(buffer) {
-                    book.push(font.info().clone());
-                    fonts.push(font);
-                }
-            }
-        }
 
         Self {
             main,
             library,
-            book: typst::utils::LazyHash::new(book),
-            fonts,
+            font_cache,
             slots: RwLock::new(HashMap::new()),
             root: std::env::current_dir().unwrap_or_default(),
             now: OnceLock::new(),
@@ -133,7 +146,7 @@ impl World for ReportWorld {
     }
 
     fn book(&self) -> &typst::utils::LazyHash<FontBook> {
-        &self.book
+        &self.font_cache.book
     }
 
     fn main(&self) -> FileId {
@@ -191,7 +204,7 @@ impl World for ReportWorld {
     }
 
     fn font(&self, index: usize) -> Option<Font> {
-        self.fonts.get(index).cloned()
+        self.font_cache.fonts.get(index).cloned()
     }
 
     fn today(&self, _offset: Option<i64>) -> Option<Datetime> {

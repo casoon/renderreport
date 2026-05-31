@@ -35,7 +35,7 @@ pub use advanced::{
     ComparisonCluster, ComparisonClusterItem, DevicePreview, DiagnosisPanel, DiagnosisRow,
     DominantIssueSpotlight, FaqItem, FaqList, GlossaryItem, GlossaryList, ImpactGrid,
     ImpactGridCard, LogoStrip, MetricStrip, MetricStripItem, PhaseBlock, PricingCard, PullQuote,
-    RecommendationCard, SectionHeaderSplit, SpotlightCard, StepCardRow, UseCaseCard,
+    RecommendationCard, SectionHeaderSplit, SpotlightCard, SpotlightCardVariant, StepCardRow, UseCaseCard,
     WrongRightBlock,
 };
 pub use text::Eyebrow;

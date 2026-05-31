@@ -249,46 +249,6 @@
 
 
 // Component Functions
-// Section Component
-// Per-level visual accent + orphan protection via phantom height.
-//
-// Level 2 — major section: primary left bar + soft background
-// Level 3 — sub-section: thin primary left bar, no background
-// Level 4+ — plain bold, muted color
-
-#let section(data) = {
-  let lv = data.level
-
-  let heading-block = if lv == 2 {
-    block(
-      width: 100%,
-      fill: color-surface-soft,
-      stroke: (left: 3pt + color-primary),
-      inset: (left: 10pt, right: 8pt, y: 6pt),
-      radius: (right: 4pt),
-    )[#heading(level: lv)[#data.title]]
-  } else if lv == 3 {
-    block(
-      width: 100%,
-      stroke: (left: 2pt + color-primary),
-      inset: (left: 8pt, y: 3pt),
-    )[#heading(level: lv)[#data.title]]
-  } else {
-    block(width: 100%)[#heading(level: lv)[#data.title]]
-  }
-
-  // Orphan protection: ghost height forces Typst to reserve ~2 lines of space
-  // after the heading on the same page. Cancelled by v(-2em) below so the gap
-  // is not visible in the rendered output.
-  block(width: 100%, breakable: false, below: 0pt)[
-    #heading-block
-    #v(spacing-4)
-    #box(height: 2em, width: 0pt)[]
-  ]
-  v(-2em)
-}
-
-
 // Callout Component
 // Highlighted information box (supports neutral type and inverted mode)
 
@@ -352,8 +312,151 @@
 }
 
 
+// Section Component
+// Per-level visual accent + orphan protection via phantom height.
+//
+// Level 2 — major section: primary left bar + soft background
+// Level 3 — sub-section: thin primary left bar, no background
+// Level 4+ — plain bold, muted color
+
+#let section(data) = {
+  let lv = data.level
+
+  let heading-block = if lv == 2 {
+    block(
+      width: 100%,
+      fill: color-surface-soft,
+      stroke: (left: 3pt + color-primary),
+      inset: (left: 10pt, right: 8pt, y: 6pt),
+      radius: (right: 4pt),
+    )[#heading(level: lv)[#data.title]]
+  } else if lv == 3 {
+    block(
+      width: 100%,
+      stroke: (left: 2pt + color-primary),
+      inset: (left: 8pt, y: 3pt),
+    )[#heading(level: lv)[#data.title]]
+  } else {
+    block(width: 100%)[#heading(level: lv)[#data.title]]
+  }
+
+  // Orphan protection: ghost height forces Typst to reserve ~2 lines of space
+  // after the heading on the same page. Cancelled by v(-2em) below so the gap
+  // is not visible in the rendered output.
+  block(width: 100%, breakable: false, below: 0pt)[
+    #heading-block
+    #v(spacing-4)
+    #box(height: 2em, width: 0pt)[]
+  ]
+  v(-2em)
+}
+
+
 // Score Card Component
 // Displays a metric with score visualization
+
+#let score-card-standard(data, status-color) = {
+  let body = [
+    #set text(fill: color-text)
+
+    #label-text(data.title)
+
+    #v(spacing-2)
+
+    #text(size: font-size-2xl, weight: "bold", fill: status-color)[
+      #data.score#text(size: font-size-base, weight: "regular", fill: color-text-muted)[\/#{data.max_score}]
+    ]
+
+    #v(spacing-3)
+    #theme-progress-bar(data.score, max: data.max_score, bar-color: status-color)
+
+    #if data.description != none [
+      #v(spacing-3)
+      #small-text(data.description)
+    ]
+  ]
+  theme-card[#body]
+}
+
+#let score-card-tall(data, status-color) = {
+  let h = if data.height != none { eval(data.height) } else { 100pt }
+  let body = [
+    #set text(fill: color-text)
+    #label-text(data.title)
+    #v(spacing-2)
+    #text(size: font-size-3xl, weight: "bold", fill: status-color)[
+      #data.score#text(size: font-size-base, weight: "regular", fill: color-text-muted)[\/#{data.max_score}]
+    ]
+    #v(spacing-3)
+    #theme-progress-bar(data.score, max: data.max_score, bar-color: status-color)
+    #if data.description != none [
+      #v(spacing-3)
+      #small-text(data.description)
+    ]
+  ]
+  grid(
+    columns: (5pt, 1fr),
+    gutter: 0pt,
+    block(
+      width: 5pt,
+      height: h,
+      fill: status-color,
+      radius: (left: 10pt),
+    ),
+    block(
+      width: 100%,
+      height: h,
+      fill: color-surface,
+      stroke: (top: component-card-border-width + color-border,
+               right: component-card-border-width + color-border,
+               bottom: component-card-border-width + color-border),
+      radius: (right: 10pt),
+      inset: (x: spacing-4, y: spacing-4),
+    )[ #body ]
+  )
+}
+
+#let score-card-inverted(data, status-color) = {
+  let h = if data.height != none { eval(data.height) } else { auto }
+  block(
+    width: 100%,
+    height: h,
+    fill: status-color,
+    radius: 10pt,
+    inset: (x: spacing-4, y: spacing-4),
+  )[
+    #text(size: font-size-xs, weight: "bold", fill: white.transparentize(25%))[#data.title]
+    #v(spacing-2)
+    #text(size: font-size-3xl, weight: "bold", fill: white)[
+      #data.score#text(size: font-size-base, weight: "regular", fill: white.transparentize(35%))[\/#{data.max_score}]
+    ]
+    #if data.description != none [
+      #v(spacing-3)
+      #text(size: font-size-sm, fill: white.transparentize(20%))[#data.description]
+    ]
+  ]
+}
+
+#let score-card-compact(data, status-color) = {
+  block(
+    width: 100%,
+    fill: color-surface,
+    stroke: (paint: color-border, thickness: component-card-border-width),
+    radius: component-score-card-radius,
+    inset: (x: spacing-3, y: spacing-2),
+  )[
+    #set text(fill: color-text)
+    #label-text(data.title)
+    #v(spacing-1)
+    #text(size: font-size-xl, weight: "bold", fill: status-color)[
+      #data.score#text(size: font-size-xs, weight: "regular", fill: color-text-muted)[\/#{data.max_score}]
+    ]
+    #if data.description != none [
+      #v(spacing-1)
+      #small-text(data.description)
+    ]
+  ]
+}
 
 #let score-card(data) = {
   let status-color = if data.computed_status == "good" {
@@ -364,88 +467,16 @@
     color-bad
   }
 
-  let is-inverted = data.at("inverted", default: false)
+  let variant = data.at("variant", default: "standard")
 
-  if is-inverted {
-    // Inverted variant: colored background, white text
-    let h = if data.height != none { eval(data.height) } else { auto }
-    block(
-      width: 100%,
-      height: h,
-      fill: status-color,
-      radius: 10pt,
-      inset: (x: spacing-4, y: spacing-4),
-    )[
-      #text(size: font-size-xs, weight: "bold", fill: white.transparentize(25%))[#data.title]
-      #v(spacing-2)
-      #text(size: font-size-3xl, weight: "bold", fill: white)[
-        #data.score#text(size: font-size-base, weight: "regular", fill: white.transparentize(35%))[\/#{data.max_score}]
-      ]
-      #if data.description != none [
-        #v(spacing-3)
-        #text(size: font-size-sm, fill: white.transparentize(20%))[#data.description]
-      ]
-    ]
+  if variant == "inverted" {
+    score-card-inverted(data, status-color)
+  } else if variant == "tall" {
+    score-card-tall(data, status-color)
+  } else if variant == "compact" {
+    score-card-compact(data, status-color)
   } else {
-    let body = [
-      #set text(fill: color-text)
-
-      #label-text(data.title)
-
-      #v(spacing-2)
-
-      #text(size: font-size-2xl, weight: "bold", fill: status-color)[
-        #data.score#text(size: font-size-base, weight: "regular", fill: color-text-muted)[\/#{data.max_score}]
-      ]
-
-      #v(spacing-3)
-      #theme-progress-bar(data.score, max: data.max_score, bar-color: status-color)
-
-      #if data.description != none [
-        #v(spacing-3)
-        #small-text(data.description)
-      ]
-    ]
-
-    if data.height != none {
-      // Full-width variant: left accent strip + larger score number
-      let tall-body = [
-        #set text(fill: color-text)
-        #label-text(data.title)
-        #v(spacing-2)
-        #text(size: font-size-3xl, weight: "bold", fill: status-color)[
-          #data.score#text(size: font-size-base, weight: "regular", fill: color-text-muted)[\/#{data.max_score}]
-        ]
-        #v(spacing-3)
-        #theme-progress-bar(data.score, max: data.max_score, bar-color: status-color)
-        #if data.description != none [
-          #v(spacing-3)
-          #small-text(data.description)
-        ]
-      ]
-      grid(
-        columns: (5pt, 1fr),
-        gutter: 0pt,
-        block(
-          width: 5pt,
-          height: eval(data.height),
-          fill: status-color,
-          radius: (left: 10pt),
-        ),
-        block(
-          width: 100%,
-          height: eval(data.height),
-          fill: color-surface,
-          stroke: (top: component-card-border-width + color-border,
-                   right: component-card-border-width + color-border,
-                   bottom: component-card-border-width + color-border),
-          radius: (right: 10pt),
-          inset: (x: spacing-4, y: spacing-4),
-        )[ #tall-body ]
-      )
-    } else {
-      theme-card[#body]
-    }
+    score-card-standard(data, status-color)
   }
 }
 
@@ -466,14 +497,14 @@
 #pagebreak()
 
 #block(breakable: false)[
-  #section(json.decode("{\"content\":[],\"level\":2,\"title\":\"Heading\"}"))
+  #section((content: (), level: 2, title: "Heading"))
   #v(spacing-3)
-  #score-card(json.decode("{\"computed_status\":\"warning\",\"description\":null,\"good_threshold\":90,\"height\":null,\"inverted\":false,\"max_score\":100,\"score\":85,\"status\":null,\"title\":\"Score\",\"warn_threshold\":50}"))
+  #score-card((computed_status: "warning", description: none, good_threshold: 90, height: none, inverted: false, max_score: 100, score: 85, status: none, title: "Score", variant: "standard", warn_threshold: 50))
 ]
 
 #v(spacing-4)
 
-#callout(json.decode("{\"callout_type\":\"info\",\"content\":\"Stable canonical content.\",\"inverted\":false,\"title\":null}"))
+#callout((callout_type: "info", content: "Stable canonical content.", inverted: false, title: none, variant: "info"))
 
 #v(spacing-4)
 
