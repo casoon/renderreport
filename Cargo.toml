@@ -1,6 +1,6 @@
 [package]
 name = "renderreport"
-version = "0.2.21"
+version = "0.2.22"
 edition = "2021"
 authors = ["Casoon <info@casoon.de>"]
 description = "Data-driven report generation with Typst as embedded render engine — no CLI dependency"
@@ -35,8 +35,6 @@ clap = { version = "4.0", features = ["derive"], optional = true }
 # Typst as embedded library
 typst = "0.13"
 typst-pdf = "0.13"
-typst-syntax = "0.13"
-comemo = "0.4"
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
@@ -57,8 +55,6 @@ inventory = "0.3"
 
 # Utilities
 chrono = { version = "0.4", features = ["serde"] }
-uuid = { version = "1.0", features = ["v4", "serde"] }
-
 # Font handling
 fontdb = "0.22"
 
@@ -72,9 +68,6 @@ codegen-units = 1
 strip = true
 
 [dev-dependencies]
-pretty_assertions = "1.0"
-insta = { version = "1.0", features = ["json"] }
-tempfile = "3.0"
 
 [features]
 default = []

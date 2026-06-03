@@ -249,109 +249,6 @@
 
 
 // Component Functions
-// Section Component
-// Per-level visual accent + orphan protection via phantom height.
-//
-// Level 2 — major section: primary left bar + soft background
-// Level 3 — sub-section: thin primary left bar, no background
-// Level 4+ — plain bold, muted color
-
-#let section(data) = {
-  let lv = data.level
-
-  let heading-block = if lv == 2 {
-    block(
-      width: 100%,
-      fill: color-surface-soft,
-      stroke: (left: 3pt + color-primary),
-      inset: (left: 10pt, right: 8pt, y: 6pt),
-      radius: (right: 4pt),
-    )[#heading(level: lv)[#data.title]]
-  } else if lv == 3 {
-    block(
-      width: 100%,
-      stroke: (left: 2pt + color-primary),
-      inset: (left: 8pt, y: 3pt),
-    )[#heading(level: lv)[#data.title]]
-  } else {
-    block(width: 100%)[#heading(level: lv)[#data.title]]
-  }
-
-  // Orphan protection: ghost height forces Typst to reserve ~2 lines of space
-  // after the heading on the same page. Cancelled by v(-2em) below so the gap
-  // is not visible in the rendered output.
-  block(width: 100%, breakable: false, below: 0pt)[
-    #heading-block
-    #v(spacing-4)
-    #box(height: 2em, width: 0pt)[]
-  ]
-  v(-2em)
-}
-
-
-// Callout Component
-// Highlighted information box (supports neutral type and inverted mode)
-
-#let callout-style(callout-type) = {
-  if callout-type == "warning" {
-    (bg: color-warn-soft, border: color-warn, icon: "⚠")
-  } else if callout-type == "error" {
-    (bg: color-bad-soft, border: color-bad, icon: "✕")
-  } else if callout-type == "success" {
-    (bg: color-ok-soft, border: color-ok, icon: "✓")
-  } else if callout-type == "tip" {
-    (bg: color-accent-soft, border: color-primary, icon: "💡")
-  } else if callout-type == "neutral" {
-    (bg: color-surface-alt, border: color-text-muted, icon: "–")
-  } else {
-    // info (default)
-    (bg: color-info-soft, border: color-info, icon: "ℹ")
-  }
-}
-
-#let callout(data) = {
-  let style = callout-style(data.callout_type)
-  let is-inv = data.at("inverted", default: false)
-
-  if is-inv {
-    block(
-      width: 100%,
-      inset: spacing-4,
-      radius: component-callout-radius,
-      fill: style.border,
-      breakable: false,
-    )[
-      #set text(fill: white)
-
-      #if data.title != none [
-        #text(weight: "bold")[#style.icon #data.title]
-        #v(spacing-2)
-      ]
-
-      #par(justify: true)[#text(size: font-size-base)[#data.content]]
-    ]
-  } else {
-    block(
-      width: 100%,
-      inset: spacing-4,
-      radius: component-callout-radius,
-      fill: style.bg,
-      stroke: (left: (paint: style.border, thickness: 3pt)),
-      breakable: false,
-    )[
-      #set text(fill: color-text)
-
-      #if data.title != none [
-        #text(weight: "bold")[#style.icon #data.title]
-        #v(spacing-2)
-      ]
-
-      #par(justify: true)[#text(size: font-size-base)[#data.content]]
-    ]
-  }
-}
-
-
 // Score Card Component
 // Displays a metric with score visualization
 
@@ -477,6 +374,109 @@
     score-card-compact(data, status-color)
   } else {
     score-card-standard(data, status-color)
+  }
+}
+
+
+// Section Component
+// Per-level visual accent + orphan protection via phantom height.
+//
+// Level 2 — major section: primary left bar + soft background
+// Level 3 — sub-section: thin primary left bar, no background
+// Level 4+ — plain bold, muted color
+
+#let section(data) = {
+  let lv = data.level
+
+  let heading-block = if lv == 2 {
+    block(
+      width: 100%,
+      fill: color-surface-soft,
+      stroke: (left: 3pt + color-primary),
+      inset: (left: 10pt, right: 8pt, y: 6pt),
+      radius: (right: 4pt),
+    )[#heading(level: lv)[#data.title]]
+  } else if lv == 3 {
+    block(
+      width: 100%,
+      stroke: (left: 2pt + color-primary),
+      inset: (left: 8pt, y: 3pt),
+    )[#heading(level: lv)[#data.title]]
+  } else {
+    block(width: 100%)[#heading(level: lv)[#data.title]]
+  }
+
+  // Orphan protection: ghost height forces Typst to reserve ~2 lines of space
+  // after the heading on the same page. Cancelled by v(-2em) below so the gap
+  // is not visible in the rendered output.
+  block(width: 100%, breakable: false, below: 0pt)[
+    #heading-block
+    #v(spacing-4)
+    #box(height: 2em, width: 0pt)[]
+  ]
+  v(-2em)
+}
+
+
+// Callout Component
+// Highlighted information box (supports neutral type and inverted mode)
+
+#let callout-style(callout-type) = {
+  if callout-type == "warning" {
+    (bg: color-warn-soft, border: color-warn, icon: "⚠")
+  } else if callout-type == "error" {
+    (bg: color-bad-soft, border: color-bad, icon: "✕")
+  } else if callout-type == "success" {
+    (bg: color-ok-soft, border: color-ok, icon: "✓")
+  } else if callout-type == "tip" {
+    (bg: color-accent-soft, border: color-primary, icon: "💡")
+  } else if callout-type == "neutral" {
+    (bg: color-surface-alt, border: color-text-muted, icon: "–")
+  } else {
+    // info (default)
+    (bg: color-info-soft, border: color-info, icon: "ℹ")
+  }
+}
+
+#let callout(data) = {
+  let style = callout-style(data.callout_type)
+  let is-inv = data.at("inverted", default: false)
+
+  if is-inv {
+    block(
+      width: 100%,
+      inset: spacing-4,
+      radius: component-callout-radius,
+      fill: style.border,
+      breakable: false,
+    )[
+      #set text(fill: white)
+
+      #if data.title != none [
+        #text(weight: "bold")[#style.icon #data.title]
+        #v(spacing-2)
+      ]
+
+      #par(justify: true)[#text(size: font-size-base)[#data.content]]
+    ]
+  } else {
+    block(
+      width: 100%,
+      inset: spacing-4,
+      radius: component-callout-radius,
+      fill: style.bg,
+      stroke: (left: (paint: style.border, thickness: 3pt)),
+      breakable: false,
+    )[
+      #set text(fill: color-text)
+
+      #if data.title != none [
+        #text(weight: "bold")[#style.icon #data.title]
+        #v(spacing-2)
+      ]
+
+      #par(justify: true)[#text(size: font-size-base)[#data.content]]
+    ]
   }
 }
 

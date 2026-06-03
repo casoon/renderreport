@@ -622,7 +622,7 @@ mod tests {
         assert_eq!(to_typst_dict(&json!(true)), "true");
         assert_eq!(to_typst_dict(&json!(false)), "false");
         assert_eq!(to_typst_dict(&json!(42)), "42");
-        assert_eq!(to_typst_dict(&json!(3.14)), "3.14");
+        assert_eq!(to_typst_dict(&json!(1.5)), "1.5");
         assert_eq!(to_typst_dict(&json!("hello")), "\"hello\"");
     }
 
