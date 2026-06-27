@@ -5,6 +5,8 @@
     component-title(text(size: font-size-xl, weight: "bold")[#data.title])
   }
 
+  set text(hyphenate: false)
+
   let boxes = data.modules.map(module => {
     let status-color = if module.computed_status == "good" {
       color-ok
@@ -15,9 +17,9 @@
     }
 
     theme-card[
-      #text(size: font-size-lg, weight: "bold")[#module.name]
+      #text(size: font-size-base, weight: "bold")[#module.name]
       #v(spacing-2)
-      #text(size: 22pt, weight: "bold", fill: status-color)[#module.score#text(size: font-size-sm, weight: "regular", fill: color-text-muted)[\/100]]
+      #text(size: 22pt, weight: "bold", fill: status-color)[#module.score]
       #v(spacing-3)
       #theme-progress-bar(module.score, bar-color: status-color)
       #v(spacing-3)
@@ -25,9 +27,13 @@
     ]
   })
 
+  // At most three cards per row so each stays wide enough to read without
+  // hyphenating the module name; further cards wrap to the next row.
+  let cols = calc.min(data.modules.len(), 3)
   grid(
-    columns: (1fr,) * data.modules.len(),
+    columns: (1fr,) * cols,
     column-gutter: spacing-3,
+    row-gutter: spacing-3,
     ..boxes,
   )
 }

@@ -249,6 +249,69 @@
 
 
 // Component Functions
+// Callout Component
+// Highlighted information box (supports neutral type and inverted mode)
+
+#let callout-style(callout-type) = {
+  if callout-type == "warning" {
+    (bg: color-warn-soft, border: color-warn, icon: "⚠")
+  } else if callout-type == "error" {
+    (bg: color-bad-soft, border: color-bad, icon: "✕")
+  } else if callout-type == "success" {
+    (bg: color-ok-soft, border: color-ok, icon: "✓")
+  } else if callout-type == "tip" {
+    (bg: color-accent-soft, border: color-primary, icon: "💡")
+  } else if callout-type == "neutral" {
+    (bg: color-surface-alt, border: color-text-muted, icon: "–")
+  } else {
+    // info (default)
+    (bg: color-info-soft, border: color-info, icon: "ℹ")
+  }
+}
+
+#let callout(data) = {
+  let style = callout-style(data.callout_type)
+  let is-inv = data.at("inverted", default: false)
+
+  if is-inv {
+    block(
+      width: 100%,
+      inset: spacing-4,
+      radius: component-callout-radius,
+      fill: style.border,
+      breakable: false,
+    )[
+      #set text(fill: white)
+
+      #if data.title != none [
+        #text(weight: "bold")[#data.title]
+        #v(spacing-2)
+      ]
+
+      #par(justify: true)[#text(size: font-size-base)[#data.content]]
+    ]
+  } else {
+    block(
+      width: 100%,
+      inset: spacing-4,
+      radius: component-callout-radius,
+      fill: style.bg,
+      stroke: (left: (paint: style.border, thickness: 3pt)),
+      breakable: false,
+    )[
+      #set text(fill: color-text)
+
+      #if data.title != none [
+        #text(weight: "bold")[#data.title]
+        #v(spacing-2)
+      ]
+
+      #par(justify: true)[#text(size: font-size-base)[#data.content]]
+    ]
+  }
+}
+
+
 // Score Card Component
 // Displays a metric with score visualization
 
@@ -261,7 +324,7 @@
     #v(spacing-2)
 
     #text(size: font-size-2xl, weight: "bold", fill: status-color)[
-      #data.score#text(size: font-size-base, weight: "regular", fill: color-text-muted)[\/#{data.max_score}]
+      #data.score
     ]
 
     #v(spacing-3)
@@ -282,7 +345,7 @@
     #label-text(data.title)
     #v(spacing-2)
     #text(size: font-size-3xl, weight: "bold", fill: status-color)[
-      #data.score#text(size: font-size-base, weight: "regular", fill: color-text-muted)[\/#{data.max_score}]
+      #data.score
     ]
     #v(spacing-3)
     #theme-progress-bar(data.score, max: data.max_score, bar-color: status-color)
@@ -325,7 +388,7 @@
     #text(size: font-size-xs, weight: "bold", fill: white.transparentize(25%))[#data.title]
     #v(spacing-2)
     #text(size: font-size-3xl, weight: "bold", fill: white)[
-      #data.score#text(size: font-size-base, weight: "regular", fill: white.transparentize(35%))[\/#{data.max_score}]
+      #data.score
     ]
     #if data.description != none [
       #v(spacing-3)
@@ -346,7 +409,7 @@
     #label-text(data.title)
     #v(spacing-1)
     #text(size: font-size-xl, weight: "bold", fill: status-color)[
-      #data.score#text(size: font-size-xs, weight: "regular", fill: color-text-muted)[\/#{data.max_score}]
+      #data.score
     ]
     #if data.description != none [
       #v(spacing-1)
@@ -415,69 +478,6 @@
     #box(height: 2em, width: 0pt)[]
   ]
   v(-2em)
-}
-
-
-// Callout Component
-// Highlighted information box (supports neutral type and inverted mode)
-
-#let callout-style(callout-type) = {
-  if callout-type == "warning" {
-    (bg: color-warn-soft, border: color-warn, icon: "⚠")
-  } else if callout-type == "error" {
-    (bg: color-bad-soft, border: color-bad, icon: "✕")
-  } else if callout-type == "success" {
-    (bg: color-ok-soft, border: color-ok, icon: "✓")
-  } else if callout-type == "tip" {
-    (bg: color-accent-soft, border: color-primary, icon: "💡")
-  } else if callout-type == "neutral" {
-    (bg: color-surface-alt, border: color-text-muted, icon: "–")
-  } else {
-    // info (default)
-    (bg: color-info-soft, border: color-info, icon: "ℹ")
-  }
-}
-
-#let callout(data) = {
-  let style = callout-style(data.callout_type)
-  let is-inv = data.at("inverted", default: false)
-
-  if is-inv {
-    block(
-      width: 100%,
-      inset: spacing-4,
-      radius: component-callout-radius,
-      fill: style.border,
-      breakable: false,
-    )[
-      #set text(fill: white)
-
-      #if data.title != none [
-        #text(weight: "bold")[#style.icon #data.title]
-        #v(spacing-2)
-      ]
-
-      #par(justify: true)[#text(size: font-size-base)[#data.content]]
-    ]
-  } else {
-    block(
-      width: 100%,
-      inset: spacing-4,
-      radius: component-callout-radius,
-      fill: style.bg,
-      stroke: (left: (paint: style.border, thickness: 3pt)),
-      breakable: false,
-    )[
-      #set text(fill: color-text)
-
-      #if data.title != none [
-        #text(weight: "bold")[#style.icon #data.title]
-        #v(spacing-2)
-      ]
-
-      #par(justify: true)[#text(size: font-size-base)[#data.content]]
-    ]
-  }
 }
 
 

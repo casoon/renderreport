@@ -33,7 +33,7 @@
       #set text(fill: white)
 
       #if data.title != none [
-        #text(weight: "bold")[#style.icon #data.title]
+        #text(weight: "bold")[#data.title]
         #v(spacing-2)
       ]
 
@@ -51,7 +51,7 @@
       #set text(fill: color-text)
 
       #if data.title != none [
-        #text(weight: "bold")[#style.icon #data.title]
+        #text(weight: "bold")[#data.title]
         #v(spacing-2)
       ]
 

@@ -1257,6 +1257,22 @@ impl Component for SeverityOverview {
 
 // ─── Cover Page ─────────────────────────────────────────────────────────────
 
+/// One module's score for the cover gauge strip.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CoverModuleGauge {
+    pub name: String,
+    pub score: u32,
+}
+
+impl CoverModuleGauge {
+    pub fn new(name: impl Into<String>, score: u32) -> Self {
+        Self {
+            name: name.into(),
+            score,
+        }
+    }
+}
+
 /// Professional cover page with score preview
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CoverPage {
@@ -1267,12 +1283,32 @@ pub struct CoverPage {
     pub date: String,
     pub score: u32,
     pub grade: String,
+    /// Plain-language condition phrase shown next to the score (replaces the
+    /// A–F grade column when present).
+    #[serde(default)]
+    pub band_phrase: String,
+    /// Localized section labels. Empty → template falls back to a German default.
+    #[serde(default)]
+    pub score_label: String,
+    #[serde(default)]
+    pub findings_label: String,
+    #[serde(default)]
+    pub modules_label: String,
+    /// Suffix after the critical count, e.g. "kritisch" / "Critical".
+    #[serde(default)]
+    pub label_critical: String,
+    /// Full "no critical" pill text, e.g. "0 kritisch" / "0 Critical".
+    #[serde(default)]
+    pub label_no_critical: String,
     #[serde(default)]
     pub total_issues: u32,
     #[serde(default)]
     pub critical_issues: u32,
     #[serde(default)]
     pub modules: Vec<String>,
+    /// Per-module scores rendered as a circular-gauge strip on the cover.
+    #[serde(default)]
+    pub module_gauges: Vec<CoverModuleGauge>,
     /// Computed from score thresholds
     #[serde(default)]
     computed_status: String,
@@ -1280,9 +1316,9 @@ pub struct CoverPage {
 
 impl CoverPage {
     pub fn new(title: &str, domain: &str, score: u32, grade: &str) -> Self {
-        let computed_status = if score >= 70 {
+        let computed_status = if score >= 75 {
             "good"
-        } else if score >= 50 {
+        } else if score >= 40 {
             "warning"
         } else {
             "bad"
@@ -1297,11 +1333,44 @@ impl CoverPage {
             date: String::new(),
             score,
             grade: grade.into(),
+            band_phrase: String::new(),
+            score_label: String::new(),
+            findings_label: String::new(),
+            modules_label: String::new(),
+            label_critical: String::new(),
+            label_no_critical: String::new(),
             total_issues: 0,
             critical_issues: 0,
             modules: vec![],
+            module_gauges: vec![],
             computed_status,
         }
+    }
+
+    pub fn with_band_phrase(mut self, phrase: impl Into<String>) -> Self {
+        self.band_phrase = phrase.into();
+        self
+    }
+
+    pub fn with_labels(
+        mut self,
+        score_label: impl Into<String>,
+        findings_label: impl Into<String>,
+        modules_label: impl Into<String>,
+        label_critical: impl Into<String>,
+        label_no_critical: impl Into<String>,
+    ) -> Self {
+        self.score_label = score_label.into();
+        self.findings_label = findings_label.into();
+        self.modules_label = modules_label.into();
+        self.label_critical = label_critical.into();
+        self.label_no_critical = label_no_critical.into();
+        self
+    }
+
+    pub fn with_module_gauges(mut self, gauges: Vec<CoverModuleGauge>) -> Self {
+        self.module_gauges = gauges;
+        self
     }
 
     pub fn with_brand(mut self, brand: &str) -> Self {

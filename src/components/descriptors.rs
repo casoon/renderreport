@@ -282,7 +282,9 @@ component_catalog! {
     template: include_str!("../../templates/components/cover_page.typ"),
     description: "Full-page cover with title, logo, and metadata",
     category: ComponentCategory::Layout,
-    layout_hint: LayoutHint::AlwaysNewPage,
+    // The cover is the first page and emits its own trailing page break, so it
+    // must NOT request a leading break (that would produce a blank page 1).
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 component_catalog! {

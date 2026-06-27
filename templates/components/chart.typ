@@ -260,53 +260,56 @@
   )
 }
 
+// Real spider / radar chart for the first series (values assumed 0..100).
 #let chart-radar(data) = {
-  let labels = if data.series.len() > 0 { data.series.at(0).data.map(p => p.label) } else { () }
-  let all_values = data.series.map(s => s.data.map(p => p.value)).flatten()
-  let max_val = if all_values.len() > 0 { calc.max(..all_values, 1) } else { 100 }
-
-  rect(
-    width: 100%,
-    stroke: 0.5pt + color-border,
-    radius: 4pt,
-    fill: color-surface,
-    inset: 16pt,
-    {
-      for (li, label) in labels.enumerate() {
-        for (si, s) in data.series.enumerate() {
-          let color = chart-colors.at(calc.rem(si, chart-colors.len()))
-          let val = if li < s.data.len() { s.data.at(li).value } else { 0 }
-          let pct = calc.min(val / max_val * 100, 100)
-          let val-color = if val >= 85 { color-ok } else if val >= 70 { color-primary } else if val >= 50 { color-warn } else { color-bad }
-
-          grid(
-            columns: (120pt, 1fr, 36pt),
-            gutter: 8pt,
-            align: (left + horizon, left + horizon, right + horizon),
-            text(size: 9pt, weight: "semibold", fill: color-text, label),
-            box(
-              width: 100%,
-              height: 18pt,
-              radius: 4pt,
-              fill: color-surface-alt,
-              stroke: 0.5pt + color-border,
-            )[
-              #place(left + horizon,
-                box(width: pct * 1%, height: 100%, radius: 4pt, fill: val-color.lighten(20%))
-              )
-              #if pct >= 15 [
-                #place(left + horizon, dx: 6pt,
-                  text(size: 7pt, weight: "bold", fill: val-color.darken(30%))[#str(calc.round(val))]
-                )
-              ]
-            ],
-            text(size: 9pt, weight: "bold", fill: val-color)[#str(calc.round(val))],
-          )
-          v(5pt)
-        }
-      }
+  let points = if data.series.len() > 0 { data.series.at(0).data } else { () }
+  let n = points.len()
+  if n >= 3 {
+    let size = 240pt
+    let cx = size / 2
+    let cy = size / 2
+    let r-max = size / 2 - 36pt
+    let coord(i, r) = {
+      let a = -90deg + i * (360deg / n)
+      (cx + r * calc.cos(a), cy + r * calc.sin(a))
     }
-  )
+    align(center, box(width: size, height: size, {
+      // Concentric grid rings at 25/50/75/100 %
+      for g in (0.25, 0.5, 0.75, 1.0) {
+        let rp = range(0, n).map(i => coord(i, r-max * g))
+        place(top + left, polygon(stroke: (paint: color-border, thickness: 0.5pt), ..rp))
+      }
+      // Spokes
+      for i in range(0, n) {
+        place(top + left, line(
+          start: (cx, cy),
+          end: coord(i, r-max),
+          stroke: (paint: color-border, thickness: 0.5pt),
+        ))
+      }
+      // Value polygon
+      let dp = range(0, n).map(i => coord(i, r-max * calc.min(points.at(i).value, 100) / 100))
+      place(top + left, polygon(
+        fill: color-primary.transparentize(82%),
+        stroke: (paint: color-primary, thickness: 1.4pt),
+        ..dp,
+      ))
+      // Value dots
+      for i in range(0, n) {
+        let (dx, dy) = coord(i, r-max * calc.min(points.at(i).value, 100) / 100)
+        place(top + left, dx: dx - 2pt, dy: dy - 2pt, circle(radius: 2pt, fill: color-primary, stroke: none))
+      }
+      // Axis labels + value
+      for i in range(0, n) {
+        let (lx, ly) = coord(i, r-max + 17pt)
+        place(top + left, dx: lx - 38pt, dy: ly - 10pt, box(width: 76pt, align(center, {
+          text(size: 7pt, weight: "medium", fill: color-text-muted)[#points.at(i).label]
+          linebreak()
+          text(size: 8.5pt, weight: "bold", fill: color-text)[#str(calc.round(points.at(i).value))]
+        })))
+      }
+    }))
+  }
 }
 
 #let chart(data) = {
