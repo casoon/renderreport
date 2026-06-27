@@ -109,8 +109,6 @@
       align(center, box(width: 100%, height: 24pt,
         align(center + top, text(size: 9pt, weight: "medium", fill: color-text, label))
       ))
-      align(center, text(size: 8.5pt, fill: color-text-muted,
-        str(calc.round(value)) + " / " + str(calc.round(max_val))))
     }
   )
 }
