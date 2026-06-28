@@ -100,8 +100,10 @@ impl ComponentRegistry {
         }
 
         // Kahn's algorithm with an id-sorted ready set for deterministic output.
-        let desc_by_id: HashMap<&'static str, &'static crate::components::catalog::ComponentDescriptor> =
-            descs.iter().map(|d| (d.id, *d)).collect();
+        let desc_by_id: HashMap<
+            &'static str,
+            &'static crate::components::catalog::ComponentDescriptor,
+        > = descs.iter().map(|d| (d.id, *d)).collect();
         let mut ready: Vec<&'static str> = indegree
             .iter()
             .filter(|(_, &deg)| deg == 0)
