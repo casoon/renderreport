@@ -58,18 +58,93 @@ impl ComponentRegistry {
     pub fn register_standard_components(&mut self) {
         use crate::components::catalog::ComponentCatalog;
 
-        const DISPATCHERS: &[&str] = &["grid-component", "flow-group"];
+        // The catalog yields descriptors in `inventory` link order, which differs
+        // across platforms (macOS vs Linux). Typst captures `#let` closures at
+        // definition time, so a component whose template calls another component's
+        // function (e.g. `card-dashboard` calls `metric-card`, the dispatchers call
+        // everything) must be registered *after* its dependency. We therefore
+        // topologically sort the templates by their cross-references, breaking ties
+        // by id, which is both dependency-safe and deterministic across platforms.
+        let descs: Vec<&'static crate::components::catalog::ComponentDescriptor> =
+            ComponentCatalog::all().collect();
+        let ids: Vec<&'static str> = descs.iter().map(|d| d.id).collect();
 
-        // Register all non-dispatcher components first.
-        for desc in ComponentCatalog::all() {
-            if !DISPATCHERS.contains(&desc.id) {
-                self.register(ComponentId::new(desc.id), desc.template.to_string());
+        // Build edges: dep -> set of components that reference it.
+        let references = |template: &str, candidate: &str| -> bool {
+            // Match `candidate(` not preceded by an identifier char or hyphen,
+            // so `metric-card` does not match inside `big-metric-card`.
+            let bytes = template.as_bytes();
+            let needle = format!("{candidate}(");
+            let mut from = 0;
+            while let Some(pos) = template[from..].find(&needle) {
+                let abs = from + pos;
+                let ok_prefix = abs == 0
+                    || !matches!(bytes[abs - 1], b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'-' | b'_');
+                if ok_prefix {
+                    return true;
+                }
+                from = abs + needle.len();
+            }
+            false
+        };
+
+        let mut indegree: HashMap<&'static str, usize> = ids.iter().map(|id| (*id, 0)).collect();
+        let mut dependents: HashMap<&'static str, Vec<&'static str>> = HashMap::new();
+        for d in &descs {
+            for dep in &ids {
+                if *dep != d.id && references(d.template, dep) {
+                    dependents.entry(dep).or_default().push(d.id);
+                    *indegree.get_mut(d.id).unwrap() += 1;
+                }
             }
         }
-        // Register dispatchers last so all other functions are already defined.
-        for id in DISPATCHERS {
-            if let Some(desc) = ComponentCatalog::get(id) {
+
+        // Kahn's algorithm with an id-sorted ready set for deterministic output.
+        let desc_by_id: HashMap<&'static str, &'static crate::components::catalog::ComponentDescriptor> =
+            descs.iter().map(|d| (d.id, *d)).collect();
+        let mut ready: Vec<&'static str> = indegree
+            .iter()
+            .filter(|(_, &deg)| deg == 0)
+            .map(|(id, _)| *id)
+            .collect();
+        ready.sort_unstable_by(|a, b| b.cmp(a));
+        let mut emitted = 0usize;
+        while let Some(id) = ready.pop() {
+            // `ready` is sorted ascending; pop the lexicographically smallest by
+            // keeping it sorted descending instead.
+            if let Some(desc) = desc_by_id.get(id) {
                 self.register(ComponentId::new(desc.id), desc.template.to_string());
+                emitted += 1;
+            }
+            if let Some(children) = dependents.get(id) {
+                let mut newly_ready = Vec::new();
+                for child in children {
+                    let deg = indegree.get_mut(child).unwrap();
+                    *deg -= 1;
+                    if *deg == 0 {
+                        newly_ready.push(*child);
+                    }
+                }
+                for c in newly_ready {
+                    ready.push(c);
+                }
+                ready.sort_unstable_by(|a, b| b.cmp(a));
+            }
+        }
+
+        // Cycle fallback: if cross-references form a cycle (should not happen),
+        // emit any stragglers in id order so nothing is silently dropped.
+        if emitted < descs.len() {
+            let mut remaining: Vec<&'static str> = descs
+                .iter()
+                .map(|d| d.id)
+                .filter(|id| !self.templates.contains_key(&ComponentId::new(*id)))
+                .collect();
+            remaining.sort_unstable();
+            for id in remaining {
+                if let Some(desc) = desc_by_id.get(id) {
+                    self.register(ComponentId::new(desc.id), desc.template.to_string());
+                }
             }
         }
     }
