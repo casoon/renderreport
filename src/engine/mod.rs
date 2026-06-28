@@ -220,12 +220,22 @@ impl Engine {
         source.push_str("// Component Functions\n");
         let used_types = collect_used_component_types(&request.components);
         let needs_all = used_types.contains("flow-group") || used_types.contains("grid-component");
-        for component_id in self.components.list_components() {
-            if needs_all || used_types.contains(component_id.0.as_str()) {
-                if let Some(template) = self.components.get_template(component_id) {
-                    source.push_str(template);
-                    source.push_str("\n\n");
-                }
+        // Emit component definitions in a stable, sorted order. The registry's
+        // insertion order can depend on link order (it differs macOS vs Linux),
+        // which made the generated source — and the snapshot test — non-portable.
+        // Component templates are independent `#let` definitions used only later
+        // in the document body, so sorting them is render-neutral.
+        let mut to_emit: Vec<_> = self
+            .components
+            .list_components()
+            .into_iter()
+            .filter(|cid| needs_all || used_types.contains(cid.0.as_str()))
+            .collect();
+        to_emit.sort_by(|a, b| a.0.cmp(&b.0));
+        for component_id in to_emit {
+            if let Some(template) = self.components.get_template(component_id) {
+                source.push_str(template);
+                source.push_str("\n\n");
             }
         }
 
