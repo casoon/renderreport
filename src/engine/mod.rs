@@ -294,7 +294,7 @@ impl Engine {
         };
 
         format!(
-            "#set page(\n  paper: \"{}\",{}\n  fill: color-background,\n{}{}{})\n\n#set text(\n  font: (font-body, \"Arial\", \"Liberation Sans\", \"Noto Sans\"),\n  size: font-size-base,\n  fill: color-text,\n)\n\n#set text(hyphenate: true)\n#set par(justify: false, leading: 0.75em)\n\n#set heading(numbering: none)\n#show heading: set par(justify: false)\n#show heading.where(level: 1): set text(size: font-size-2xl, weight: \"bold\", fill: color-text)\n#show heading.where(level: 2): set text(size: font-size-xl, weight: \"bold\", fill: color-text)\n#show heading.where(level: 3): set text(size: font-size-lg, weight: \"bold\", fill: color-text)\n#show heading.where(level: 4): set text(size: font-size-base, weight: \"bold\", fill: color-text-muted)\n",
+            "#set page(\n  paper: \"{}\",{}\n  fill: color-background,\n{}{}{})\n\n#set text(\n  font: (font-body, \"Arial\", \"Liberation Sans\", \"Noto Sans\"),\n  size: font-size-base,\n  fill: color-text,\n)\n\n#set text(hyphenate: true)\n#set par(justify: false, leading: 0.75em)\n\n#set heading(numbering: none)\n#show heading: set par(justify: false)\n#show heading: set block(sticky: true)\n#show heading.where(level: 1): set text(size: font-size-2xl, weight: \"bold\", fill: color-text)\n#show heading.where(level: 2): set text(size: font-size-xl, weight: \"bold\", fill: color-text)\n#show heading.where(level: 3): set text(size: font-size-lg, weight: \"bold\", fill: color-text)\n#show heading.where(level: 4): set text(size: font-size-base, weight: \"bold\", fill: color-text-muted)\n",
             paper,
             if flipped { "\n  flipped: true," } else { "" },
             margin_block,

@@ -169,12 +169,11 @@
 //   Use 2em for text/list bodies, 4em for table/grid bodies
 //   (table rows are ~3-4em tall including padding).
 #let component-title(content, spacing: spacing-3, min-body: 4em) = {
-  block(width: 100%, breakable: false, below: 0pt)[
-    #content
-    #v(spacing)
-    #box(height: min-body, width: 0pt)[]
-  ]
-  v(-min-body)
+  // `sticky: true` keeps the title on the same page as the content that follows
+  // it, so a component heading never strands alone at the bottom of a page with
+  // its body pushed to the next page. (`min-body` is kept for call-site
+  // compatibility but is no longer needed — sticky handles tall bodies too.)
+  block(width: 100%, breakable: false, below: spacing, sticky: true)[#content]
 }
 
 
@@ -242,6 +241,7 @@
 
 #set heading(numbering: none)
 #show heading: set par(justify: false)
+#show heading: set block(sticky: true)
 #show heading.where(level: 1): set text(size: font-size-2xl, weight: "bold", fill: color-text)
 #show heading.where(level: 2): set text(size: font-size-xl, weight: "bold", fill: color-text)
 #show heading.where(level: 3): set text(size: font-size-lg, weight: "bold", fill: color-text)
