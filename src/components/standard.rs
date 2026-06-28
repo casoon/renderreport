@@ -1283,6 +1283,11 @@ pub struct CoverPage {
     pub date: String,
     pub score: u32,
     pub grade: String,
+    /// Optional brand logo asset path (e.g. a registered SVG). When set, it is
+    /// rendered in the top-left brand slot instead of the plain `brand` text —
+    /// enabling white-label custom logos on the cover.
+    #[serde(default)]
+    pub logo_src: String,
     /// Plain-language condition phrase shown next to the score (replaces the
     /// A–F grade column when present).
     #[serde(default)]
@@ -1333,6 +1338,7 @@ impl CoverPage {
             date: String::new(),
             score,
             grade: grade.into(),
+            logo_src: String::new(),
             band_phrase: String::new(),
             score_label: String::new(),
             findings_label: String::new(),
@@ -1345,6 +1351,11 @@ impl CoverPage {
             module_gauges: vec![],
             computed_status,
         }
+    }
+
+    pub fn with_logo(mut self, logo_src: impl Into<String>) -> Self {
+        self.logo_src = logo_src.into();
+        self
     }
 
     pub fn with_band_phrase(mut self, phrase: impl Into<String>) -> Self {

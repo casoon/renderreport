@@ -20,10 +20,18 @@
   v(9mm)
 
   // ── Brand + Date header ───────────────────────────────────────
+  // A custom logo (white-label) takes the brand slot when provided; otherwise
+  // the brand name is shown as text.
+  let brand-mark = if data.at("logo_src", default: "") != "" {
+    image(data.logo_src, height: 9mm)
+  } else {
+    text(size: font-size-base, weight: "bold", fill: color-primary)[#data.brand]
+  }
   grid(
     columns: (1fr, auto),
+    align: (left + horizon, right + horizon),
     gutter: spacing-3,
-    text(size: font-size-base, weight: "bold", fill: color-primary)[#data.brand],
+    brand-mark,
     text(size: font-size-sm, fill: color-text-muted)[#data.date],
   )
 
