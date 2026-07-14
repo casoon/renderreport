@@ -39,10 +39,15 @@
         if data.striped and y > 0 and calc.even(y) { table-row-alt-bg } else { none }
       },
 
-      // Header row — compact muted label, like a section eyebrow
-      ..data.columns.map(col => {
-        text(weight: "bold", fill: color-text-muted, size: font-size-xs)[#col.header]
-      }),
+      // Header row — compact muted label, like a section eyebrow. Uses
+      // table.header() (not a plain first row) so Typst repeats it on every
+      // page the table spans and never leaves it stranded on the previous
+      // page while an orphaned data row floats alone on the next.
+      table.header(
+        ..data.columns.map(col => {
+          text(weight: "bold", fill: color-text-muted, size: font-size-xs)[#col.header]
+        }),
+      ),
 
       // Data rows
       ..data.rows.flatten()
