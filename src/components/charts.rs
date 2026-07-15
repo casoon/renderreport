@@ -41,6 +41,11 @@ pub struct Chart {
     /// Chart height
     #[serde(default = "default_chart_height")]
     pub height: String,
+    /// Render a bar chart as horizontal rows instead of vertical columns.
+    /// Use for ranked/categorical data with long text labels, where fixed-width
+    /// columns would force multi-line label wraps as the category count grows.
+    #[serde(default)]
+    pub horizontal: bool,
 }
 
 fn default_true() -> bool {
@@ -78,6 +83,7 @@ impl Chart {
             show_legend: true,
             width: "100%".into(),
             height: "200pt".into(),
+            horizontal: false,
         }
     }
 
@@ -108,6 +114,14 @@ impl Chart {
     pub fn with_labels(mut self, x: impl Into<String>, y: impl Into<String>) -> Self {
         self.x_label = Some(x.into());
         self.y_label = Some(y.into());
+        self
+    }
+
+    /// Render a bar chart as horizontal rows: each label sits on its own full-width
+    /// line above its bar, so long category text wraps normally instead of being
+    /// squeezed under a narrow column.
+    pub fn horizontal(mut self) -> Self {
+        self.horizontal = true;
         self
     }
 }

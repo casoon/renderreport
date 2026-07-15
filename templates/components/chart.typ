@@ -25,7 +25,10 @@
   )
 }
 
-#let chart-bar(data) = {
+// A single series encodes magnitude, not identity — every bar takes the same
+// hue (no legend box; the chart title already names what's plotted). Reserve
+// `chart-colors` cycling for charts that render more than one series.
+#let chart-bar-vertical(data) = {
   let points = if data.series.len() > 0 { data.series.at(0).data } else { () }
   let max_val = if points.len() > 0 {
     calc.max(..points.map(p => p.value), 1)
@@ -58,7 +61,7 @@
             rect(
               width: 100%,
               height: bar_height * 1pt,
-              fill: chart-colors.at(calc.rem(i, chart-colors.len())),
+              fill: color-primary,
               radius: (top: 3pt),
             )
             v(6pt)
@@ -73,6 +76,60 @@
       }
     }
   )
+}
+
+// Rows instead of columns: the label owns the full row width and wraps
+// normally, so it stays readable regardless of how many categories there are
+// or how long their text is — unlike fixed-width columns, which get narrower
+// (and the label more cramped) as the category count grows.
+#let chart-bar-horizontal(data) = {
+  let points = if data.series.len() > 0 { data.series.at(0).data } else { () }
+  let max_val = if points.len() > 0 {
+    calc.max(..points.map(p => p.value), 1)
+  } else { 100 }
+  let bar-height = 10pt
+
+  rect(
+    width: 100%,
+    stroke: 0.5pt + color-border,
+    radius: 4pt,
+    fill: color-surface,
+    inset: 16pt,
+    {
+      let y_label = data.at("y_label", default: none)
+      if y_label != none {
+        align(left, text(size: 8pt, fill: color-text-muted, y_label))
+        v(4pt)
+      }
+
+      for (i, p) in points.enumerate() {
+        if i > 0 { v(spacing-3) }
+        let bar_frac = calc.max(p.value / max_val, 0.03)
+        text(size: 8.5pt, fill: color-text, p.label)
+        v(spacing-1)
+        grid(
+          columns: (1fr, auto),
+          column-gutter: spacing-2,
+          align: (left + horizon, right + horizon),
+          rect(
+            width: bar_frac * 100%,
+            height: bar-height,
+            fill: color-primary,
+            radius: (right: 3pt),
+          ),
+          text(size: 8pt, weight: "bold", fill: color-text, str(calc.round(p.value))),
+        )
+      }
+    }
+  )
+}
+
+#let chart-bar(data) = {
+  if data.at("horizontal", default: false) {
+    chart-bar-horizontal(data)
+  } else {
+    chart-bar-vertical(data)
+  }
 }
 
 #let chart-pie(data) = {

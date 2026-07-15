@@ -7,8 +7,8 @@
       #text(
         size: font-size-xs,
         weight: "bold",
-        fill: color-primary,
-        tracking: 0.08em,
+        fill: color-secondary,
+        tracking: 0.12em,
         upper(data.eyebrow),
       )
       #v(spacing-2)
