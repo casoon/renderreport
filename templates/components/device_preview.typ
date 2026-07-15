@@ -33,14 +33,29 @@
               circle(radius: 4pt, fill: rgb("#28c840")),
             )
           ],
-          // Image at full width, outer box clips to h - 20pt — shows top of page
-          image(data.desktop_src, width: 100%),
+          // `place(top, ..)` over a plain `image(..)`: harmless when the
+          // image already fits (the normal case here — desktop screenshots
+          // rarely overflow this box) but doesn't reliably fix it when it
+          // doesn't — see the mobile column below for why overflow needs to
+          // be avoided upstream instead of fixed here.
+          place(top, image(data.desktop_src, width: 100%)),
         )
       ],
 
-      // Mobile: phone-style rounded corners, outer box clips to h — shows top
+      // Mobile: phone-style rounded corners, outer box clips to h. A
+      // portrait screenshot scaled to this column's width naturally comes
+      // out several times taller than `h` — verified empirically (test
+      // image with distinct top/mid/bottom color bands) that when this
+      // much overflow needs clipping, neither a plain `image` nor
+      // `place(top, ..)` nor `image(.., fit: "cover")` reliably keeps the
+      // top of the source in frame; the top slice (here: the page header)
+      // silently goes missing regardless of `h`. There is no in-template
+      // fix for this — the caller MUST pre-crop the source asset to near
+      // this box's aspect ratio before handing it to this component (see
+      // `register_page_screenshot_assets` in auditmysite), so this box
+      // only ever needs to clip a small, harmless margin.
       box(stroke: 0.5pt + rgb("#d1d5db"), radius: 14pt, clip: true, width: 100%, height: h)[
-        #image(data.mobile_src, width: 100%)
+        #place(top, image(data.mobile_src, width: 100%))
       ],
     )
   ])
