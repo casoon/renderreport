@@ -92,7 +92,7 @@
 #let before-after(bad, good) = grid(
   columns: (1fr, 1fr),
   gutter: spacing-3,
-  code-panel("✕ Wrong", bad, fill: color-bad-soft),
+  code-panel("✗ Wrong", bad, fill: color-bad-soft),
   code-panel("✓ Right", good, fill: color-ok-soft),
 )
 

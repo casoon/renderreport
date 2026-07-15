@@ -5,7 +5,7 @@
   if callout-type == "warning" {
     (bg: color-warn-soft, border: color-warn, icon: "⚠")
   } else if callout-type == "error" {
-    (bg: color-bad-soft, border: color-bad, icon: "✕")
+    (bg: color-bad-soft, border: color-bad, icon: "✗")
   } else if callout-type == "success" {
     (bg: color-ok-soft, border: color-ok, icon: "✓")
   } else if callout-type == "tip" {

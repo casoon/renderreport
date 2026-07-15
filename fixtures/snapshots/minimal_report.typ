@@ -143,7 +143,7 @@
 #let before-after(bad, good) = grid(
   columns: (1fr, 1fr),
   gutter: spacing-3,
-  code-panel("✕ Wrong", bad, fill: color-bad-soft),
+  code-panel("✗ Wrong", bad, fill: color-bad-soft),
   code-panel("✓ Right", good, fill: color-ok-soft),
 )
 
@@ -256,7 +256,7 @@
   if callout-type == "warning" {
     (bg: color-warn-soft, border: color-warn, icon: "⚠")
   } else if callout-type == "error" {
-    (bg: color-bad-soft, border: color-bad, icon: "✕")
+    (bg: color-bad-soft, border: color-bad, icon: "✗")
   } else if callout-type == "success" {
     (bg: color-ok-soft, border: color-ok, icon: "✓")
   } else if callout-type == "tip" {

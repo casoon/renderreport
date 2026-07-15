@@ -2,7 +2,7 @@
 // Before/after comparison using before-after() helper from theme_helpers.typ
 
 #let comparison-block(data) = {
-  let wrong-label = if data.wrong_label != none { data.wrong_label } else { "✕ " + data.label_left }
+  let wrong-label = if data.wrong_label != none { data.wrong_label } else { "✗ " + data.label_left }
   let right-label = if data.right_label != none { data.right_label } else { "✓ " + data.label_right }
 
   block(width: 100%)[

@@ -23,10 +23,15 @@
     #v(spacing-4)
 
     #for item in data.items [
+      // The value column is 1fr (not auto): an `auto` column sizes itself to
+      // its content's natural width, so a long value (an HTML snippet, a DOM
+      // path) would claim unbounded width and squeeze the label column to
+      // near-zero — the label's own text then has nowhere to go but overlap
+      // the value next to it. 1fr wraps long values inside their own space.
       #grid(
-        columns: (auto, 1fr, auto),
+        columns: (auto, auto, 1fr),
         gutter: spacing-2,
-        align: (left, left, right),
+        align: (left, left, left),
 
         status-indicator(item.status),
         text(fill: color-text-muted, size: font-size-base)[#item.label],

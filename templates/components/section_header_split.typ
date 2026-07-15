@@ -14,6 +14,11 @@
       #v(spacing-2)
     ]
 
+    // The eyebrow's v(spacing-2) above is meant to be the entire gap to the
+    // heading — without this, Typst's own default heading "above" spacing
+    // stacks on top of it, so the two read as detached instead of a paired
+    // kicker + title.
+    #show heading: set block(above: if data.eyebrow != none { 0pt } else { auto })
     #heading(level: data.level, outlined: data.outlined)[#data.title]
 
     #v(spacing-2)
