@@ -138,3 +138,14 @@ jobs:
         uses: rustsec/audit-check@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # RUSTSEC-2026-0194 / -0195 (quick-xml DoS via untrusted-XML namespace/
+          # attribute handling): reached transitively through typst-library's own
+          # deps (hayagriva/citationberg for bibliography CSL, syntect/plist for
+          # syntax-highlight themes), pinned by their semver ranges — `cargo
+          # update -p quick-xml` has no compatible fix to move to yet. Both are
+          # DoS-only (no memory-corruption/RCE) and the exploitable path is
+          # attacker-controlled XML fed to those parsers; renderreport only feeds
+          # them typst's own bundled, non-user-controlled resource files, so
+          # there's no reachable attacker input here. Revisit and drop this once
+          # typst-library bumps past a quick-xml >=0.41 requirement.
+          ignore: RUSTSEC-2026-0194,RUSTSEC-2026-0195
