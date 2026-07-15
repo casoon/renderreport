@@ -6,7 +6,7 @@
     #if data.eyebrow != none [
       #text(
         size: font-size-xs,
-        weight: "bold",
+        weight: "semibold",
         fill: color-secondary,
         tracking: 0.15em,
         upper(data.eyebrow),
