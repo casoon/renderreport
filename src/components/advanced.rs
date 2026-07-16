@@ -1960,6 +1960,18 @@ pub struct DominantIssueSpotlight {
     pub eyebrow: Option<String>,
     #[serde(default)]
     pub affected_count: Option<u32>,
+    /// Label for the "user impact" field. Defaults to German ("Nutzer-Wirkung")
+    /// in the template when not set — pass this explicitly for non-German reports.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label_user_impact: Option<String>,
+    /// Label for the "recommendation" field. Defaults to German ("Empfehlung")
+    /// in the template when not set.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label_recommendation: Option<String>,
+    /// Suffix appended after `affected_count` (e.g. "% Anteil" / "% share").
+    /// Defaults to German in the template when not set.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label_share_suffix: Option<String>,
 }
 
 impl DominantIssueSpotlight {
@@ -1978,6 +1990,9 @@ impl DominantIssueSpotlight {
             recommendation: recommendation.into(),
             eyebrow: None,
             affected_count: None,
+            label_user_impact: None,
+            label_recommendation: None,
+            label_share_suffix: None,
         }
     }
 
@@ -1988,6 +2003,20 @@ impl DominantIssueSpotlight {
 
     pub fn with_affected_count(mut self, count: u32) -> Self {
         self.affected_count = Some(count);
+        self
+    }
+
+    /// Sets the user-impact/recommendation/share-suffix labels — required for
+    /// a non-German report, since the template's own defaults are German.
+    pub fn with_labels(
+        mut self,
+        label_user_impact: impl Into<String>,
+        label_recommendation: impl Into<String>,
+        label_share_suffix: impl Into<String>,
+    ) -> Self {
+        self.label_user_impact = Some(label_user_impact.into());
+        self.label_recommendation = Some(label_recommendation.into());
+        self.label_share_suffix = Some(label_share_suffix.into());
         self
     }
 }

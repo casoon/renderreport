@@ -39,7 +39,7 @@
               upper(data.eyebrow),
             ),
             if data.at("affected_count", default: none) != none {
-              text(size: font-size-xs, fill: color-text-muted)[#str(data.affected_count)% Anteil]
+              text(size: font-size-xs, fill: color-text-muted)[#str(data.affected_count)#data.at("label_share_suffix", default: "% Anteil")]
             },
           )
           #v(spacing-1)
@@ -60,12 +60,12 @@
 
           stack(
             spacing: spacing-1,
-            label-text("Nutzer-Wirkung"),
+            label-text(data.at("label_user_impact", default: "Nutzer-Wirkung")),
             text(size: font-size-xs, fill: color-text)[#data.user_impact],
           ),
           stack(
             spacing: spacing-1,
-            label-text("Empfehlung"),
+            label-text(data.at("label_recommendation", default: "Empfehlung")),
             text(size: font-size-xs, fill: color-text)[#data.recommendation],
           ),
         )

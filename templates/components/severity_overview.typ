@@ -21,7 +21,7 @@
       radius: 10pt,
       inset: (x: spacing-3, y: spacing-3),
     )[
-      #label-text([Kritisch])
+      #label-text(data.at("label_critical", default: "Kritisch"))
       #v(spacing-2)
       #text(size: font-size-2xl, weight: "bold", fill: color-bad)[#data.critical]
     ],
@@ -34,7 +34,7 @@
       radius: 10pt,
       inset: (x: spacing-3, y: spacing-3),
     )[
-      #label-text([Schwerwiegend])
+      #label-text(data.at("label_serious", default: "Schwerwiegend"))
       #v(spacing-2)
       #text(size: font-size-2xl, weight: "bold", fill: color-bad)[#data.serious]
     ],
@@ -47,7 +47,7 @@
       radius: 10pt,
       inset: (x: spacing-3, y: spacing-3),
     )[
-      #label-text([Moderat])
+      #label-text(data.at("label_moderate", default: "Moderat"))
       #v(spacing-2)
       #text(size: font-size-2xl, weight: "bold", fill: color-warn)[#data.moderate]
     ],
@@ -60,7 +60,7 @@
       radius: 10pt,
       inset: (x: spacing-3, y: spacing-3),
     )[
-      #label-text([Gering])
+      #label-text(data.at("label_minor", default: "Gering"))
       #v(spacing-2)
       #text(size: font-size-2xl, weight: "bold", fill: color-ok)[#data.minor]
     ],
@@ -73,6 +73,6 @@
     let high-count = data.critical + data.serious
     theme-severity-strip(high-count, data.moderate, data.minor)
     v(spacing-2)
-    small-text([#total Verstöße insgesamt])
+    small-text([#total #data.at("label_total_suffix", default: "Verstöße insgesamt")])
   }
 }

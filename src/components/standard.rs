@@ -1226,6 +1226,19 @@ pub struct SeverityOverview {
     pub serious: u32,
     pub moderate: u32,
     pub minor: u32,
+    /// Card labels (critical/serious/moderate/minor) and the strip-bar total
+    /// suffix. Each defaults to German in the template when not set — pass
+    /// these explicitly for a non-German report.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label_critical: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label_serious: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label_moderate: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label_minor: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label_total_suffix: Option<String>,
 }
 
 impl SeverityOverview {
@@ -1236,11 +1249,34 @@ impl SeverityOverview {
             serious,
             moderate,
             minor,
+            label_critical: None,
+            label_serious: None,
+            label_moderate: None,
+            label_minor: None,
+            label_total_suffix: None,
         }
     }
 
     pub fn with_title(mut self, title: &str) -> Self {
         self.title = Some(title.into());
+        self
+    }
+
+    /// Sets the card/strip-bar labels — required for a non-German report,
+    /// since the template's own defaults are German.
+    pub fn with_labels(
+        mut self,
+        label_critical: impl Into<String>,
+        label_serious: impl Into<String>,
+        label_moderate: impl Into<String>,
+        label_minor: impl Into<String>,
+        label_total_suffix: impl Into<String>,
+    ) -> Self {
+        self.label_critical = Some(label_critical.into());
+        self.label_serious = Some(label_serious.into());
+        self.label_moderate = Some(label_moderate.into());
+        self.label_minor = Some(label_minor.into());
+        self.label_total_suffix = Some(label_total_suffix.into());
         self
     }
 }
