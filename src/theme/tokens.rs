@@ -147,7 +147,9 @@ impl Default for ThemeTokens {
 
         // Table
         tokens.set("table.header-bg", TokenValue::Color("#F2F4F7".into()));
-        tokens.set("table.row-alt-bg", TokenValue::Color("#F8FAFC".into()));
+        // Neutral gray, not a blue-tinted slate — striped rows shouldn't read
+        // as a color accent.
+        tokens.set("table.row-alt-bg", TokenValue::Color("#F7F7F7".into()));
         tokens.set("table.border", TokenValue::Color("#E4E7EC".into()));
         tokens.set("table.border-width", TokenValue::Size("0.5pt".into()));
 

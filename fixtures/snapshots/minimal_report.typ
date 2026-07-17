@@ -46,7 +46,7 @@
 #let table-border = rgb("#E4E7EC")
 #let table-border-width = 0.5pt
 #let table-header-bg = rgb("#F2F4F7")
-#let table-row-alt-bg = rgb("#F8FAFC")
+#let table-row-alt-bg = rgb("#F7F7F7")
 
 // Theme Helpers
 // Theme Helper Functions
