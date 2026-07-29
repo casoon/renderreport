@@ -24,10 +24,12 @@ mod descriptors;
 mod registry;
 mod standard;
 pub mod text;
+pub mod wordsearch;
 
 pub use catalog::{ComponentCatalog, ComponentCategory, ComponentDescriptor, LayoutHint};
 pub use registry::{ComponentId, ComponentRegistry};
 pub use standard::*;
+pub use wordsearch::{WordSearch, WordSearchBuilder};
 
 // Re-export new primitive and composite types
 pub use advanced::{
@@ -54,6 +56,15 @@ pub trait Component: Send + Sync {
     /// Validate the component data
     fn validate(&self) -> crate::Result<()> {
         Ok(())
+    }
+
+    /// Wrap this component as a generic `{"type": ..., "data": ...}` item,
+    /// for embedding heterogeneous components inside a `Grid`/`FlowGroup`.
+    fn as_item(&self) -> serde_json::Value {
+        serde_json::json!({
+            "type": self.component_id(),
+            "data": self.to_data(),
+        })
     }
 }
 

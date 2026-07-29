@@ -16,6 +16,7 @@ use renderreport::components::crosstab::{Crosstab, PivotTable};
 use renderreport::components::text::{
     DateField, Eyebrow, Label, NumberField, ResourceField, TextBlock,
 };
+use renderreport::components::wordsearch::WordSearch;
 use renderreport::prelude::*;
 use std::collections::HashMap;
 
@@ -68,12 +69,9 @@ fn main() -> renderreport::Result<()> {
         .add_component(
             Grid::new(3) // @id: grid-component
                 .with_item_min_height("80pt")
-                .add_item(serde_json::json!({ "type": "metric-card",
-                    "data": MetricCard::new("Columns", "3").to_data() }))
-                .add_item(serde_json::json!({ "type": "metric-card",
-                    "data": MetricCard::new("Min-Height", "80pt").to_data() }))
-                .add_item(serde_json::json!({ "type": "metric-card",
-                    "data": MetricCard::new("Gap", "16pt").to_data() })),
+                .add_item(MetricCard::new("Columns", "3").as_item()) // @id: metric-card
+                .add_item(MetricCard::new("Min-Height", "80pt").as_item()) // @id: metric-card
+                .add_item(MetricCard::new("Gap", "16pt").as_item()), // @id: metric-card
         )
 
         .add_component(Section::new("1.5 FlowGroup").with_level(2))
@@ -84,10 +82,8 @@ fn main() -> renderreport::Result<()> {
             FlowGroup::new() // @id: flow-group
                 .with_spacing("8pt")
                 .with_keep_together_if_under("200pt")
-                .add_item(serde_json::json!({ "type": "score-card",
-                    "data": ScoreCard::new("Group Item A", 88).to_data() }))
-                .add_item(serde_json::json!({ "type": "score-card",
-                    "data": ScoreCard::new("Group Item B", 74).to_data() })),
+                .add_item(ScoreCard::new("Group Item A", 88).as_item()) // @id: score-card
+                .add_item(ScoreCard::new("Group Item B", 74).as_item()), // @id: score-card
         )
 
         .add_component(Section::new("1.6 Watermark").with_level(2))
@@ -111,12 +107,9 @@ fn main() -> renderreport::Result<()> {
         ))
         .add_component(
             Grid::new(3).with_item_min_height("110pt")
-                .add_item(serde_json::json!({ "type": "score-card",
-                    "data": ScoreCard::new("Accessibility", 94).with_description("WCAG 2.1 AA").to_data() }))
-                .add_item(serde_json::json!({ "type": "score-card",
-                    "data": ScoreCard::new("Performance", 67).with_description("Lighthouse").to_data() }))
-                .add_item(serde_json::json!({ "type": "score-card",
-                    "data": ScoreCard::new("Security", 41).with_description("OWASP Top 10").to_data() })),
+                .add_item(ScoreCard::new("Accessibility", 94).with_description("WCAG 2.1 AA").as_item()) // @id: score-card
+                .add_item(ScoreCard::new("Performance", 67).with_description("Lighthouse").as_item()) // @id: score-card
+                .add_item(ScoreCard::new("Security", 41).with_description("OWASP Top 10").as_item()), // @id: score-card
         )
 
         .add_component(Section::new("2.2 MetricCard").with_level(2))
@@ -125,25 +118,18 @@ fn main() -> renderreport::Result<()> {
         ))
         .add_component(
             Grid::new(4).with_item_min_height("90pt")
-                .add_item(serde_json::json!({ "type": "metric-card",
-                    "data": MetricCard::new("Issues", "142").with_subtitle("total").to_data() }))
-                .add_item(serde_json::json!({ "type": "metric-card",
-                    "data": MetricCard::new("Critical", "8").with_accent_color("#e53e3e").to_data() }))
-                .add_item(serde_json::json!({ "type": "metric-card",
-                    "data": MetricCard::new("Pages", "24").with_subtitle("crawled").to_data() }))
-                .add_item(serde_json::json!({ "type": "metric-card",
-                    "data": MetricCard::new("Score", "79/100").with_accent_color("#38a169").to_data() })),
+                .add_item(MetricCard::new("Issues", "142").with_subtitle("total").as_item()) // @id: metric-card
+                .add_item(MetricCard::new("Critical", "8").with_accent_color("#e53e3e").as_item()) // @id: metric-card
+                .add_item(MetricCard::new("Pages", "24").with_subtitle("crawled").as_item()) // @id: metric-card
+                .add_item(MetricCard::new("Score", "79/100").with_accent_color("#38a169").as_item()), // @id: metric-card
         )
 
         .add_component(Section::new("2.3 Gauge").with_level(2))
         .add_component(
             Grid::new(3)
-                .add_item(serde_json::json!({ "type": "gauge",
-                    "data": Gauge::new("Overall", 79.0).to_data() }))
-                .add_item(serde_json::json!({ "type": "gauge",
-                    "data": Gauge::new("Accessibility", 94.0).to_data() }))
-                .add_item(serde_json::json!({ "type": "gauge",
-                    "data": Gauge::new("Performance", 52.0).to_data() })),
+                .add_item(Gauge::new("Overall", 79.0).as_item()) // @id: gauge
+                .add_item(Gauge::new("Accessibility", 94.0).as_item()) // @id: gauge
+                .add_item(Gauge::new("Performance", 52.0).as_item()), // @id: gauge
         )
 
         .add_component(Section::new("2.4 ProgressBar").with_level(2))
@@ -158,28 +144,29 @@ fn main() -> renderreport::Result<()> {
         .add_component(TextBlock::new("Single stat with optional unit, trend and accent."))
         .add_component(
             Grid::new(3)
-                .add_item(serde_json::json!({ "type": "stat",
-                    "data": Stat::new("Total Issues", "142").with_unit("findings").to_data() }))
-                .add_item(serde_json::json!({ "type": "stat",
-                    "data": Stat::new("Score Delta", "+21").with_trend("up", true).to_data() }))
-                .add_item(serde_json::json!({ "type": "stat",
-                    "data": Stat::new("Revenue", "€2.4M").with_accent("#22c55e").to_data() })),
+                .add_item(Stat::new("Total Issues", "142").with_unit("findings").as_item()) // @id: stat
+                .add_item(Stat::new("Score Delta", "+21").with_trend("up", true).as_item()) // @id: stat
+                .add_item(Stat::new("Revenue", "€2.4M").with_accent("#22c55e").as_item()), // @id: stat
         )
 
         .add_component(Section::new("2.7 StatPair").with_level(2))
         .add_component(TextBlock::new("Two stats side by side."))
         .add_component(
             Grid::new(2)
-                .add_item(serde_json::json!({ "type": "stat-pair", // @id: stat-pair
-                    "data": StatPair::new(
+                .add_item(
+                    StatPair::new(
                         StatPairEntry::new("Before", "58"),
                         StatPairEntry::new("After", "79"),
-                    ).to_data() }))
-                .add_item(serde_json::json!({ "type": "stat-pair",
-                    "data": StatPair::new(
+                    )
+                    .as_item(), // @id: stat-pair
+                )
+                .add_item(
+                    StatPair::new(
                         StatPairEntry::new("Score", "79").with_unit("/100"),
                         StatPairEntry::new("Delta", "+21").with_accent("#22c55e"),
-                    ).to_data() })),
+                    )
+                    .as_item(), // @id: stat-pair
+                ),
         )
 
         .add_component(Section::new("2.8 MetricStrip").with_level(2))
@@ -196,12 +183,9 @@ fn main() -> renderreport::Result<()> {
         .add_component(Section::new("2.9 TrendTile").with_level(2))
         .add_component(
             Grid::new(3)
-                .add_item(serde_json::json!({ "type": "trend-tile",
-                    "data": TrendTile::up("Accessibility", "+7").with_reference("was 87").to_data() }))
-                .add_item(serde_json::json!({ "type": "trend-tile",
-                    "data": TrendTile::down("Performance", "-4").with_reference("was 71").to_data() }))
-                .add_item(serde_json::json!({ "type": "trend-tile",
-                    "data": TrendTile::stable("SEO", "0").to_data() })),
+                .add_item(TrendTile::up("Accessibility", "+7").with_reference("was 87").as_item()) // @id: trend-tile
+                .add_item(TrendTile::down("Performance", "-4").with_reference("was 71").as_item()) // @id: trend-tile
+                .add_item(TrendTile::stable("SEO", "0").as_item()), // @id: trend-tile
         )
 
         .add_component(Section::new("2.10 ModuleComparison").with_level(2))
@@ -292,16 +276,11 @@ fn main() -> renderreport::Result<()> {
         ))
         .add_component(
             Grid::new(5)
-                .add_item(serde_json::json!({ "type": "status-pill",
-                    "data": StatusPill::good("Passed").to_data() }))
-                .add_item(serde_json::json!({ "type": "status-pill",
-                    "data": StatusPill::warn("Review").to_data() }))
-                .add_item(serde_json::json!({ "type": "status-pill",
-                    "data": StatusPill::bad("Failed").to_data() }))
-                .add_item(serde_json::json!({ "type": "status-pill",
-                    "data": StatusPill::info("Info").to_data() }))
-                .add_item(serde_json::json!({ "type": "status-pill",
-                    "data": StatusPill::neutral("Pending").to_data() })),
+                .add_item(StatusPill::good("Passed").as_item()) // @id: status-pill
+                .add_item(StatusPill::warn("Review").as_item()) // @id: status-pill
+                .add_item(StatusPill::bad("Failed").as_item()) // @id: status-pill
+                .add_item(StatusPill::info("Info").as_item()) // @id: status-pill
+                .add_item(StatusPill::neutral("Pending").as_item()), // @id: status-pill
         )
 
         .add_component(Section::new("3.4 Eyebrow").with_level(2))
@@ -709,25 +688,18 @@ fn main() -> renderreport::Result<()> {
         ))
         .add_component(
             Grid::new(4)
-                .add_item(serde_json::json!({ "type": "number-field",
-                    "data": NumberField::new(42000.0).to_data() }))
-                .add_item(serde_json::json!({ "type": "number-field",
-                    "data": NumberField::currency(2400.0, "€").to_data() }))
-                .add_item(serde_json::json!({ "type": "number-field",
-                    "data": NumberField::percentage(79.0).to_data() }))
-                .add_item(serde_json::json!({ "type": "number-field",
-                    "data": NumberField::new(1234.56).with_prefix("Score: ").to_data() })),
+                .add_item(NumberField::new(42000.0).as_item()) // @id: number-field
+                .add_item(NumberField::currency(2400.0, "€").as_item()) // @id: number-field
+                .add_item(NumberField::percentage(79.0).as_item()) // @id: number-field
+                .add_item(NumberField::new(1234.56).with_prefix("Score: ").as_item()), // @id: number-field
         )
 
         .add_component(Section::new("9.2 DateField").with_level(2))
         .add_component(
             Grid::new(3)
-                .add_item(serde_json::json!({ "type": "date-field",
-                    "data": DateField::new("2026-04-02").to_data() }))
-                .add_item(serde_json::json!({ "type": "date-field",
-                    "data": DateField::european("2026-04-02").to_data() }))
-                .add_item(serde_json::json!({ "type": "date-field",
-                    "data": DateField::us("2026-04-02").to_data() })),
+                .add_item(DateField::new("2026-04-02").as_item()) // @id: date-field
+                .add_item(DateField::european("2026-04-02").as_item()) // @id: date-field
+                .add_item(DateField::us("2026-04-02").as_item()), // @id: date-field
         )
 
         .add_component(Section::new("9.3 ResourceField").with_level(2))
@@ -742,21 +714,23 @@ fn main() -> renderreport::Result<()> {
         .add_component(TextBlock::new("Code128, EAN-13, QR, Data Matrix and more."))
         .add_component(
             Grid::new(2)
-                .add_item(serde_json::json!({ "type": "barcode",
-                    "data": Barcode::code128("PROD-2026-XYZ-001").to_data() }))
-                .add_item(serde_json::json!({ "type": "barcode",
-                    "data": Barcode::ean13("5901234123457").to_data() })),
+                .add_item(Barcode::code128("PROD-2026-XYZ-001").as_item()) // @id: barcode
+                .add_item(Barcode::ean13("5901234123457").as_item()), // @id: barcode
         )
 
         .add_component(Section::new("9.5 Barcode — 2D").with_level(2))
         .add_component(
             Grid::new(2)
-                .add_item(serde_json::json!({ "type": "barcode",
-                    "data": Barcode::qr_code("https://github.com/casoon/renderreport")
-                        .with_size("80pt", "80pt").to_data() }))
-                .add_item(serde_json::json!({ "type": "barcode",
-                    "data": Barcode::data_matrix("ASSET-2026-001")
-                        .with_size("80pt", "80pt").to_data() })),
+                .add_item(
+                    Barcode::qr_code("https://github.com/casoon/renderreport")
+                        .with_size("80pt", "80pt")
+                        .as_item(), // @id: barcode
+                )
+                .add_item(
+                    Barcode::data_matrix("ASSET-2026-001")
+                        .with_size("80pt", "80pt")
+                        .as_item(), // @id: barcode
+                ),
         )
 
         // ── 10. Image ────────────────────────────────────────────────────────
@@ -1035,6 +1009,17 @@ fn main() -> renderreport::Result<()> {
         .add_component(TextBlock::new("Side-by-side desktop / mobile screenshot comparison."))
         .add_component( // @id: device-preview
             DevicePreview::new("examples/assets/desktop.png", "examples/assets/mobile.png"),
+        )
+
+        .add_component(Section::new("12.14 WordSearch").with_level(2))
+        .add_component(TextBlock::new("Parameter-driven word search puzzle generator with word list and solution highlighting."))
+        .add_component( // @id: word-search
+            WordSearch::builder()
+                .title("Finde die Begriffe")
+                .words(vec!["RUST", "TYPST", "REPORT"])
+                .grid_size(8, 8)
+                .seed(42)
+                .build()?,
         )
 
         // ── 13. Report Patterns ──────────────────────────────────────────────────

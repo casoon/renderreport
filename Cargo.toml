@@ -99,6 +99,10 @@ name = "charts_demo"
 path = "examples/charts_demo.rs"
 
 [[example]]
+name = "wordsearch_demo"
+path = "examples/wordsearch_demo.rs"
+
+[[example]]
 name = "barcode_demo"
 path = "examples/barcode_demo.rs"
 

@@ -243,6 +243,9 @@ id = "dominant-issue-spotlight"
 [[component]]
 id = "wrong-right-block"
 
+[[component]]
+id = "word-search"
+
 # Dispatchers — must be last
 [[component]]
 id = "grid-component"
