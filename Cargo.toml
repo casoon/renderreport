@@ -11,7 +11,7 @@ license = "MIT OR Apache-2.0"
 keywords = ["report", "pdf", "typst", "audit", "generator"]
 categories = ["text-processing", "rendering", "template-engine"]
 readme = "README.md"
-rust-version = "1.75"
+rust-version = "1.89"
 exclude = [
     "target/",
     ".github/",

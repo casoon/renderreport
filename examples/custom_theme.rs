@@ -60,21 +60,21 @@ fn main() -> renderreport::Result<()> {
         .add_component(Section::new("Department Scores").with_level(1))
         .add_component(
             Grid::new(3)
-                .add_item(serde_json::json!({
-                    "type": "score-card",
-                    "data": ScoreCard::new("Customer Satisfaction", 89)
-                        .with_description("CSAT survey results").to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "score-card",
-                    "data": ScoreCard::new("Employee Engagement", 82)
-                        .with_description("Quarterly pulse survey").to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "score-card",
-                    "data": ScoreCard::new("Operational Efficiency", 91)
-                        .with_description("Process automation index").to_data()
-                })),
+                .add_item(
+                    ScoreCard::new("Customer Satisfaction", 89)
+                        .with_description("CSAT survey results")
+                        .as_item(),
+                )
+                .add_item(
+                    ScoreCard::new("Employee Engagement", 82)
+                        .with_description("Quarterly pulse survey")
+                        .as_item(),
+                )
+                .add_item(
+                    ScoreCard::new("Operational Efficiency", 91)
+                        .with_description("Process automation index")
+                        .as_item(),
+                ),
         )
         // Chart
         .add_component(Section::new("Revenue Trend").with_level(1))
@@ -100,18 +100,9 @@ fn main() -> renderreport::Result<()> {
         .add_component(Section::new("Key Performance Indicators").with_level(1))
         .add_component(
             Grid::new(3)
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("Target Achievement", 87.0).with_range(0.0, 100.0).to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("Budget Utilization", 78.0).with_range(0.0, 100.0).to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("Pipeline Health", 92.0).with_range(0.0, 100.0).to_data()
-                })),
+                .add_item(Gauge::new("Target Achievement", 87.0).with_range(0.0, 100.0).as_item())
+                .add_item(Gauge::new("Budget Utilization", 78.0).with_range(0.0, 100.0).as_item())
+                .add_item(Gauge::new("Pipeline Health", 92.0).with_range(0.0, 100.0).as_item()),
         )
         // Findings
         .add_component(Section::new("Highlights & Risks").with_level(1))
@@ -237,22 +228,22 @@ fn main() -> renderreport::Result<()> {
         )
         .add_component(
             Grid::new(3)
-                .add_item(serde_json::json!({
-                    "type": "score-card",
-                    "data": ScoreCard::new("API Health", 98)
-                        .with_description("Avg response <120ms").to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "score-card",
-                    "data": ScoreCard::new("Database", 72)
+                .add_item(
+                    ScoreCard::new("API Health", 98)
+                        .with_description("Avg response <120ms")
+                        .as_item(),
+                )
+                .add_item(
+                    ScoreCard::new("Database", 72)
                         .with_description("Replication lag detected")
-                        .with_thresholds(90, 60).to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "score-card",
-                    "data": ScoreCard::new("CDN Hit Rate", 95)
-                        .with_description("Global edge caching").to_data()
-                })),
+                        .with_thresholds(90, 60)
+                        .as_item(),
+                )
+                .add_item(
+                    ScoreCard::new("CDN Hit Rate", 95)
+                        .with_description("Global edge caching")
+                        .as_item(),
+                ),
         )
         // Performance Charts
         .add_component(Section::new("Performance Metrics").with_level(1))
@@ -280,18 +271,9 @@ fn main() -> renderreport::Result<()> {
         .add_component(Section::new("Resource Utilization").with_level(1))
         .add_component(
             Grid::new(3)
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("CPU Usage", 62.0).with_range(0.0, 100.0).to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("Memory", 78.0).with_range(0.0, 100.0).to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("Disk I/O", 45.0).with_range(0.0, 100.0).to_data()
-                })),
+                .add_item(Gauge::new("CPU Usage", 62.0).with_range(0.0, 100.0).as_item())
+                .add_item(Gauge::new("Memory", 78.0).with_range(0.0, 100.0).as_item())
+                .add_item(Gauge::new("Disk I/O", 45.0).with_range(0.0, 100.0).as_item()),
         )
         // Incidents
         .add_component(Section::new("Active Incidents").with_level(1))

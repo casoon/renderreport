@@ -29,18 +29,9 @@ fn main() -> renderreport::Result<()> {
         .add_component(Section::new("Grid Layout").with_level(1))
         .add_component(
             Grid::new(3)
-                .add_item(serde_json::json!({
-                    "type": "score-card",
-                    "data": ScoreCard::new("Performance", 92).to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "score-card",
-                    "data": ScoreCard::new("Security", 88).to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "score-card",
-                    "data": ScoreCard::new("Quality", 95).to_data()
-                })),
+                .add_item(ScoreCard::new("Performance", 92).as_item())
+                .add_item(ScoreCard::new("Security", 88).as_item())
+                .add_item(ScoreCard::new("Quality", 95).as_item()),
         )
         // Progress Bars
         .add_component(Section::new("Progress Indicators").with_level(1))

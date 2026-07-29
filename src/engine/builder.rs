@@ -80,11 +80,7 @@ impl ReportBuilder {
 
     /// Add a component to the current scope (root or active section).
     pub fn add_component(mut self, component: impl Component) -> Self {
-        let value = serde_json::json!({
-            "type": component.component_id(),
-            "data": component.to_data()
-        });
-        self.push_to_current_scope(value);
+        self.push_to_current_scope(component.as_item());
         self
     }
 
@@ -97,11 +93,7 @@ impl ReportBuilder {
     /// Add multiple components to the current scope.
     pub fn add_components(mut self, components: impl IntoIterator<Item = impl Component>) -> Self {
         for component in components {
-            let value = serde_json::json!({
-                "type": component.component_id(),
-                "data": component.to_data()
-            });
-            self.push_to_current_scope(value);
+            self.push_to_current_scope(component.as_item());
         }
         self
     }

@@ -25,12 +25,7 @@ fn main() -> renderreport::Result<()> {
     let engine = Engine::new()?;
 
     // Helper function to add components
-    let add_comp = |component: &dyn Component| -> serde_json::Value {
-        serde_json::json!({
-            "type": component.component_id(),
-            "data": component.to_data()
-        })
-    };
+    let add_comp = |component: &dyn Component| -> serde_json::Value { component.as_item() };
 
     let report = engine
         .report("default")

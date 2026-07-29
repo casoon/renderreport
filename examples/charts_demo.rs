@@ -134,17 +134,15 @@ fn main() -> renderreport::Result<()> {
                 ("Africa".into(), 5.0),
             ],
         ))
-        .add_component(
-            Chart::pie("Revenue by Product Category").add_series(
-                "Revenue",
-                vec![
-                    ("Enterprise".into(), 45.0),
-                    ("Professional".into(), 30.0),
-                    ("Standard".into(), 18.0),
-                    ("Starter".into(), 7.0),
-                ],
-            ),
-        )
+        .add_component(Chart::pie("Revenue by Product Category").add_series(
+            "Revenue",
+            vec![
+                ("Enterprise".into(), 45.0),
+                ("Professional".into(), 30.0),
+                ("Standard".into(), 18.0),
+                ("Starter".into(), 7.0),
+            ],
+        ))
         // ============================================
         // SECTION 4: Area Charts
         // ============================================
@@ -225,8 +223,7 @@ fn main() -> renderreport::Result<()> {
             100.0, 105.0, 98.0, 110.0, 115.0, 112.0, 120.0, 118.0, 125.0, 130.0,
         ]))
         .add_component(
-            Sparkline::bar(vec![5.0, 8.0, 6.0, 12.0, 10.0, 15.0, 14.0, 18.0])
-                .with_color("#3b82f6"),
+            Sparkline::bar(vec![5.0, 8.0, 6.0, 12.0, 10.0, 15.0, 14.0, 18.0]).with_color("#3b82f6"),
         )
         .add_component(
             Sparkline::bar(vec![20.0, 25.0, 22.0, 28.0, 30.0, 27.0, 32.0, 35.0])
@@ -239,30 +236,35 @@ fn main() -> renderreport::Result<()> {
         // Circular gauges in a 3-column grid
         .add_component(
             Grid::new(3)
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("System Performance", 87.5).with_range(0.0, 100.0).to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("Customer Satisfaction", 92.3).with_range(0.0, 100.0).to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("Server Load", 45.8).with_range(0.0, 100.0).to_data()
-                })),
+                .add_item(
+                    Gauge::new("System Performance", 87.5)
+                        .with_range(0.0, 100.0)
+                        .as_item(),
+                )
+                .add_item(
+                    Gauge::new("Customer Satisfaction", 92.3)
+                        .with_range(0.0, 100.0)
+                        .as_item(),
+                )
+                .add_item(
+                    Gauge::new("Server Load", 45.8)
+                        .with_range(0.0, 100.0)
+                        .as_item(),
+                ),
         )
         // Thermometer gauges in a 2-column grid
         .add_component(
             Grid::new(2)
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::thermometer("CPU Temperature", 68.5).with_range(0.0, 100.0).to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::thermometer("Memory Usage", 72.3).with_range(0.0, 100.0).to_data()
-                })),
+                .add_item(
+                    Gauge::thermometer("CPU Temperature", 68.5)
+                        .with_range(0.0, 100.0)
+                        .as_item(),
+                )
+                .add_item(
+                    Gauge::thermometer("Memory Usage", 72.3)
+                        .with_range(0.0, 100.0)
+                        .as_item(),
+                ),
         )
         .build();
 

@@ -108,18 +108,9 @@ fn main() -> renderreport::Result<()> {
         .add_component(Section::new("Key Performance Indicators").with_level(1))
         .add_component(
             Grid::new(3)
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("Customer Retention", 94.0).with_range(80.0, 100.0).to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("NPS Score", 67.0).with_range(0.0, 100.0).to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("Platform Uptime", 99.9).with_range(99.0, 100.0).to_data()
-                })),
+                .add_item(Gauge::new("Customer Retention", 94.0).with_range(80.0, 100.0).as_item())
+                .add_item(Gauge::new("NPS Score", 67.0).with_range(0.0, 100.0).as_item())
+                .add_item(Gauge::new("Platform Uptime", 99.9).with_range(99.0, 100.0).as_item()),
         )
         .add_component(
             AuditTable::new(vec![

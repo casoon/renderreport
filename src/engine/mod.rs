@@ -459,22 +459,7 @@ pub fn to_typst_dict(value: &serde_json::Value) -> String {
         serde_json::Value::Null => "none".to_string(),
         serde_json::Value::Bool(b) => b.to_string(),
         serde_json::Value::Number(n) => n.to_string(),
-        serde_json::Value::String(s) => {
-            let mut out = String::with_capacity(s.len() + 2);
-            out.push('"');
-            for ch in s.chars() {
-                match ch {
-                    '\\' => out.push_str("\\\\"),
-                    '"' => out.push_str("\\\""),
-                    '\n' => out.push_str("\\n"),
-                    '\r' => out.push_str("\\r"),
-                    '\t' => out.push_str("\\t"),
-                    c => out.push(c),
-                }
-            }
-            out.push('"');
-            out
-        }
+        serde_json::Value::String(s) => format!("\"{}\"", escape_for_typst_string(s)),
         serde_json::Value::Array(arr) => {
             let items: Vec<String> = arr.iter().map(to_typst_dict).collect();
             match items.len() {

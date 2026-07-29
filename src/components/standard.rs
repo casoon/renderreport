@@ -354,10 +354,7 @@ impl Section {
     }
 
     pub fn add_component(mut self, component: impl Component) -> Self {
-        self.content.push(serde_json::json!({
-            "type": component.component_id(),
-            "data": component.to_data()
-        }));
+        self.content.push(component.as_item());
         self
     }
 }
@@ -1142,23 +1139,15 @@ impl Component for CardDashboard {
 
     fn to_data(&self) -> serde_json::Value {
         let mut data = serde_json::to_value(self).unwrap_or_default();
-        // Compute status for each module
+        // Compute status for each module, reading scores from the typed source
+        // (self.modules) rather than round-tripping through the serialized JSON.
         if let serde_json::Value::Object(ref mut map) = data {
             if let Some(serde_json::Value::Array(ref mut modules)) = map.get_mut("modules") {
-                for module in modules.iter_mut() {
+                for (module, source) in modules.iter_mut().zip(&self.modules) {
                     if let serde_json::Value::Object(ref mut m) = module {
-                        let score = m.get("score").and_then(|v| v.as_u64()).unwrap_or(0) as u32;
-                        let good = m
-                            .get("good_threshold")
-                            .and_then(|v| v.as_u64())
-                            .unwrap_or(90) as u32;
-                        let warn = m
-                            .get("warn_threshold")
-                            .and_then(|v| v.as_u64())
-                            .unwrap_or(50) as u32;
-                        let status = if score >= good {
+                        let status = if source.score >= source.good_threshold {
                             "good"
-                        } else if score >= warn {
+                        } else if source.score >= source.warn_threshold {
                             "warning"
                         } else {
                             "bad"

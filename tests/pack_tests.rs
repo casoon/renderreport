@@ -171,11 +171,12 @@ capabilities = ["charts", "tables", "images"]
 fn test_pack_loader_creation() {
     use renderreport::pack::PackLoader;
 
-    let _loader = PackLoader::new(&[PathBuf::from("./packs")]);
+    let loader = PackLoader::new(&[PathBuf::from("./packs")]);
 
-    // Loader should be created successfully
-    // Can't test loading without actual pack files
-    // Can't test loading without actual pack files — creation succeeds
+    // The repo ships real packs under ./packs, so a freshly created loader
+    // should already be able to see them.
+    let available = loader.list_available();
+    assert!(available.contains(&"standard".to_string()));
 }
 
 #[test]

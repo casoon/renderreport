@@ -33,7 +33,12 @@ fn assert_snapshot(name: &str, actual: &str) {
     let expected = std::fs::read_to_string(&path).expect("failed to read snapshot");
     if expected != actual {
         let diff_path = path.with_extension("typ.actual");
-        std::fs::write(&diff_path, actual).ok();
+        if let Err(e) = std::fs::write(&diff_path, actual) {
+            eprintln!(
+                "warning: failed to write diff artifact {}: {e}",
+                diff_path.display()
+            );
+        }
 
         // Surface the first differing lines so a mismatch is debuggable from the
         // CI log alone — otherwise only the `.actual` path is shown and the cause

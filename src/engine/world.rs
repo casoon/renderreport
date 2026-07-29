@@ -36,7 +36,9 @@ impl FontCache {
             if path.is_dir() {
                 fontdb.load_fonts_dir(path);
             } else if path.is_file() {
-                let _ = fontdb.load_font_file(path);
+                if let Err(e) = fontdb.load_font_file(path) {
+                    eprintln!("warning: failed to load font file {}: {e}", path.display());
+                }
             }
         }
 
@@ -136,7 +138,32 @@ impl ReportWorld {
         let id = FileId::new(None, VirtualPath::new(path.as_ref()));
         let mut slots = self.slots.write().unwrap();
         let slot = slots.entry(id).or_insert_with(FileSlot::new);
-        let _ = slot.bytes.set(Ok(Bytes::new(content.into())));
+        slot.bytes.get_or_init(|| Ok(Bytes::new(content.into())));
+    }
+
+    /// Resolve `id` from cache, falling back to `load` against its on-disk path
+    /// and caching the result in the `FileSlot` field selected by `cell`.
+    fn cached_or_load<T: Clone>(
+        &self,
+        id: FileId,
+        cell: impl Fn(&FileSlot) -> &OnceCell<FileResult<T>>,
+        load: impl FnOnce(&Path) -> FileResult<T>,
+    ) -> FileResult<T> {
+        let slots = self.slots.read().unwrap();
+        if let Some(slot) = slots.get(&id) {
+            if let Some(result) = cell(slot).get() {
+                return result.clone();
+            }
+        }
+        drop(slots);
+
+        let path = id.vpath().as_rooted_path();
+        let full_path = self.root.join(path.strip_prefix("/").unwrap_or(path));
+        let result = load(&full_path);
+
+        let mut slots = self.slots.write().unwrap();
+        let slot = slots.entry(id).or_insert_with(FileSlot::new);
+        cell(slot).get_or_init(|| result.clone()).clone()
     }
 }
 
@@ -158,49 +185,27 @@ impl World for ReportWorld {
             return Ok(self.main.clone());
         }
 
-        let slots = self.slots.read().unwrap();
-        if let Some(slot) = slots.get(&id) {
-            if let Some(result) = slot.source.get() {
-                return result.clone();
-            }
-        }
-        drop(slots);
-
-        let path = id.vpath().as_rooted_path();
-        let full_path = self.root.join(path.strip_prefix("/").unwrap_or(path));
-
-        let result = std::fs::read_to_string(&full_path)
-            .map_err(|e| FileError::from_io(e, &full_path))
-            .map(|text| Source::new(id, text));
-
-        let mut slots = self.slots.write().unwrap();
-        let slot = slots.entry(id).or_insert_with(FileSlot::new);
-        let _ = slot.source.set(result.clone());
-
-        result
+        self.cached_or_load(
+            id,
+            |slot| &slot.source,
+            |full_path| {
+                std::fs::read_to_string(full_path)
+                    .map_err(|e| FileError::from_io(e, full_path))
+                    .map(|text| Source::new(id, text))
+            },
+        )
     }
 
     fn file(&self, id: FileId) -> FileResult<Bytes> {
-        let slots = self.slots.read().unwrap();
-        if let Some(slot) = slots.get(&id) {
-            if let Some(result) = slot.bytes.get() {
-                return result.clone();
-            }
-        }
-        drop(slots);
-
-        let path = id.vpath().as_rooted_path();
-        let full_path = self.root.join(path.strip_prefix("/").unwrap_or(path));
-
-        let result = std::fs::read(&full_path)
-            .map_err(|e| FileError::from_io(e, &full_path))
-            .map(Bytes::new);
-
-        let mut slots = self.slots.write().unwrap();
-        let slot = slots.entry(id).or_insert_with(FileSlot::new);
-        let _ = slot.bytes.set(result.clone());
-
-        result
+        self.cached_or_load(
+            id,
+            |slot| &slot.bytes,
+            |full_path| {
+                std::fs::read(full_path)
+                    .map_err(|e| FileError::from_io(e, full_path))
+                    .map(Bytes::new)
+            },
+        )
     }
 
     fn font(&self, index: usize) -> Option<Font> {

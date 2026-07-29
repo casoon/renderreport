@@ -2,6 +2,7 @@ use std::io::{self, Read};
 use std::path::PathBuf;
 use std::process;
 
+use anyhow::Context;
 use clap::{Parser, Subcommand};
 use renderreport::{ComponentCatalog, Engine, LayoutHint, RenderRequest};
 
@@ -113,20 +114,27 @@ fn run(cli: Cli) -> anyhow::Result<()> {
         }
         Commands::Render { input, output } => {
             let json = match input {
-                Some(path) => std::fs::read_to_string(&path)?,
+                Some(path) => std::fs::read_to_string(&path)
+                    .with_context(|| format!("failed to read input file {}", path.display()))?,
                 None => {
                     let mut buf = String::new();
-                    io::stdin().read_to_string(&mut buf)?;
+                    io::stdin()
+                        .read_to_string(&mut buf)
+                        .context("failed to read request JSON from stdin")?;
                     buf
                 }
             };
 
-            let request: RenderRequest = serde_json::from_str(&json)?;
+            let request: RenderRequest =
+                serde_json::from_str(&json).context("failed to parse request JSON")?;
 
-            let engine = Engine::new()?;
-            let pdf = engine.render_pdf(&request)?;
+            let engine = Engine::new().context("failed to initialize render engine")?;
+            let pdf = engine
+                .render_pdf(&request)
+                .context("failed to render PDF")?;
 
-            std::fs::write(&output, &pdf)?;
+            std::fs::write(&output, &pdf)
+                .with_context(|| format!("failed to write output file {}", output.display()))?;
             eprintln!("Written {} bytes to {}", pdf.len(), output.display());
         }
     }

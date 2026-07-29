@@ -30,25 +30,22 @@ fn main() -> renderreport::Result<()> {
         // ── Score Cards in Grid ─────────────────────────────────────
         .add_component(
             Grid::new(3)
-                .add_item(serde_json::json!({
-                    "type": "score-card",
-                    "data": ScoreCard::new("Code Quality", 92)
+                .add_item(
+                    ScoreCard::new("Code Quality", 92)
                         .with_description("SonarQube analysis")
-                        .to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "score-card",
-                    "data": ScoreCard::new("Test Coverage", 87)
+                        .as_item(),
+                )
+                .add_item(
+                    ScoreCard::new("Test Coverage", 87)
                         .with_description("Unit + Integration")
                         .with_thresholds(80, 60)
-                        .to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "score-card",
-                    "data": ScoreCard::new("Performance", 95)
+                        .as_item(),
+                )
+                .add_item(
+                    ScoreCard::new("Performance", 95)
                         .with_description("Lighthouse score")
-                        .to_data()
-                })),
+                        .as_item(),
+                ),
         )
         // ── Progress ────────────────────────────────────────────────
         .add_component(Section::new("Sprint Progress").with_level(1))
@@ -72,18 +69,9 @@ fn main() -> renderreport::Result<()> {
         // ── KPI Gauges ──────────────────────────────────────────────
         .add_component(
             Grid::new(3)
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("Uptime", 99.8).with_range(95.0, 100.0).to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("Response Time", 72.0).with_range(0.0, 100.0).to_data()
-                }))
-                .add_item(serde_json::json!({
-                    "type": "gauge",
-                    "data": Gauge::new("Error Rate", 95.0).with_range(0.0, 100.0).to_data()
-                })),
+                .add_item(Gauge::new("Uptime", 99.8).with_range(95.0, 100.0).as_item())
+                .add_item(Gauge::new("Response Time", 72.0).with_range(0.0, 100.0).as_item())
+                .add_item(Gauge::new("Error Rate", 95.0).with_range(0.0, 100.0).as_item()),
         )
         // ── Findings ────────────────────────────────────────────────
         .add_component(Section::new("Open Issues").with_level(1))

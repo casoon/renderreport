@@ -9,6 +9,10 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
+fn bytes_to_string(bytes: Vec<u8>) -> std::io::Result<String> {
+    String::from_utf8(bytes).map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))
+}
+
 /// Virtual filesystem entry
 #[derive(Debug, Clone)]
 pub enum VfsEntry {
@@ -32,9 +36,7 @@ impl VfsEntry {
 
     /// Read the content as string
     pub fn read_to_string(&self) -> std::io::Result<String> {
-        let bytes = self.read()?;
-        String::from_utf8(bytes)
-            .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))
+        bytes_to_string(self.read()?)
     }
 }
 
@@ -114,9 +116,7 @@ impl Vfs {
 
     /// Read file as string
     pub fn read_to_string(&self, path: &str) -> std::io::Result<String> {
-        let bytes = self.read(path)?;
-        String::from_utf8(bytes)
-            .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))
+        bytes_to_string(self.read(path)?)
     }
 
     /// List all mounted paths
