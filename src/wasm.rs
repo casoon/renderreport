@@ -222,7 +222,10 @@ pub fn render_wordsearch(request_json: &str) -> Result<Vec<u8>, JsValue> {
                 "footer_link_url".to_string(),
                 "https://renderreport.casoon.de".to_string(),
             ),
-            ("footer_tagline".to_string(), copy.footer_tagline.to_string()),
+            (
+                "footer_tagline".to_string(),
+                copy.footer_tagline.to_string(),
+            ),
         ]
         .into_iter()
         .collect(),

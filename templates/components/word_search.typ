@@ -69,8 +69,12 @@
           )[
             #text(size: font-size-sm, weight: "bold", fill: color-text)[#w.text]
             #if w.at("translation", default: none) != none [
-              #v(1pt)
-              #text(size: font-size-xs, fill: color-text-muted, style: "italic")[#w.translation]
+              #v(3pt)
+              #if show-sol [
+                #text(size: font-size-xs, fill: color-text-muted, style: "italic")[#w.translation]
+              ] else [
+                #line(length: 70%, stroke: 0.5pt + color-border)
+              ]
             ]
           ]
         ])

@@ -158,6 +158,12 @@ pub struct WordSearchBuilder {
     inner: WordSearch,
 }
 
+impl Default for WordSearchBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl WordSearchBuilder {
     pub fn new() -> Self {
         Self {
@@ -260,7 +266,7 @@ impl Component for WordSearch {
             .collect();
 
         // Sort by length descending for better placement density
-        clean_words.sort_by(|a, b| b.len().cmp(&a.len()));
+        clean_words.sort_by_key(|w| std::cmp::Reverse(w.len()));
 
         // Determine available directions
         let mut directions = vec![Direction::RIGHT, Direction::DOWN];
@@ -360,10 +366,13 @@ impl Component for WordSearch {
         let translation_by_clean_word: HashMap<String, String> = self
             .words
             .iter()
-            .zip(self.translations.iter().cloned().chain(std::iter::repeat(None)))
-            .filter_map(|(word, translation)| {
-                translation.map(|t| (clean_word(word), t))
-            })
+            .zip(
+                self.translations
+                    .iter()
+                    .cloned()
+                    .chain(std::iter::repeat(None)),
+            )
+            .filter_map(|(word, translation)| translation.map(|t| (clean_word(word), t)))
             .collect();
 
         let word_entries: Vec<serde_json::Value> = display_words
