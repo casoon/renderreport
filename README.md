@@ -51,7 +51,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-renderreport = "0.2"
+renderreport = "0.3"
 ```
 
 ## Inspecting the generated Typst source
@@ -75,7 +75,7 @@ std::fs::write("report.typ", &source)?;
 3. **Metrics & KPIs** — ScoreCard, Gauge, BigNumber, TrendTile, ProgressBar
 4. **Data & Comparison** — AuditTable, ComparisonBlock, Crosstab, PivotTable
 5. **Narrative & Storytelling** — Finding, QuoteBlock, WhyItMatters, ProblemSolution, BeforeAfter
-6. **Infographics** — ProcessFlow, Timeline, Funnel, RoadmapBlock, PhaseBlock
+6. **Infographics** — ProcessFlow, Timeline, Funnel, RoadmapBlock, PhaseBlock, WordSearch
 7. **Marketing & Sales** — ProductHero, FeatureGrid, BenefitStrip, CTABox, PricingCard, Testimonial, UseCaseCard
 8. **Media & Assets** — Image, Barcode, Sparkline, Chart, List, FaqList, GlossaryList
 
@@ -162,6 +162,47 @@ let report = engine
 
 Create your own packs with custom templates and components. See [@casoon/renderreport-packs](https://github.com/casoon/renderreport-packs).
 
+## WebAssembly / Cloudflare Workers
+
+Enable the `wasm` feature to compile the engine to `wasm32-unknown-unknown` and
+run it inside a JS host with no filesystem or system fonts available (e.g. a
+Cloudflare Worker). Fonts are embedded in the binary as a fallback
+(`EngineConfig::use_embedded_fonts`) and picked up automatically whenever no
+system/font-path fonts are present.
+
+```toml
+[dependencies]
+renderreport = { version = "0.3", default-features = false, features = ["wasm"] }
+```
+
+```bash
+cargo build --release --target wasm32-unknown-unknown --no-default-features --features wasm
+wasm-bindgen target/wasm32-unknown-unknown/release/renderreport.wasm --out-dir pkg --target web
+```
+
+```js
+import { initSync, render, render_wordsearch } from "./pkg/renderreport.js";
+import wasmModule from "./pkg/renderreport_bg.wasm"; // bundler-provided WebAssembly.Module
+
+initSync({ module: wasmModule });
+
+// Generic report from a RenderRequest
+const pdfBytes = render(JSON.stringify(renderRequest));
+
+// Purpose-built word search puzzle: title/explanation page, puzzle, solution —
+// the grid itself is always computed by the real WordSearch engine
+const wordSearchPdf = render_wordsearch(JSON.stringify({
+  title: "Animals",
+  words: ["CAT", "DOG", "OWL"],
+  translations: ["Katze", "Hund", null], // optional, per word
+  language: "en", // "de" | "en" | "fr" | "es"
+}));
+```
+
+The `barcodes` feature (Code128/QR/DataMatrix/…) is on by default for native
+use; disable it with `default-features = false` on targets where the extra
+dependency weight isn't needed (as in the wasm example above).
+
 ## Project Structure
 
 ```
@@ -198,7 +239,7 @@ renderreport/
 - [ ] Preview server for development
 - [ ] Visual regression tests
 - [ ] HTML output (experimental)
-- [ ] WASM support
+- [x] WASM support
 
 ## Related Projects
 

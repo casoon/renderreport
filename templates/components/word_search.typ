@@ -73,7 +73,7 @@
               #if show-sol [
                 #text(size: font-size-xs, fill: color-text-muted, style: "italic")[#w.translation]
               ] else [
-                #line(length: 70%, stroke: 0.5pt + color-border)
+                #box(width: 100%, height: 18pt, fill: color-surface, stroke: 0.5pt + color-border, radius: 2pt)
               ]
             ]
           ]

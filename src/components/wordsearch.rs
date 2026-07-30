@@ -34,7 +34,12 @@ impl SimpleRng {
         x ^= x >> 7;
         x ^= x << 17;
         self.state = x;
-        x
+        // Plain xorshift64 has weak low-order bits; `% max` below (especially
+        // for small `max` like a grid width) would otherwise draw from
+        // exactly those weak bits, causing visibly clustered/repetitive
+        // placement. The xorshift64* multiplicative finalizer mixes all bits
+        // and stays fully deterministic for a given seed.
+        x.wrapping_mul(0x2545_F491_4F6C_DD1D)
     }
 
     fn next_usize(&mut self, max: usize) -> usize {
@@ -124,12 +129,19 @@ impl Default for WordSearch {
 }
 
 /// Word list heading per language (unrecognized codes fall back to German).
-fn word_list_label(language: &str) -> &'static str {
-    match language {
-        "en" => "Words to find",
-        "fr" => "Mots à trouver",
-        "es" => "Palabras a encontrar",
-        _ => "Zu suchende Wörter",
+/// When `with_translation` is set (i.e. this puzzle has translations), the
+/// heading itself announces the fill-in-the-blank task, so the blank line
+/// under each word doesn't need its own repeated "Translation:" label.
+fn word_list_label(language: &str, with_translation: bool) -> &'static str {
+    match (language, with_translation) {
+        ("en", true) => "Words to find and translate",
+        ("en", false) => "Words to find",
+        ("fr", true) => "Mots à trouver et à traduire",
+        ("fr", false) => "Mots à trouver",
+        ("es", true) => "Palabras a encontrar y traducir",
+        ("es", false) => "Palabras a encontrar",
+        (_, true) => "Zu suchende und zu übersetzende Wörter",
+        (_, false) => "Zu suchende Wörter",
     }
 }
 
@@ -269,15 +281,19 @@ impl Component for WordSearch {
         clean_words.sort_by_key(|w| std::cmp::Reverse(w.len()));
 
         // Determine available directions
+        // Only directions that read "forward" (left-to-right / top-to-bottom)
+        // are offered without `allow_reverse` — a bottom-to-top diagonal
+        // (UP_RIGHT) reads backwards just as much as LEFT/UP do, so it
+        // belongs with the reverse directions, not with plain diagonal.
         let mut directions = vec![Direction::RIGHT, Direction::DOWN];
         if self.allow_diagonal {
             directions.push(Direction::DOWN_RIGHT);
-            directions.push(Direction::UP_RIGHT);
         }
         if self.allow_reverse {
             directions.push(Direction::LEFT);
             directions.push(Direction::UP);
             if self.allow_diagonal {
+                directions.push(Direction::UP_RIGHT);
                 directions.push(Direction::UP_LEFT);
                 directions.push(Direction::DOWN_LEFT);
             }
@@ -394,7 +410,7 @@ impl Component for WordSearch {
             "words": word_entries,
             "show_solution": self.show_solution,
             "columns_word_list": self.columns_word_list,
-            "word_list_label": word_list_label(&self.language),
+            "word_list_label": word_list_label(&self.language, !translation_by_clean_word.is_empty()),
         })
     }
 }
