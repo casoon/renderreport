@@ -70,7 +70,7 @@ Add these badges at the top of README.md after the title:
 
 [![Crates.io](https://img.shields.io/crates/v/renderreport.svg)](https://crates.io/crates/renderreport)
 [![Documentation](https://docs.rs/renderreport/badge.svg)](https://docs.rs/renderreport)
-[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE-MIT)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Build Status](https://github.com/casoon/renderreport/workflows/CI/badge.svg)](https://github.com/casoon/renderreport/actions)
 [![Rust Version](https://img.shields.io/badge/rust-1.70%2B-blue.svg)](https://www.rust-lang.org)
 

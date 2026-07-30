@@ -49,7 +49,7 @@ fn main() -> renderreport::Result<()> {
                 .add("Version", "0.1.0")
                 .add("Language", "Rust")
                 .add_highlighted("Status", "Active Development")
-                .add("License", "MIT OR Apache-2.0"),
+                .add("License", "MIT"),
         )
         .add_component(Divider::dashed())
         // Numbered List

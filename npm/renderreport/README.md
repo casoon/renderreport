@@ -105,16 +105,18 @@ The report definition follows the `RenderRequest` format:
 | Crosstab | `crosstab` | Cross-tabulation |
 | TextBlock | `textblock` | Multi-line text block |
 | Label | `label` | Styled label |
+| WordSearch | `word-search` | Word search puzzle with solution highlighting |
 
 ## Supported Platforms
 
-| Platform | Package |
+A single `@casoon/renderreport` install works everywhere — `postinstall` detects
+your platform and downloads the matching binary from GitHub Releases:
+
+| Platform | Architecture |
 |---|---|
-| Linux x64 | `@casoon/renderreport-cli-linux-x64` |
-| Linux ARM64 | `@casoon/renderreport-cli-linux-arm64` |
-| macOS x64 (Intel) | `@casoon/renderreport-cli-darwin-x64` |
-| macOS ARM64 (Apple Silicon) | `@casoon/renderreport-cli-darwin-arm64` |
-| Windows x64 | `@casoon/renderreport-cli-win32-x64` |
+| Linux | x64, ARM64 |
+| macOS | x64 (Intel), ARM64 (Apple Silicon) |
+| Windows | x64, ARM64 |
 
 ## Rust Library
 
@@ -122,4 +124,4 @@ This is the Node.js wrapper. For the Rust library, see [crates.io/crates/renderr
 
 ## License
 
-MIT OR Apache-2.0
+MIT
