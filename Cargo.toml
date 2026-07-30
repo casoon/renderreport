@@ -22,6 +22,7 @@ exclude = [
 [lib]
 name = "renderreport"
 path = "src/lib.rs"
+crate-type = ["rlib", "cdylib"]
 
 [[bin]]
 name = "renderreport"
@@ -45,10 +46,11 @@ toml = "0.8"
 thiserror = "2.0"
 anyhow = "1.0"
 
-# Barcode encoding
-barcoders = "2.0"
-qrcode = "0.14"
-datamatrix = "0.3"
+# Barcode encoding (optional — pulls noticeable weight into Wasm builds where
+# barcode components aren't needed)
+barcoders = { version = "2.0", optional = true }
+qrcode = { version = "0.14", optional = true }
+datamatrix = { version = "0.3", optional = true }
 
 # Distributed static component registration
 inventory = "0.3"
@@ -57,6 +59,9 @@ inventory = "0.3"
 chrono = { version = "0.4", features = ["serde"] }
 # Font handling
 fontdb = "0.22"
+
+# Wasm bindings (optional)
+wasm-bindgen = { version = "0.2", optional = true }
 
 # Async (optional, for future remote pack loading)
 # tokio = { version = "1.0", features = ["full"], optional = true }
@@ -70,8 +75,10 @@ strip = true
 [dev-dependencies]
 
 [features]
-default = []
+default = ["barcodes"]
 cli = ["clap"]
+wasm = ["wasm-bindgen"]
+barcodes = ["dep:barcoders", "dep:qrcode", "dep:datamatrix"]
 # remote-packs = ["tokio"]
 
 [[example]]

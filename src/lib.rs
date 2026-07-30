@@ -25,6 +25,9 @@ pub mod render;
 pub mod theme;
 pub mod vfs;
 
+#[cfg(feature = "wasm")]
+pub mod wasm;
+
 mod error;
 
 pub use components::{

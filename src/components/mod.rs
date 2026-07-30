@@ -16,6 +16,7 @@
 //! - `SummaryBox` - Executive summary widget
 
 pub mod advanced;
+#[cfg(feature = "barcodes")]
 pub mod barcode;
 pub mod catalog;
 pub mod charts;

@@ -54,12 +54,12 @@
     #v(spacing-4)
 
     #if data.words.len() > 0 [
-      #text(weight: "semibold", size: font-size-sm, fill: color-text-muted)[Zu suchende Wörter (#data.words.len()):]
+      #text(weight: "semibold", size: font-size-sm, fill: color-text-muted)[#data.word_list_label (#data.words.len()):]
       #v(spacing-2)
       #grid(
         columns: range(word-cols).map(_ => 1fr),
         gutter: spacing-2,
-        ..data.words.map(word => [
+        ..data.words.map(w => [
           #block(
             width: 100%,
             fill: color-surface-alt,
@@ -67,7 +67,11 @@
             radius: 4pt,
             stroke: 0.5pt + color-border,
           )[
-            #text(size: font-size-sm, weight: "bold", fill: color-text)[#word]
+            #text(size: font-size-sm, weight: "bold", fill: color-text)[#w.text]
+            #if w.at("translation", default: none) != none [
+              #v(1pt)
+              #text(size: font-size-xs, fill: color-text-muted, style: "italic")[#w.translation]
+            ]
           ]
         ])
       )

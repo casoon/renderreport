@@ -231,7 +231,7 @@
 )
 
 #set text(
-  font: (font-body, "Arial", "Liberation Sans", "Noto Sans"),
+  font: (font-body, "Arial", "Liberation Sans", "Noto Sans", "Fira Sans"),
   size: font-size-base,
   fill: color-text,
 )

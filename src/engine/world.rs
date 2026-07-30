@@ -17,6 +17,17 @@ use typst::{Library, World};
 
 use crate::engine::EngineConfig;
 
+/// Fonts bundled with the crate, used as a last-resort fallback when neither
+/// system fonts nor explicit font paths provide a usable face (e.g. inside a
+/// Wasm sandbox with no filesystem/system fonts). Fira Sans (OFL-licensed,
+/// static weights) — see `assets/fonts/OFL.txt`.
+const EMBEDDED_FONTS: &[&[u8]] = &[
+    include_bytes!("../../assets/fonts/FiraSans-Regular.ttf"),
+    include_bytes!("../../assets/fonts/FiraSans-Bold.ttf"),
+    include_bytes!("../../assets/fonts/FiraSans-Italic.ttf"),
+    include_bytes!("../../assets/fonts/FiraSans-BoldItalic.ttf"),
+];
+
 /// Cached font data, built once at engine construction time.
 pub struct FontCache {
     pub book: typst::utils::LazyHash<FontBook>,
@@ -39,6 +50,12 @@ impl FontCache {
                 if let Err(e) = fontdb.load_font_file(path) {
                     eprintln!("warning: failed to load font file {}: {e}", path.display());
                 }
+            }
+        }
+
+        if config.use_embedded_fonts {
+            for data in EMBEDDED_FONTS {
+                fontdb.load_font_data(data.to_vec());
             }
         }
 
@@ -86,7 +103,8 @@ pub struct ReportWorld {
     slots: RwLock<HashMap<FileId, FileSlot>>,
     /// Root path for file resolution
     root: PathBuf,
-    /// Current datetime
+    /// Current datetime (unused on wasm32 — no OS clock to query)
+    #[cfg_attr(target_arch = "wasm32", allow(dead_code))]
     now: OnceLock<Option<Datetime>>,
 }
 
@@ -213,16 +231,27 @@ impl World for ReportWorld {
     }
 
     fn today(&self, _offset: Option<i64>) -> Option<Datetime> {
-        *self.now.get_or_init(|| {
-            let now = chrono::Local::now();
-            Datetime::from_ymd_hms(
-                now.format("%Y").to_string().parse().ok()?,
-                now.format("%m").to_string().parse().ok()?,
-                now.format("%d").to_string().parse().ok()?,
-                now.format("%H").to_string().parse().ok()?,
-                now.format("%M").to_string().parse().ok()?,
-                now.format("%S").to_string().parse().ok()?,
-            )
-        })
+        // `std::time::SystemTime::now()` (used internally by `chrono::Local`)
+        // panics on wasm32-unknown-unknown — there is no OS clock to query.
+        // None of our templates call `datetime.today()`, so skip it there.
+        #[cfg(target_arch = "wasm32")]
+        {
+            None
+        }
+
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            *self.now.get_or_init(|| {
+                let now = chrono::Local::now();
+                Datetime::from_ymd_hms(
+                    now.format("%Y").to_string().parse().ok()?,
+                    now.format("%m").to_string().parse().ok()?,
+                    now.format("%d").to_string().parse().ok()?,
+                    now.format("%H").to_string().parse().ok()?,
+                    now.format("%M").to_string().parse().ok()?,
+                    now.format("%S").to_string().parse().ok()?,
+                )
+            })
+        }
     }
 }

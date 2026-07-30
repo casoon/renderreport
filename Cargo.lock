@@ -1758,6 +1758,7 @@ dependencies = [
  "toml",
  "typst",
  "typst-pdf",
+ "wasm-bindgen",
 ]
 
 [[package]]

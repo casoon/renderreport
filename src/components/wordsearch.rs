@@ -5,7 +5,7 @@
 
 use super::Component;
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 /// Grid cell model passed to Typst
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -95,6 +95,13 @@ pub struct WordSearch {
     pub show_solution: bool,
     /// Number of columns for displaying the word list
     pub columns_word_list: usize,
+    /// Language for the (localized) word list label — "de", "en", "fr", or "es".
+    /// Unrecognized codes fall back to German.
+    pub language: String,
+    /// Optional translation for each entry in `words`, matched by index.
+    /// Shorter than `words`, or containing `None`, means "no translation" for
+    /// that word.
+    pub translations: Vec<Option<String>>,
 }
 
 impl Default for WordSearch {
@@ -110,8 +117,30 @@ impl Default for WordSearch {
             seed: Some(42),
             show_solution: false,
             columns_word_list: 3,
+            language: "de".into(),
+            translations: Vec::new(),
         }
     }
+}
+
+/// Word list heading per language (unrecognized codes fall back to German).
+fn word_list_label(language: &str) -> &'static str {
+    match language {
+        "en" => "Words to find",
+        "fr" => "Mots à trouver",
+        "es" => "Palabras a encontrar",
+        _ => "Zu suchende Wörter",
+    }
+}
+
+/// Uppercase + strip non-alphanumeric characters, matching the cleanup
+/// applied to placed words in `to_data()` — so translation lookups by
+/// cleaned word still hit.
+fn clean_word(word: &str) -> String {
+    word.to_uppercase()
+        .chars()
+        .filter(|c| c.is_alphanumeric())
+        .collect()
 }
 
 impl WordSearch {
@@ -183,6 +212,19 @@ impl WordSearchBuilder {
 
     pub fn columns_word_list(mut self, cols: usize) -> Self {
         self.inner.columns_word_list = cols.max(1);
+        self
+    }
+
+    pub fn language(mut self, language: impl Into<String>) -> Self {
+        self.inner.language = language.into();
+        self
+    }
+
+    pub fn translations<I>(mut self, translations: I) -> Self
+    where
+        I: IntoIterator<Item = Option<String>>,
+    {
+        self.inner.translations = translations.into_iter().collect();
         self
     }
 
@@ -313,15 +355,37 @@ impl Component for WordSearch {
             placed_words
         };
 
+        // Look up each displayed word's translation by its cleaned form, so
+        // the mapping survives the uppercasing/sorting/filtering above.
+        let translation_by_clean_word: HashMap<String, String> = self
+            .words
+            .iter()
+            .zip(self.translations.iter().cloned().chain(std::iter::repeat(None)))
+            .filter_map(|(word, translation)| {
+                translation.map(|t| (clean_word(word), t))
+            })
+            .collect();
+
+        let word_entries: Vec<serde_json::Value> = display_words
+            .iter()
+            .map(|w| {
+                serde_json::json!({
+                    "text": w,
+                    "translation": translation_by_clean_word.get(&clean_word(w)),
+                })
+            })
+            .collect();
+
         serde_json::json!({
             "title": self.title,
             "description": self.description,
             "width": width,
             "height": height,
             "grid": rendered_grid,
-            "words": display_words,
+            "words": word_entries,
             "show_solution": self.show_solution,
             "columns_word_list": self.columns_word_list,
+            "word_list_label": word_list_label(&self.language),
         })
     }
 }
