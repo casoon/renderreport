@@ -2,7 +2,19 @@
 // Card with label–diagnosis rows and optional status indicators
 
 #let checklist-panel(data) = {
-  theme-card[
+  // Long checklists (e.g. an "all violations" list with dozens of rows) can
+  // exceed a single page. theme-card() is breakable: false (right for small
+  // cards), which would force the whole card onto one page and overflow past
+  // the page boundary instead of paginating — the same breakable body/
+  // non-breakable header split used by phase-block() for the same reason.
+  block(
+    width: 100%,
+    fill: color-surface,
+    stroke: (paint: color-border, thickness: component-card-border-width),
+    radius: 10pt,
+    inset: (x: spacing-4, y: spacing-4),
+    breakable: true,
+  )[
     #if data.title != none [
       #component-title(text(weight: "bold", size: font-size-sm, fill: color-text)[#data.title])
     ]
