@@ -23,7 +23,7 @@
   // A custom logo (white-label) takes the brand slot when provided; otherwise
   // the brand name is shown as text.
   let brand-mark = if data.at("logo_src", default: "") != "" {
-    image(data.logo_src, height: 9mm)
+    image(data.logo_src, height: 9mm, alt: data.brand)
   } else {
     text(size: font-size-base, weight: "bold", fill: color-primary)[#data.brand]
   }
@@ -128,9 +128,10 @@
               let ang = -90deg + (i / n) * frac * 360deg
               (cx + r * calc.cos(ang), cy + r * calc.sin(ang))
             })
-            place(top + left, path(
+            place(top + left, curve(
               stroke: (paint: gc, thickness: 4pt, cap: "round"),
-              ..pts
+              curve.move(pts.at(0)),
+              ..pts.slice(1).map(p => curve.line(p)),
             ))
           }
           place(center + horizon, text(weight: "bold", size: 15pt, fill: color-text)[#score])

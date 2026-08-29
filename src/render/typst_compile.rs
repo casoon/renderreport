@@ -27,8 +27,20 @@ pub fn compile_to_pdf(
 
     match result.output {
         Ok(document) => {
-            // Render to PDF
-            let pdf_result = typst_pdf::pdf(&document, &typst_pdf::PdfOptions::default());
+            // Render to PDF. `tagged` is already `true` by default (Typst 0.14+
+            // writes a baseline structure tree for every PDF), but PDF/UA-1
+            // conformance additionally requires enforcing it as a `standards`
+            // validator — this makes the compiler hard-fail (with an actionable
+            // Typst diagnostic) on any document missing a title, language,
+            // outline, or image alt text, instead of silently emitting a
+            // non-conformant PDF.
+            let standards = typst_pdf::PdfStandards::new(&[typst_pdf::PdfStandard::Ua_1])
+                .map_err(|e| Error::Render(RenderError::TypstCompilation(e.message().to_string())))?;
+            let options = typst_pdf::PdfOptions {
+                standards,
+                ..Default::default()
+            };
+            let pdf_result = typst_pdf::pdf(&document, &options);
             match pdf_result {
                 Ok(pdf_bytes) => Ok(pdf_bytes),
                 Err(errors) => {

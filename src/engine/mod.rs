@@ -174,7 +174,19 @@ impl Engine {
 
         // Inject metadata as Typst variables (needed by header/footer)
         source.push_str("// Report Metadata\n");
-        let title_str = request.title.as_deref().unwrap_or("");
+        // Reports that use the `cover-page` component as their front page
+        // typically don't set `RenderRequest.title` (the component renders its
+        // own dashboard-style title instead of the plain built-in title page).
+        // PDF/UA-1 requires a document title regardless, so fall back to the
+        // cover page's own title so `#set document(title: ..)` (and the
+        // running header, which also reads `report-title`) still get one.
+        let cover_page_title = fallback_cover_page_title(&request.components);
+        let title_str = request
+            .title
+            .as_deref()
+            .filter(|t| !t.is_empty())
+            .or(cover_page_title.as_deref())
+            .unwrap_or("");
         let date_str = request
             .metadata
             .get("date")
@@ -200,6 +212,7 @@ impl Engine {
             .get("footer_tagline")
             .map(|s| s.as_str())
             .unwrap_or("");
+        let lang_str = request.metadata.get("lang").map(|s| s.as_str()).unwrap_or("en");
         source.push_str(&format!(
             "#let report-title = \"{}\"\n#let report-date = \"{}\"\n#let report-author = \"{}\"\n#let report-footer-link-url = \"{}\"\n#let report-footer-prefix = \"{}\"\n#let report-footer-tagline = \"{}\"\n\n",
             escape_for_typst_string(title_str),
@@ -211,7 +224,7 @@ impl Engine {
         ));
 
         // Add page setup
-        source.push_str(&self.generate_page_setup(theme, &request.page_setup));
+        source.push_str(&self.generate_page_setup(theme, &request.page_setup, lang_str));
         source.push_str("\n\n");
 
         // Add component functions — only those actually used in this request.
@@ -241,7 +254,12 @@ impl Engine {
     }
 
     /// Generate page setup Typst code
-    fn generate_page_setup(&self, _theme: &Theme, page_setup: &crate::render::PageSetup) -> String {
+    fn generate_page_setup(
+        &self,
+        _theme: &Theme,
+        page_setup: &crate::render::PageSetup,
+        lang: &str,
+    ) -> String {
         let paper = page_setup.paper.as_deref().unwrap_or("a4");
         let flipped = page_setup.orientation.as_deref() == Some("landscape");
 
@@ -281,11 +299,11 @@ impl Engine {
         gutter: spacing-3,
         [#text(size: font-size-xs, fill: color-text-muted)[
           #if report-footer-prefix != "" { report-footer-prefix + " " }
-          #if report-footer-link-url != "" {
-            link(report-footer-link-url)[#text(weight: "semibold", fill: color-text-muted)[#report-author]]
-          } else {
-            text(weight: "semibold")[#report-author]
-          }
+          // Running footers are automatically tagged as PDF artifacts by
+          // Typst, and PDF/UA-1 forbids links inside artifacts — so this
+          // must stay plain text even when a footer link URL is configured
+          // (see `report-footer-link-url`, otherwise unused here).
+          #text(weight: "semibold")[#report-author]
         ]],
         [#text(size: font-size-xs, fill: color-text-muted)[#counter(page).display("1 / 1", both: true)]],
         align(right)[#text(size: font-size-xs, fill: color-text-muted)[#report-footer-tagline]]
@@ -298,12 +316,13 @@ impl Engine {
         };
 
         format!(
-            "#set page(\n  paper: \"{}\",{}\n  fill: color-background,\n{}{}{})\n\n#set text(\n  font: (font-body, \"Arial\", \"Liberation Sans\", \"Noto Sans\", \"Fira Sans\"),\n  size: font-size-base,\n  fill: color-text,\n)\n\n#set text(hyphenate: true)\n#set par(justify: false, leading: 0.75em)\n\n#set heading(numbering: none)\n#show heading: set par(justify: false)\n#show heading: set block(sticky: true)\n#show heading.where(level: 1): set text(size: font-size-2xl, weight: \"bold\", fill: color-text)\n#show heading.where(level: 2): set text(size: font-size-xl, weight: \"bold\", fill: color-text)\n#show heading.where(level: 3): set text(size: font-size-lg, weight: \"bold\", fill: color-text)\n#show heading.where(level: 4): set text(size: font-size-base, weight: \"bold\", fill: color-text-muted)\n",
+            "#set page(\n  paper: \"{}\",{}\n  fill: color-background,\n{}{}{})\n\n#set document(title: [#report-title])\n\n#set text(\n  font: (font-body, \"Arial\", \"Liberation Sans\", \"Noto Sans\", \"Fira Sans\"),\n  size: font-size-base,\n  fill: color-text,\n  lang: \"{}\",\n)\n\n#set text(hyphenate: true)\n#set par(justify: false, leading: 0.75em)\n\n#set heading(numbering: none)\n#show heading: set par(justify: false)\n#show heading: set block(sticky: true)\n#show heading.where(level: 1): set text(size: font-size-2xl, weight: \"bold\", fill: color-text)\n#show heading.where(level: 2): set text(size: font-size-xl, weight: \"bold\", fill: color-text)\n#show heading.where(level: 3): set text(size: font-size-lg, weight: \"bold\", fill: color-text)\n#show heading.where(level: 4): set text(size: font-size-base, weight: \"bold\", fill: color-text-muted)\n",
             paper,
             if flipped { "\n  flipped: true," } else { "" },
             margin_block,
             header_block,
             footer_block,
+            escape_for_typst_string(lang),
         )
     }
 
@@ -329,10 +348,11 @@ impl Engine {
 
             content.push_str(&format!(
                 r#"#block(width: 100%, height: 100%, breakable: false)[
+  #show heading: set block(above: 0pt, below: 0pt)
   #v(1fr)
   #block(width: 60pt, height: 4pt, fill: color-primary, radius: 2pt)
   #v(spacing-5)
-  #block(width: 100%)[#set par(leading: 0.4em); #text(size: 36pt, weight: "bold", fill: color-text, tracking: -0.02em)[{title}]]
+  #heading(level: 1)[#block(width: 100%)[#set par(leading: 0.4em); #text(size: 36pt, weight: "bold", fill: color-text, tracking: -0.02em)[{title}]]]
   #v(spacing-3)
   #text(size: 18pt, fill: color-text-muted)[{subtitle}]
   #v(1fr)
@@ -543,6 +563,23 @@ fn escape_for_typst_markup(s: &str) -> String {
         }
     }
     out
+}
+
+/// Finds the title of the first top-level `cover-page` component, if any.
+///
+/// Used as a document-title fallback when the caller didn't set
+/// `RenderRequest.title` — see the call site in `generate_typst_source`.
+fn fallback_cover_page_title(components: &[serde_json::Value]) -> Option<String> {
+    components.iter().find_map(|c| {
+        if c.get("type").and_then(|t| t.as_str()) != Some("cover-page") {
+            return None;
+        }
+        let data = c.get("data").unwrap_or(c);
+        data.get("title")
+            .and_then(|t| t.as_str())
+            .filter(|t| !t.is_empty())
+            .map(str::to_string)
+    })
 }
 
 /// Collect all component type IDs referenced anywhere in a component list,

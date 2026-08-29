@@ -1561,6 +1561,16 @@ pub struct DevicePreview {
     /// Desktop column ratio 0.0–1.0 (defaults to 0.75 for 3/4 layout)
     #[serde(default = "default_desktop_ratio")]
     pub desktop_ratio: f64,
+    /// Alternative description of the desktop screenshot for Assistive
+    /// Technology (required for PDF/UA-1 — every image needs either a real
+    /// description or an explicit decorative marker). Defaults to a generic
+    /// placeholder; callers should supply a real description via
+    /// [`Self::with_alt_text`] when one is available (e.g. the audited URL).
+    #[serde(default = "default_desktop_alt")]
+    pub desktop_alt: String,
+    /// Alternative description of the mobile screenshot. See `desktop_alt`.
+    #[serde(default = "default_mobile_alt")]
+    pub mobile_alt: String,
 }
 
 fn default_device_preview_height() -> f64 {
@@ -1571,6 +1581,14 @@ fn default_desktop_ratio() -> f64 {
     0.70
 }
 
+fn default_desktop_alt() -> String {
+    "Desktop screenshot preview".to_string()
+}
+
+fn default_mobile_alt() -> String {
+    "Mobile screenshot preview".to_string()
+}
+
 impl DevicePreview {
     pub fn new(desktop_src: impl Into<String>, mobile_src: impl Into<String>) -> Self {
         Self {
@@ -1578,11 +1596,25 @@ impl DevicePreview {
             mobile_src: mobile_src.into(),
             height_pt: default_device_preview_height(),
             desktop_ratio: default_desktop_ratio(),
+            desktop_alt: default_desktop_alt(),
+            mobile_alt: default_mobile_alt(),
         }
     }
 
     pub fn with_height(mut self, height_pt: f64) -> Self {
         self.height_pt = height_pt;
+        self
+    }
+
+    /// Set real alternative descriptions for the desktop/mobile screenshots
+    /// (e.g. naming the audited URL), replacing the generic placeholder.
+    pub fn with_alt_text(
+        mut self,
+        desktop_alt: impl Into<String>,
+        mobile_alt: impl Into<String>,
+    ) -> Self {
+        self.desktop_alt = desktop_alt.into();
+        self.mobile_alt = mobile_alt.into();
         self
     }
 }

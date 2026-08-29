@@ -404,6 +404,15 @@ impl Image {
         self.width = Some(width.into());
         self
     }
+
+    /// Set an alternative description of the image for Assistive Technology
+    /// (screen readers). Images without `alt` are rendered as decorative PDF
+    /// artifacts (see `templates/components/image.typ`) — set this whenever
+    /// the image conveys content rather than pure decoration.
+    pub fn with_alt(mut self, alt: impl Into<String>) -> Self {
+        self.alt = Some(alt.into());
+        self
+    }
 }
 
 impl Component for Image {

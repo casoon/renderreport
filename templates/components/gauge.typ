@@ -47,9 +47,10 @@
               let ang = -90deg + (i / n) * frac * 360deg
               (cx + r * calc.cos(ang), cy + r * calc.sin(ang))
             })
-            place(top + left, path(
+            place(top + left, curve(
               stroke: (paint: gauge_color, thickness: 5pt, cap: "round"),
-              ..pts
+              curve.move(pts.at(0)),
+              ..pts.slice(1).map(p => curve.line(p)),
             ))
           }
           place(center + horizon,

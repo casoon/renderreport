@@ -217,11 +217,11 @@
         gutter: spacing-3,
         [#text(size: font-size-xs, fill: color-text-muted)[
           #if report-footer-prefix != "" { report-footer-prefix + " " }
-          #if report-footer-link-url != "" {
-            link(report-footer-link-url)[#text(weight: "semibold", fill: color-text-muted)[#report-author]]
-          } else {
-            text(weight: "semibold")[#report-author]
-          }
+          // Running footers are automatically tagged as PDF artifacts by
+          // Typst, and PDF/UA-1 forbids links inside artifacts — so this
+          // must stay plain text even when a footer link URL is configured
+          // (see `report-footer-link-url`, otherwise unused here).
+          #text(weight: "semibold")[#report-author]
         ]],
         [#text(size: font-size-xs, fill: color-text-muted)[#counter(page).display("1 / 1", both: true)]],
         align(right)[#text(size: font-size-xs, fill: color-text-muted)[#report-footer-tagline]]
@@ -230,10 +230,13 @@
   },
 )
 
+#set document(title: [#report-title])
+
 #set text(
   font: (font-body, "Arial", "Liberation Sans", "Noto Sans", "Fira Sans"),
   size: font-size-base,
   fill: color-text,
+  lang: "en",
 )
 
 #set text(hyphenate: true)
@@ -483,10 +486,11 @@
 
 // Report Content
 #block(width: 100%, height: 100%, breakable: false)[
+  #show heading: set block(above: 0pt, below: 0pt)
   #v(1fr)
   #block(width: 60pt, height: 4pt, fill: color-primary, radius: 2pt)
   #v(spacing-5)
-  #block(width: 100%)[#set par(leading: 0.4em); #text(size: 36pt, weight: "bold", fill: color-text, tracking: -0.02em)[Snapshot Report]]
+  #heading(level: 1)[#block(width: 100%)[#set par(leading: 0.4em); #text(size: 36pt, weight: "bold", fill: color-text, tracking: -0.02em)[Snapshot Report]]]
   #v(spacing-3)
   #text(size: 18pt, fill: color-text-muted)[]
   #v(1fr)

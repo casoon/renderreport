@@ -38,7 +38,7 @@
           // rarely overflow this box) but doesn't reliably fix it when it
           // doesn't — see the mobile column below for why overflow needs to
           // be avoided upstream instead of fixed here.
-          place(top, image(data.desktop_src, width: 100%)),
+          place(top, image(data.desktop_src, width: 100%, alt: data.desktop_alt)),
         )
       ],
 
@@ -55,7 +55,7 @@
       // `register_page_screenshot_assets` in auditmysite), so this box
       // only ever needs to clip a small, harmless margin.
       box(stroke: 0.5pt + rgb("#d1d5db"), radius: 14pt, clip: true, width: 100%, height: h)[
-        #place(top, image(data.mobile_src, width: 100%))
+        #place(top, image(data.mobile_src, width: 100%, alt: data.mobile_alt))
       ],
     )
   ])

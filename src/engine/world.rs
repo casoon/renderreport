@@ -10,10 +10,10 @@ use std::sync::{Arc, OnceLock, RwLock};
 
 use fontdb::Database;
 use typst::diag::{FileError, FileResult};
-use typst::foundations::{Bytes, Datetime};
-use typst::syntax::{FileId, Source, VirtualPath};
+use typst::foundations::{Bytes, Datetime, Duration};
+use typst::syntax::{FileId, RootedPath, Source, VirtualPath, VirtualRoot};
 use typst::text::{Font, FontBook};
-use typst::{Library, World};
+use typst::{Library, LibraryExt, World};
 
 use crate::engine::EngineConfig;
 
@@ -130,8 +130,8 @@ unsafe impl Sync for FileSlot {}
 impl ReportWorld {
     /// Create a new world using a pre-built font cache.
     pub fn new(source: String, font_cache: Arc<FontCache>) -> Self {
-        let path = VirtualPath::new("report.typ");
-        let id = FileId::new(None, path);
+        let path = VirtualPath::new("report.typ").expect("\"report.typ\" is a valid virtual path");
+        let id = FileId::new(RootedPath::new(VirtualRoot::Project, path));
         let main = Source::new(id, source);
         let library = typst::utils::LazyHash::new(Library::default());
 
@@ -153,7 +153,11 @@ impl ReportWorld {
 
     /// Add a virtual file
     pub fn add_file(&self, path: impl AsRef<Path>, content: impl Into<Vec<u8>>) {
-        let id = FileId::new(None, VirtualPath::new(path.as_ref()));
+        let path_str = path.as_ref().to_string_lossy();
+        let Ok(vpath) = VirtualPath::new(path_str.as_ref()) else {
+            return;
+        };
+        let id = FileId::new(RootedPath::new(VirtualRoot::Project, vpath));
         let mut slots = self.slots.write().unwrap();
         let slot = slots.entry(id).or_insert_with(FileSlot::new);
         slot.bytes.get_or_init(|| Ok(Bytes::new(content.into())));
@@ -175,7 +179,8 @@ impl ReportWorld {
         }
         drop(slots);
 
-        let path = id.vpath().as_rooted_path();
+        let path_str = id.vpath().get_with_slash();
+        let path = Path::new(path_str);
         let full_path = self.root.join(path.strip_prefix("/").unwrap_or(path));
         let result = load(&full_path);
 
@@ -230,7 +235,7 @@ impl World for ReportWorld {
         self.font_cache.fonts.get(index).cloned()
     }
 
-    fn today(&self, _offset: Option<i64>) -> Option<Datetime> {
+    fn today(&self, _offset: Option<Duration>) -> Option<Datetime> {
         // `std::time::SystemTime::now()` (used internally by `chrono::Local`)
         // panics on wasm32-unknown-unknown — there is no OS clock to query.
         // None of our templates call `datetime.today()`, so skip it there.
