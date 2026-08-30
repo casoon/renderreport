@@ -1593,20 +1593,32 @@ pub struct BenchmarkTable {
     pub rows: Vec<BenchmarkRow>,
 }
 
+/// One caller-defined extra ranking column (e.g. a scored audit dimension).
+///
+/// Deliberately generic — callers add whatever named dimensions their domain
+/// has (`with_column("SEO", 91)`, `with_column("Security", 95)`, ...) instead
+/// of `BenchmarkRow` hardcoding a fixed, closed set of field names. This
+/// keeps `renderreport` domain-agnostic: a new caller-side dimension never
+/// requires a new field/method/template branch here.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BenchmarkColumn {
+    pub label: String,
+    #[serde(default)]
+    pub score: Option<u32>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BenchmarkRow {
     pub rank: u32,
     pub domain: String,
     pub score: u32,
     pub accessibility: u32,
+    /// Additional scored dimensions, in the order added. The rendered table
+    /// derives its extra column headers from the union of labels seen across
+    /// all rows (first-seen order) — rows that omit a given row don't need
+    /// to break column alignment for the rest of the table.
     #[serde(default)]
-    pub seo: Option<u32>,
-    #[serde(default)]
-    pub performance: Option<u32>,
-    #[serde(default)]
-    pub security: Option<u32>,
-    #[serde(default)]
-    pub html_conform: Option<u32>,
+    pub extra_columns: Vec<BenchmarkColumn>,
     pub critical_issues: u32,
     /// Computed from score
     #[serde(default)]
@@ -1649,32 +1661,18 @@ impl BenchmarkRow {
             domain: domain.into(),
             score,
             accessibility,
-            seo: None,
-            performance: None,
-            security: None,
-            html_conform: None,
+            extra_columns: Vec::new(),
             critical_issues,
             computed_status,
         }
     }
 
-    pub fn with_seo(mut self, score: u32) -> Self {
-        self.seo = Some(score);
-        self
-    }
-
-    pub fn with_performance(mut self, score: u32) -> Self {
-        self.performance = Some(score);
-        self
-    }
-
-    pub fn with_security(mut self, score: u32) -> Self {
-        self.security = Some(score);
-        self
-    }
-
-    pub fn with_html_conform(mut self, score: u32) -> Self {
-        self.html_conform = Some(score);
+    /// Add a scored dimension column (e.g. `with_column("SEO", 91)`).
+    pub fn with_column(mut self, label: impl Into<String>, score: u32) -> Self {
+        self.extra_columns.push(BenchmarkColumn {
+            label: label.into(),
+            score: Some(score),
+        });
         self
     }
 }

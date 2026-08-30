@@ -51,21 +51,21 @@ fn main() -> renderreport::Result<()> {
         .add_component(
             BenchmarkTable::new(vec![
                 BenchmarkRow::new(1, "shop.example.com", 93, 96, 1)
-                    .with_seo(91).with_performance(90).with_security(95),
+                    .with_column("SEO", 91).with_column("Perf", 90).with_column("Sec", 95),
                 BenchmarkRow::new(2, "docs.example.com", 88, 94, 2)
-                    .with_seo(85).with_performance(88).with_security(86),
+                    .with_column("SEO", 85).with_column("Perf", 88).with_column("Sec", 86),
                 BenchmarkRow::new(3, "blog.example.com", 82, 88, 3)
-                    .with_seo(82).with_performance(78).with_security(80),
+                    .with_column("SEO", 82).with_column("Perf", 78).with_column("Sec", 80),
                 BenchmarkRow::new(4, "www.example.com", 78, 82, 5)
-                    .with_seo(76).with_performance(72).with_security(82),
+                    .with_column("SEO", 76).with_column("Perf", 72).with_column("Sec", 82),
                 BenchmarkRow::new(5, "api.example.com", 75, 70, 4)
-                    .with_seo(60).with_performance(85).with_security(88),
+                    .with_column("SEO", 60).with_column("Perf", 85).with_column("Sec", 88),
                 BenchmarkRow::new(6, "app.example.com", 68, 72, 8)
-                    .with_seo(65).with_performance(62).with_security(74),
+                    .with_column("SEO", 65).with_column("Perf", 62).with_column("Sec", 74),
                 BenchmarkRow::new(7, "careers.example.com", 62, 58, 11)
-                    .with_seo(68).with_performance(55).with_security(65),
+                    .with_column("SEO", 68).with_column("Perf", 55).with_column("Sec", 65),
                 BenchmarkRow::new(8, "legacy.example.com", 41, 35, 18)
-                    .with_seo(42).with_performance(38).with_security(48),
+                    .with_column("SEO", 42).with_column("Perf", 38).with_column("Sec", 48),
             ])
             .with_title("Website Ranking by Overall Score"),
         )
