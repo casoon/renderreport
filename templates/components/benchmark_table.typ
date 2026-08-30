@@ -15,9 +15,9 @@
   )[
     #set text(size: font-size-xs, weight: "bold", fill: color-text-muted)
     #grid(
-      columns: (8mm, 1fr, 16mm, 16mm, 16mm, 16mm, 16mm, 18mm),
+      columns: (8mm, 1fr, 16mm, 16mm, 16mm, 16mm, 16mm, 16mm, 18mm),
       gutter: spacing-2,
-      [Nr], [Domain], [Score], [A11y], [SEO], [Perf], [Sec], [Krit.],
+      [Nr], [Domain], [Score], [A11y], [SEO], [Perf], [Sec], [Konf.], [Krit.],
     )
   ]
 
@@ -33,7 +33,7 @@
       stroke: (bottom: (paint: color-border, thickness: 0.5pt)),
     )[
       #grid(
-        columns: (8mm, 1fr, 16mm, 16mm, 16mm, 16mm, 16mm, 18mm),
+        columns: (8mm, 1fr, 16mm, 16mm, 16mm, 16mm, 16mm, 16mm, 18mm),
         gutter: spacing-2,
         text(size: font-size-sm, fill: color-text-muted)[#row.rank],
         text(size: font-size-sm, weight: "bold")[#row.domain],
@@ -49,6 +49,10 @@
         },
         {
           if row.security != none { text(size: font-size-sm)[#row.security] }
+          else { text(size: font-size-sm, fill: color-text-muted)[—] }
+        },
+        {
+          if row.html_conform != none { text(size: font-size-sm)[#row.html_conform] }
           else { text(size: font-size-sm, fill: color-text-muted)[—] }
         },
         {

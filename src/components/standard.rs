@@ -1605,6 +1605,8 @@ pub struct BenchmarkRow {
     pub performance: Option<u32>,
     #[serde(default)]
     pub security: Option<u32>,
+    #[serde(default)]
+    pub html_conform: Option<u32>,
     pub critical_issues: u32,
     /// Computed from score
     #[serde(default)]
@@ -1650,6 +1652,7 @@ impl BenchmarkRow {
             seo: None,
             performance: None,
             security: None,
+            html_conform: None,
             critical_issues,
             computed_status,
         }
@@ -1667,6 +1670,11 @@ impl BenchmarkRow {
 
     pub fn with_security(mut self, score: u32) -> Self {
         self.security = Some(score);
+        self
+    }
+
+    pub fn with_html_conform(mut self, score: u32) -> Self {
+        self.html_conform = Some(score);
         self
     }
 }
