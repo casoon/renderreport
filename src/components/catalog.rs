@@ -80,7 +80,8 @@ pub enum LayoutHint {
     Breakable,
     /// Component must not break across pages (default for cards, charts).
     KeepTogether,
-    /// Engine emits a page break *before* this component.
+    /// Engine starts this component on a new page (a weak break *before* it,
+    /// so an already-empty page is reused instead of left blank).
     AlwaysNewPage,
     /// Engine keeps this component on the same page as the *following* sibling.
     KeepWithNext,

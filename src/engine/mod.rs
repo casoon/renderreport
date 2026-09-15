@@ -390,9 +390,11 @@ impl Engine {
                 .map(|d| d.layout_hint)
                 .unwrap_or(LayoutHint::KeepTogether);
 
-            // AlwaysNewPage: emit a page break before the component.
+            // AlwaysNewPage: start the component on a new page. The break is
+            // weak so it is skipped when the page is already empty — a strong
+            // break here turned two adjacent `PageBreak`s into a blank page.
             if layout_hint == LayoutHint::AlwaysNewPage {
-                content.push_str("#pagebreak()\n\n");
+                content.push_str("#pagebreak(weak: true)\n\n");
             }
 
             // KeepWithNext: wrap this component and the immediately following
