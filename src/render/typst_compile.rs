@@ -34,8 +34,10 @@ pub fn compile_to_pdf(
             // Typst diagnostic) on any document missing a title, language,
             // outline, or image alt text, instead of silently emitting a
             // non-conformant PDF.
-            let standards = typst_pdf::PdfStandards::new(&[typst_pdf::PdfStandard::Ua_1])
-                .map_err(|e| Error::Render(RenderError::TypstCompilation(e.message().to_string())))?;
+            let standards =
+                typst_pdf::PdfStandards::new(&[typst_pdf::PdfStandard::Ua_1]).map_err(|e| {
+                    Error::Render(RenderError::TypstCompilation(e.message().to_string()))
+                })?;
             let options = typst_pdf::PdfOptions {
                 standards,
                 ..Default::default()

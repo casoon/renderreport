@@ -212,7 +212,11 @@ impl Engine {
             .get("footer_tagline")
             .map(|s| s.as_str())
             .unwrap_or("");
-        let lang_str = request.metadata.get("lang").map(|s| s.as_str()).unwrap_or("en");
+        let lang_str = request
+            .metadata
+            .get("lang")
+            .map(|s| s.as_str())
+            .unwrap_or("en");
         source.push_str(&format!(
             "#let report-title = \"{}\"\n#let report-date = \"{}\"\n#let report-author = \"{}\"\n#let report-footer-link-url = \"{}\"\n#let report-footer-prefix = \"{}\"\n#let report-footer-tagline = \"{}\"\n\n",
             escape_for_typst_string(title_str),
