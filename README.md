@@ -47,12 +47,25 @@ fn main() -> renderreport::Result<()> {
 
 ## Installation
 
+### Library
+
 Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-renderreport = "0.3"
+renderreport = "0.5"
 ```
+
+### CLI
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/casoon/renderreport/main/install.sh | sh
+```
+
+Downloads the archive for your platform from the latest release, verifies it against the
+published `.sha256` file and installs the binary to `/usr/local/bin`. Set
+`RENDERREPORT_INSTALL_DIR` to install elsewhere, or `VERSION` to pin a release. On Windows, take
+the `.zip` from the [releases page](https://github.com/casoon/renderreport/releases).
 
 ## Inspecting the generated Typst source
 
