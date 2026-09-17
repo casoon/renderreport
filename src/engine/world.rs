@@ -62,22 +62,37 @@ impl FontCache {
         let mut book = FontBook::new();
         let mut fonts = Vec::new();
 
+        // Font collections (.ttc/.otc, common among CJK system fonts) list one
+        // `FaceInfo` per face, but all faces in the same file share one
+        // `Source::File`. Cache the decoded buffer per path so an N-face
+        // collection is read from disk once, not N times — and use
+        // `Font::new(buffer, index)` to construct exactly the one face
+        // fontdb found, instead of `Font::iter`, which walks and pushes
+        // every face in the buffer on every call (quadratic in face count).
+        let mut file_cache: HashMap<PathBuf, Bytes> = HashMap::new();
+
         for face in fontdb.faces() {
-            let source_data: Option<Vec<u8>> = match &face.source {
-                fontdb::Source::File(path) => std::fs::read(path).ok(),
+            let buffer: Option<Bytes> = match &face.source {
+                fontdb::Source::File(path) => match file_cache.get(path) {
+                    Some(cached) => Some(cached.clone()),
+                    None => std::fs::read(path).ok().map(|data| {
+                        let bytes = Bytes::new(data);
+                        file_cache.insert(path.clone(), bytes.clone());
+                        bytes
+                    }),
+                },
                 fontdb::Source::Binary(data) => {
                     let slice: &[u8] = data.as_ref().as_ref();
-                    Some(slice.to_vec())
+                    Some(Bytes::new(slice.to_vec()))
                 }
                 fontdb::Source::SharedFile(_, data) => {
                     let slice: &[u8] = data.as_ref().as_ref();
-                    Some(slice.to_vec())
+                    Some(Bytes::new(slice.to_vec()))
                 }
             };
 
-            if let Some(data) = source_data {
-                let buffer = Bytes::new(data);
-                for font in Font::iter(buffer) {
+            if let Some(buffer) = buffer {
+                if let Some(font) = Font::new(buffer, face.index) {
                     book.push(font.info().clone());
                     fonts.push(font);
                 }
