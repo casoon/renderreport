@@ -12,6 +12,8 @@ Data-driven report generation with Typst as embedded render engine.
 
 Build professional PDF reports without learning Typst. Use components, themes, and template packs to create reports from structured data.
 
+**Website:** [renderreport.casoon.de](https://renderreport.casoon.de/en/)
+
 ## Features
 
 - **Component-based**: Build reports using pre-built components (ScoreCard, Finding, Table, etc.)
