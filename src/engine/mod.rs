@@ -47,9 +47,17 @@ impl Engine {
 
     /// Create a new engine with custom configuration
     pub fn with_config(config: EngineConfig) -> Result<Self> {
+        Self::with_config_and_fonts(config, &[])
+    }
+
+    /// Create a new engine with custom configuration and additional embedded
+    /// font byte buffers (e.g. `include_bytes!`-loaded fonts), on top of
+    /// whatever `config.use_system_fonts`/`use_embedded_fonts`/`font_paths`
+    /// already select. See [`world::FontCache::with_extra_fonts`].
+    pub fn with_config_and_fonts(config: EngineConfig, extra_fonts: &[&[u8]]) -> Result<Self> {
         let components = ComponentRegistry::with_standard_components();
         let pack_loader = PackLoader::new(&config.pack_paths);
-        let font_cache = Arc::new(FontCache::new(&config));
+        let font_cache = Arc::new(FontCache::with_extra_fonts(&config, extra_fonts));
 
         Ok(Self {
             config,

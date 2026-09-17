@@ -37,6 +37,18 @@ pub struct FontCache {
 impl FontCache {
     /// Build font cache from engine configuration.
     pub fn new(config: &EngineConfig) -> Self {
+        Self::with_extra_fonts(config, &[])
+    }
+
+    /// Build font cache from engine configuration, plus additional
+    /// caller-supplied font byte buffers (e.g. `include_bytes!`-embedded
+    /// fonts), loaded the same way as `EMBEDDED_FONTS`.
+    ///
+    /// For a caller that sets `use_system_fonts(false)` and wants a fully
+    /// self-contained binary — no dependency on font files present on the
+    /// machine that runs it — with its own theme fonts rather than the
+    /// crate's built-in Fira Sans fallback.
+    pub fn with_extra_fonts(config: &EngineConfig, extra_fonts: &[&[u8]]) -> Self {
         let mut fontdb = Database::new();
 
         if config.use_system_fonts {
@@ -57,6 +69,10 @@ impl FontCache {
             for data in EMBEDDED_FONTS {
                 fontdb.load_font_data(data.to_vec());
             }
+        }
+
+        for data in extra_fonts {
+            fontdb.load_font_data(data.to_vec());
         }
 
         let mut book = FontBook::new();
