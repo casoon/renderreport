@@ -11,7 +11,7 @@ license = "MIT"
 keywords = ["report", "pdf", "typst", "audit", "generator"]
 categories = ["text-processing", "rendering", "template-engine"]
 readme = "README.md"
-rust-version = "1.89"
+rust-version = "1.92"
 exclude = [
     "target/",
     ".github/",
@@ -55,10 +55,8 @@ datamatrix = { version = "0.3", optional = true }
 # Distributed static component registration
 inventory = "0.3"
 
-# Utilities
-chrono = { version = "0.4", features = ["serde"] }
-# Font handling
-fontdb = "0.22"
+# Typst world: fonts, virtual filesystem, dates
+embedded-typst = { version = "0.1", default-features = false }
 
 # Wasm bindings (optional)
 wasm-bindgen = { version = "0.2", optional = true }
