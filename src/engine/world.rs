@@ -1,19 +1,18 @@
 //! Typst World implementation for embedded compilation
 //!
 //! This module provides the necessary infrastructure for running Typst
-//! as an embedded library without CLI.
+//! as an embedded library without CLI. Fonts, the virtual filesystem and
+//! dates come from [`embedded_typst`].
 
-use std::cell::OnceCell;
-use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, OnceLock, RwLock};
+use std::sync::Arc;
 
-use fontdb::Database;
-use typst::diag::{FileError, FileResult};
+use embedded_typst::{EmbeddedWorld, Fonts};
+use typst::diag::FileResult;
 use typst::foundations::{Bytes, Datetime, Duration};
-use typst::syntax::{FileId, RootedPath, Source, VirtualPath, VirtualRoot};
+use typst::syntax::{FileId, Source, VirtualPath};
 use typst::text::{Font, FontBook};
-use typst::{Library, LibraryExt, World};
+use typst::{Library, World};
 
 use crate::engine::EngineConfig;
 
@@ -28,10 +27,10 @@ const EMBEDDED_FONTS: &[&[u8]] = &[
     include_bytes!("../../assets/fonts/FiraSans-BoldItalic.ttf"),
 ];
 
-/// Cached font data, built once at engine construction time.
+/// Cached font data, built once at engine construction time. Fonts found on
+/// disk are only read when a document uses them.
 pub struct FontCache {
-    pub book: typst::utils::LazyHash<FontBook>,
-    pub fonts: Vec<Font>,
+    fonts: Arc<Fonts>,
 }
 
 impl FontCache {
@@ -49,137 +48,50 @@ impl FontCache {
     /// machine that runs it — with its own theme fonts rather than the
     /// crate's built-in Fira Sans fallback.
     pub fn with_extra_fonts(config: &EngineConfig, extra_fonts: &[&[u8]]) -> Self {
-        let mut fontdb = Database::new();
+        let mut fonts = Fonts::builder();
 
-        if config.use_system_fonts {
-            fontdb.load_system_fonts();
-        }
-
-        for path in &config.font_paths {
-            if path.is_dir() {
-                fontdb.load_fonts_dir(path);
-            } else if path.is_file() {
-                if let Err(e) = fontdb.load_font_file(path) {
-                    eprintln!("warning: failed to load font file {}: {e}", path.display());
-                }
+        // There is no filesystem and there are no system fonts on wasm32.
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            if config.use_system_fonts {
+                fonts = fonts.system_fonts();
+            }
+            for path in &config.font_paths {
+                fonts = fonts.path(path);
             }
         }
 
         if config.use_embedded_fonts {
             for data in EMBEDDED_FONTS {
-                fontdb.load_font_data(data.to_vec());
+                fonts = fonts.data(*data);
             }
         }
 
         for data in extra_fonts {
-            fontdb.load_font_data(data.to_vec());
-        }
-
-        let mut book = FontBook::new();
-        let mut fonts = Vec::new();
-
-        // Font collections (.ttc/.otc, common among CJK system fonts) list one
-        // `FaceInfo` per face, but all faces in the same file share one
-        // `Source::File`. Cache the decoded buffer per path so an N-face
-        // collection is read from disk once, not N times — and use
-        // `Font::new(buffer, index)` to construct exactly the one face
-        // fontdb found, instead of `Font::iter`, which walks and pushes
-        // every face in the buffer on every call (quadratic in face count).
-        let mut file_cache: HashMap<PathBuf, Bytes> = HashMap::new();
-
-        for face in fontdb.faces() {
-            let buffer: Option<Bytes> = match &face.source {
-                fontdb::Source::File(path) => match file_cache.get(path) {
-                    Some(cached) => Some(cached.clone()),
-                    None => std::fs::read(path).ok().map(|data| {
-                        let bytes = Bytes::new(data);
-                        file_cache.insert(path.clone(), bytes.clone());
-                        bytes
-                    }),
-                },
-                fontdb::Source::Binary(data) => {
-                    let slice: &[u8] = data.as_ref().as_ref();
-                    Some(Bytes::new(slice.to_vec()))
-                }
-                fontdb::Source::SharedFile(_, data) => {
-                    let slice: &[u8] = data.as_ref().as_ref();
-                    Some(Bytes::new(slice.to_vec()))
-                }
-            };
-
-            if let Some(buffer) = buffer {
-                if let Some(font) = Font::new(buffer, face.index) {
-                    book.push(font.info().clone());
-                    fonts.push(font);
-                }
-            }
+            fonts = fonts.data(data.to_vec());
         }
 
         Self {
-            book: typst::utils::LazyHash::new(book),
-            fonts,
+            fonts: Arc::new(fonts.build()),
         }
     }
 }
 
 /// Typst World implementation for RenderReport
-pub struct ReportWorld {
-    /// The main source file
-    main: Source,
-    /// The standard library
-    library: typst::utils::LazyHash<Library>,
-    /// Shared font cache
-    font_cache: Arc<FontCache>,
-    /// File slots for virtual filesystem
-    slots: RwLock<HashMap<FileId, FileSlot>>,
-    /// Root path for file resolution
-    root: PathBuf,
-    /// Current datetime (unused on wasm32 — no OS clock to query)
-    #[cfg_attr(target_arch = "wasm32", allow(dead_code))]
-    now: OnceLock<Option<Datetime>>,
-}
-
-/// Slot for lazy file loading
-struct FileSlot {
-    source: OnceCell<FileResult<Source>>,
-    bytes: OnceCell<FileResult<Bytes>>,
-}
-
-impl FileSlot {
-    fn new() -> Self {
-        Self {
-            source: OnceCell::new(),
-            bytes: OnceCell::new(),
-        }
-    }
-}
-
-// Safety: FileSlot's OnceCell only allows single initialization
-unsafe impl Send for FileSlot {}
-unsafe impl Sync for FileSlot {}
+pub struct ReportWorld(EmbeddedWorld);
 
 impl ReportWorld {
     /// Create a new world using a pre-built font cache.
     pub fn new(source: String, font_cache: Arc<FontCache>) -> Self {
-        let path = VirtualPath::new("report.typ").expect("\"report.typ\" is a valid virtual path");
-        let id = FileId::new(RootedPath::new(VirtualRoot::Project, path));
-        let main = Source::new(id, source);
-        let library = typst::utils::LazyHash::new(Library::default());
-
-        Self {
-            main,
-            library,
-            font_cache,
-            slots: RwLock::new(HashMap::new()),
-            root: std::env::current_dir().unwrap_or_default(),
-            now: OnceLock::new(),
-        }
+        let main = VirtualPath::new("report.typ").expect("\"report.typ\" is a valid virtual path");
+        let world = EmbeddedWorld::new(main, source, font_cache.fonts.clone());
+        let root = std::env::current_dir().unwrap_or_default();
+        Self(world.with_roots(vec![root]))
     }
 
     /// Set the root path for file resolution
-    pub fn with_root(mut self, root: impl Into<PathBuf>) -> Self {
-        self.root = root.into();
-        self
+    pub fn with_root(self, root: impl Into<PathBuf>) -> Self {
+        Self(self.0.with_roots(vec![root.into()]))
     }
 
     /// Add a virtual file
@@ -188,106 +100,36 @@ impl ReportWorld {
         let Ok(vpath) = VirtualPath::new(path_str.as_ref()) else {
             return;
         };
-        let id = FileId::new(RootedPath::new(VirtualRoot::Project, vpath));
-        let mut slots = self.slots.write().unwrap();
-        let slot = slots.entry(id).or_insert_with(FileSlot::new);
-        slot.bytes.get_or_init(|| Ok(Bytes::new(content.into())));
-    }
-
-    /// Resolve `id` from cache, falling back to `load` against its on-disk path
-    /// and caching the result in the `FileSlot` field selected by `cell`.
-    fn cached_or_load<T: Clone>(
-        &self,
-        id: FileId,
-        cell: impl Fn(&FileSlot) -> &OnceCell<FileResult<T>>,
-        load: impl FnOnce(&Path) -> FileResult<T>,
-    ) -> FileResult<T> {
-        let slots = self.slots.read().unwrap();
-        if let Some(slot) = slots.get(&id) {
-            if let Some(result) = cell(slot).get() {
-                return result.clone();
-            }
-        }
-        drop(slots);
-
-        let path_str = id.vpath().get_with_slash();
-        let path = Path::new(path_str);
-        let full_path = self.root.join(path.strip_prefix("/").unwrap_or(path));
-        let result = load(&full_path);
-
-        let mut slots = self.slots.write().unwrap();
-        let slot = slots.entry(id).or_insert_with(FileSlot::new);
-        cell(slot).get_or_init(|| result.clone()).clone()
+        self.0.add_file(vpath, content.into());
     }
 }
 
 impl World for ReportWorld {
     fn library(&self) -> &typst::utils::LazyHash<Library> {
-        &self.library
+        self.0.library()
     }
 
     fn book(&self) -> &typst::utils::LazyHash<FontBook> {
-        &self.font_cache.book
+        self.0.book()
     }
 
     fn main(&self) -> FileId {
-        self.main.id()
+        self.0.main()
     }
 
     fn source(&self, id: FileId) -> FileResult<Source> {
-        if id == self.main.id() {
-            return Ok(self.main.clone());
-        }
-
-        self.cached_or_load(
-            id,
-            |slot| &slot.source,
-            |full_path| {
-                std::fs::read_to_string(full_path)
-                    .map_err(|e| FileError::from_io(e, full_path))
-                    .map(|text| Source::new(id, text))
-            },
-        )
+        self.0.source(id)
     }
 
     fn file(&self, id: FileId) -> FileResult<Bytes> {
-        self.cached_or_load(
-            id,
-            |slot| &slot.bytes,
-            |full_path| {
-                std::fs::read(full_path)
-                    .map_err(|e| FileError::from_io(e, full_path))
-                    .map(Bytes::new)
-            },
-        )
+        self.0.file(id)
     }
 
     fn font(&self, index: usize) -> Option<Font> {
-        self.font_cache.fonts.get(index).cloned()
+        self.0.font(index)
     }
 
-    fn today(&self, _offset: Option<Duration>) -> Option<Datetime> {
-        // `std::time::SystemTime::now()` (used internally by `chrono::Local`)
-        // panics on wasm32-unknown-unknown — there is no OS clock to query.
-        // None of our templates call `datetime.today()`, so skip it there.
-        #[cfg(target_arch = "wasm32")]
-        {
-            None
-        }
-
-        #[cfg(not(target_arch = "wasm32"))]
-        {
-            *self.now.get_or_init(|| {
-                let now = chrono::Local::now();
-                Datetime::from_ymd_hms(
-                    now.format("%Y").to_string().parse().ok()?,
-                    now.format("%m").to_string().parse().ok()?,
-                    now.format("%d").to_string().parse().ok()?,
-                    now.format("%H").to_string().parse().ok()?,
-                    now.format("%M").to_string().parse().ok()?,
-                    now.format("%S").to_string().parse().ok()?,
-                )
-            })
-        }
+    fn today(&self, offset: Option<Duration>) -> Option<Datetime> {
+        self.0.today(offset)
     }
 }
