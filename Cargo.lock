@@ -682,6 +682,8 @@ checksum = "9e5e8f6c15a24b9a3ee5efec809ccd006d3b30e8b3bb63c39af737c7f87daa1d"
 [[package]]
 name = "embedded-typst"
 version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "771d8404d3b5a18d7b879c469f8b87336c7fd544778ad07982bdea85381b6b44"
 dependencies = [
  "chrono",
  "fontdb 0.24.0",
