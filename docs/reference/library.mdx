@@ -1,0 +1,102 @@
+---
+title: Library API
+description: The main types of the Rust crate. Item-level documentation, including every component builder, is on docs.rs.
+order: 3
+---
+
+`renderreport::prelude::*` brings the engine, the themes and all built-in components into scope.
+The full API is on [docs.rs/renderreport](https://docs.rs/renderreport).
+
+## Engine
+
+<ApiEntry
+  kind="struct"
+  name="Engine"
+  signature={`impl Engine {
+    pub fn new() -> Result<Engine>
+    pub fn with_config(config: EngineConfig) -> Result<Engine>
+    pub fn with_config_and_fonts(config: EngineConfig, extra_fonts: &[&[u8]]) -> Result<Engine>
+}`}
+>
+  Holds the configuration, the font index, the component registry, loaded packs and the default
+  theme. Create it once and reuse it. `with_config_and_fonts` adds font bytes, for example from
+  `include_bytes!`, to the fonts the configuration selects.
+</ApiEntry>
+
+<ApiEntry
+  kind="struct"
+  name="EngineConfig"
+  signature={`pub struct EngineConfig {
+    pub pack_paths: Vec<PathBuf>,    // ./packs, ~/.renderreport/packs
+    pub font_paths: Vec<PathBuf>,    // none
+    pub use_embedded_fonts: bool,    // true: bundled Fira Sans
+    pub use_system_fonts: bool,      // true
+    pub cache_dir: Option<PathBuf>,  // none
+}`}
+/>
+
+## Building and rendering
+
+<ApiEntry
+  kind="fn"
+  name="Engine::report"
+  signature="pub fn report(&self, template_id: impl Into<String>) -> ReportBuilder"
+>
+  Starts a report. The builder sets `title`, `subtitle`, `metadata`, `theme`, `pack`,
+  `page_setup` and `asset`, appends components with `add_component` or `add_components`, and
+  returns a `RenderRequest` from `build()`.
+</ApiEntry>
+
+<ApiEntry
+  kind="fn"
+  name="Engine::render_pdf"
+  signature="pub fn render_pdf(&self, request: &RenderRequest) -> Result<Vec<u8>>"
+>
+  Renders a request to PDF bytes with PDF/UA-1 enforced. `render` returns the same as a
+  `RenderOutput`.
+</ApiEntry>
+
+<ApiEntry
+  kind="fn"
+  name="Engine::render_typ"
+  signature="pub fn render_typ(&self, request: &RenderRequest) -> Result<String>"
+>
+  The Typst source that `render_pdf` would compile, see
+  [the generated Typst source](../../guides/typst-source/).
+</ApiEntry>
+
+## Components and themes
+
+<ApiEntry
+  kind="trait"
+  name="Component"
+  signature={`pub trait Component: Send + Sync {
+    fn component_id(&self) -> &str;
+    fn to_data(&self) -> serde_json::Value;
+}`}
+>
+  Implemented by every built-in component. Implement it for your own types and register their
+  template with `engine.components_mut().register(…)`, see
+  [custom components](../../guides/custom-components/).
+</ApiEntry>
+
+<ApiEntry
+  kind="struct"
+  name="Theme"
+  signature={`impl Theme {
+    pub fn new(id: impl Into<String>, name: impl Into<String>) -> Theme
+    pub fn default_theme() -> Theme
+}`}
+>
+  A named set of design tokens; set values with `theme.tokens.set(key, TokenValue::…)`. See
+  [themes and tokens](../../concepts/themes/).
+</ApiEntry>
+
+<ApiEntry
+  kind="struct"
+  name="AuditPattern, ExecutivePattern, MarketingPattern"
+  signature="AuditPattern::new().add_findings(…).add_roadmap(…).to_components()"
+>
+  Prepared report structures: each collects data for a fixed sequence of components and
+  returns them with `to_components()`.
+</ApiEntry>

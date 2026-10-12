@@ -17,6 +17,9 @@ exclude = [
     ".github/",
     "docs/",
     "fixtures/",
+    "site/",
+    "examples/requests/",
+    "examples/terminal/",
 ]
 
 [package.metadata.docs.rs]

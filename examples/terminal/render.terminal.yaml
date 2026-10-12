@@ -1,0 +1,15 @@
+# The hero scene of the project site. The output lines are what the CLI of
+# this checkout prints for examples/requests/health-check.json; rebuild the SVG
+# after changing them (see examples/regenerate.sh).
+version: 1
+terminal:
+  title: renderreport
+  cols: 60
+  rows: 8
+steps:
+  - run: renderreport render health-check.json -o health-check.pdf
+  - output: "{green}Written 35217 bytes to health-check.pdf{/}\n"
+  - wait: 800
+  - run: renderreport list-components | tail -1
+  - output: "80 component(s)\n"
+  - wait: 3000

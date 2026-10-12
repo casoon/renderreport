@@ -1,0 +1,87 @@
+---
+title: Installation
+description: renderreport is one crate on crates.io. Add it as a library, or install the CLI with the install script, npm or cargo.
+order: 1
+---
+
+<Tabs
+  label="Installation"
+  tabs={[
+    { id: 'library', label: 'Library' },
+    { id: 'script', label: 'CLI: install script' },
+    { id: 'npm', label: 'CLI: npm' },
+    { id: 'cargo', label: 'CLI: cargo' },
+  ]}
+>
+<div slot="library">
+
+```sh
+cargo add renderreport
+```
+
+</div>
+<div slot="script">
+
+Downloads the archive for your platform from the latest GitHub release, checks it against the
+published `.sha256` file and installs the binary to `/usr/local/bin`:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/casoon/renderreport/main/install.sh | sh
+```
+
+Set `RENDERREPORT_INSTALL_DIR` to install elsewhere, or `VERSION` to pin a release. On Windows,
+take the `.zip` from the [releases page](https://github.com/casoon/renderreport/releases).
+
+</div>
+<div slot="npm">
+
+The package downloads the matching release binary in `postinstall` and verifies its checksum:
+
+```sh
+npm install @casoon/renderreport
+npx renderreport --version
+```
+
+</div>
+<div slot="cargo">
+
+Builds the CLI from source, for platforms without a prebuilt binary:
+
+```sh
+cargo install renderreport --features cli
+```
+
+</div>
+</Tabs>
+
+## Prebuilt binaries
+
+Every release ships the CLI for these targets:
+
+| Platform | Target |
+| --- | --- |
+| Linux x64 | `x86_64-unknown-linux-gnu` |
+| Linux ARM64 | `aarch64-unknown-linux-gnu` |
+| macOS Apple Silicon | `aarch64-apple-darwin` |
+| Windows x64 | `x86_64-pc-windows-msvc` |
+| Windows ARM64 | `aarch64-pc-windows-msvc` |
+
+Intel Macs have no prebuilt binary since 0.6.0; install from source with cargo.
+
+## Requirements
+
+| | Minimum | Notes |
+| --- | --- | --- |
+| Rust | `1.92` | `rust-version` in `Cargo.toml`, edition 2021 |
+| Typst | – | Embedded: `typst` and `typst-pdf` 0.15 are compiled in |
+
+No `typst` binary is needed. Fira Sans is compiled into every build as a fallback font, so the
+engine also renders where no system fonts exist.
+
+## Features
+
+| Feature | Default | Adds |
+| --- | --- | --- |
+| `barcodes` | yes | The `barcode` component: Code128, QR, Data Matrix and more |
+| `cli` | no | The `renderreport` binary (via `clap`) |
+| `wasm` | no | `wasm-bindgen` exports for `wasm32-unknown-unknown`, see [Wasm](../../guides/wasm/) |

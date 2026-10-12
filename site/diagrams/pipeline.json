@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "type": "flow",
+  "title": "From data to PDF",
+  "description": "The Rust builder, the CLI and the Wasm build all produce a RenderRequest. The engine merges the themes, writes the Typst source and compiles it in-process; the PDF is written with PDF/UA-1 enforced, or the render fails with a Typst diagnostic.",
+  "source": "src/engine/mod.rs, src/render/typst_compile.rs",
+  "width": 880,
+  "height": 980,
+  "flow": {
+    "lanes": [
+      { "id": "input", "label": "Input" },
+      { "id": "engine", "label": "Engine" },
+      { "id": "output", "label": "Output" }
+    ],
+    "nodes": [
+      { "id": "rust", "label": "Rust builder", "sublabel": "engine.report(…)", "kind": "start", "lane": "input" },
+      { "id": "json", "label": "JSON", "sublabel": "CLI, npm, Wasm", "kind": "start", "lane": "input" },
+      { "id": "request", "label": "RenderRequest", "sublabel": "components, theme, metadata", "lane": "input" },
+      { "id": "theme", "label": "Merge themes", "sublabel": "default → pack → request", "lane": "engine" },
+      { "id": "source", "label": "Typst source", "sublabel": "tokens, page setup, components", "lane": "engine" },
+      { "id": "compile", "label": "Embedded Typst 0.15", "sublabel": "virtual files, fonts", "lane": "engine" },
+      { "id": "typ", "label": ".typ string", "sublabel": "render_typ", "kind": "end", "lane": "output" },
+      { "id": "ua", "label": "PDF/UA-1 met?", "kind": "decision", "lane": "output" },
+      { "id": "pdf", "label": "PDF", "sublabel": "render_pdf", "kind": "end", "lane": "output" },
+      { "id": "error", "label": "Typst diagnostic", "sublabel": "no PDF written", "kind": "end", "lane": "output" }
+    ],
+    "edges": [
+      { "from": "rust", "to": "request" },
+      { "from": "json", "to": "request", "label": "serde" },
+      { "from": "request", "to": "theme" },
+      { "from": "theme", "to": "source" },
+      { "from": "source", "to": "typ", "label": "stop here" },
+      { "from": "source", "to": "compile" },
+      { "from": "compile", "to": "ua" },
+      { "from": "ua", "to": "pdf", "label": "yes" },
+      { "from": "ua", "to": "error", "label": "no" }
+    ]
+  }
+}

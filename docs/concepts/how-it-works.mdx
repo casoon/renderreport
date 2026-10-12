@@ -1,0 +1,52 @@
+---
+title: How a report is rendered
+description: From a list of components to a PDF/UA-1 file, in one process and without a typst binary.
+order: 1
+---
+
+<Diagram name="pipeline" />
+
+## 1. The request
+
+Everything starts with a `RenderRequest`: a template id, an optional pack, title and metadata, an
+optional theme, page setup, assets and the list of components. The Rust builder, the CLI (which
+reads JSON) and the Wasm export all produce the same struct. See
+[the render request](../../reference/render-request/).
+
+## 2. The theme
+
+The engine merges three themes, later ones winning per token: its default theme, the default
+theme of the pack named in the request, and the theme in the request itself. The result is
+written to the top of the Typst source as variables: `color.primary` becomes
+`#let color-primary = rgb("#155EEF")`. See [themes](../themes/).
+
+## 3. The Typst source
+
+Next come shared helper functions, the report metadata (title, date, author, used by the running
+header and footer) and the page setup: paper, orientation, margins, header and footer. Then the
+engine adds the Typst function of every component type the request uses, and only those. A
+`flow-group` or `grid-component` can hold any component, so with one of them in the request all
+functions are included.
+
+Finally each component becomes one call, with its `data` turned into a Typst dictionary:
+`#score-card((title: "Accessibility", score: 91, …))`. Layout hints from the component catalog
+decide what happens around the call: a page break before `always-new-page` components, and a
+`keep-with-next` component (a section heading, for example) is kept on the same page as the
+component after it.
+
+You can stop here and get the source as a string with `Engine::render_typ`, see
+[the generated Typst source](../../guides/typst-source/).
+
+## 4. Compilation
+
+The source is compiled by Typst 0.15, embedded through
+[embedded-typst](https://github.com/casoon/embedded-typst): a virtual file system holds the
+source, templates and assets; fonts come from the system, from configured font folders and from
+the bundled Fira Sans. Font files from disk are only read when a document uses them.
+
+## 5. The PDF
+
+The PDF is written with the PDF/UA-1 standard enforced. A document without a title or language,
+or an image without alt text, fails with a Typst diagnostic instead of producing a PDF that is
+not accessible. If the request has no title, the engine falls back to the title of the first
+`cover-page` component, then of the first `section`.

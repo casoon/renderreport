@@ -1,0 +1,176 @@
+{
+  "template_id": "default",
+  "title": "Website Health Check",
+  "subtitle": "shop.example.com — October 2026",
+  "metadata": {
+    "date": "2026-10-12",
+    "author": "Web Team"
+  },
+  "components": [
+    {
+      "data": {
+        "content": [],
+        "level": 1,
+        "title": "Summary"
+      },
+      "type": "section"
+    },
+    {
+      "data": {
+        "column_gap": "16pt",
+        "columns": 3,
+        "item_min_height": null,
+        "items": [
+          {
+            "colspan": 1,
+            "content": {
+              "data": {
+                "computed_status": "warning",
+                "description": "Lighthouse, mobile",
+                "good_threshold": 90,
+                "height": null,
+                "inverted": false,
+                "max_score": 100,
+                "score": 78,
+                "status": null,
+                "title": "Performance",
+                "variant": "standard",
+                "warn_threshold": 50
+              },
+              "type": "score-card"
+            }
+          },
+          {
+            "colspan": 1,
+            "content": {
+              "data": {
+                "computed_status": "good",
+                "description": "axe, 42 pages",
+                "good_threshold": 90,
+                "height": null,
+                "inverted": false,
+                "max_score": 100,
+                "score": 91,
+                "status": null,
+                "title": "Accessibility",
+                "variant": "standard",
+                "warn_threshold": 50
+              },
+              "type": "score-card"
+            }
+          },
+          {
+            "colspan": 1,
+            "content": {
+              "data": {
+                "computed_status": "warning",
+                "description": "Crawl of 1,280 URLs",
+                "good_threshold": 80,
+                "height": null,
+                "inverted": false,
+                "max_score": 100,
+                "score": 64,
+                "status": null,
+                "title": "SEO",
+                "variant": "standard",
+                "warn_threshold": 60
+              },
+              "type": "score-card"
+            }
+          }
+        ],
+        "row_gap": "16pt",
+        "title": null
+      },
+      "type": "grid-component"
+    },
+    {
+      "type": "progress-bar",
+      "data": {
+        "label": "Home: pages passing Core Web Vitals",
+        "value": 96.0,
+        "max": 100.0,
+        "show_percentage": true,
+        "color": null,
+        "percentage": 96.0
+      }
+    },
+    {
+      "type": "progress-bar",
+      "data": {
+        "label": "Product: pages passing Core Web Vitals",
+        "value": 88.0,
+        "max": 100.0,
+        "show_percentage": true,
+        "color": null,
+        "percentage": 88.0
+      }
+    },
+    {
+      "type": "progress-bar",
+      "data": {
+        "label": "Checkout: pages passing Core Web Vitals",
+        "value": 81.0,
+        "max": 100.0,
+        "show_percentage": true,
+        "color": null,
+        "percentage": 81.0
+      }
+    },
+    {
+      "type": "progress-bar",
+      "data": {
+        "label": "Category: pages passing Core Web Vitals",
+        "value": 54.0,
+        "max": 100.0,
+        "show_percentage": true,
+        "color": null,
+        "percentage": 54.0
+      }
+    },
+    {
+      "data": {
+        "content": [],
+        "level": 1,
+        "title": "Findings"
+      },
+      "type": "section"
+    },
+    {
+      "data": {
+        "affected": null,
+        "category": "Performance",
+        "description": "Images on category pages have no width and height, so the layout shifts while they load.",
+        "label_affected": null,
+        "label_recommendation": null,
+        "recommendation": "Set width and height on every hero image and serve them as AVIF.",
+        "severity": "high",
+        "title": "Category pages load hero images without size hints"
+      },
+      "type": "finding"
+    },
+    {
+      "data": {
+        "affected": null,
+        "category": "SEO",
+        "description": "Old product URLs redirect twice before reaching the current page.",
+        "label_affected": null,
+        "label_recommendation": null,
+        "recommendation": "Point each old URL directly at its final target.",
+        "severity": "medium",
+        "title": "212 URLs return a redirect chain"
+      },
+      "type": "finding"
+    },
+    {
+      "data": {
+        "callout_type": "info",
+        "content": "Generated with the renderreport CLI from examples/requests/health-check.json.",
+        "inverted": false,
+        "title": "About this report",
+        "variant": "info"
+      },
+      "type": "callout"
+    }
+  ]
+}

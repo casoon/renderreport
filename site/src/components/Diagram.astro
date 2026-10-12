@@ -1,0 +1,12 @@
+---
+import { diagram } from '../diagrams';
+
+interface Props {
+  /** File name in site/diagrams/ without .json */
+  name: string;
+}
+
+const html = diagram(Astro.props.name);
+---
+
+<Fragment set:html={html} />

@@ -1,0 +1,138 @@
+---
+import {
+  Badge,
+  Badges,
+  BuildOutput,
+  CodeBlock,
+  Facts,
+  Features,
+  Hero,
+  Install,
+  Quickstart,
+} from '@casoon/pages-theme/components';
+import Base from '@casoon/pages-theme/layouts/Base.astro';
+import { url } from '@casoon/pages-theme/lib/url.ts';
+import renderSvg from '../../../examples/terminal/render.svg?url';
+import Diagram from '../components/Diagram.astro';
+import { pdfViewer } from '../showcase';
+
+const quickstart = `use renderreport::prelude::*;
+
+fn main() -> renderreport::Result<()> {
+    let engine = Engine::new()?;
+
+    let report = engine
+        .report("default")
+        .title("Website Health Check")
+        .add_component(ScoreCard::new("Accessibility", 91))
+        .add_component(Finding::new(
+            "212 URLs return a redirect chain",
+            Severity::Medium,
+            "Old product URLs redirect twice.",
+        ))
+        .build();
+
+    std::fs::write("report.pdf", engine.render_pdf(&report)?)?;
+    Ok(())
+}`;
+---
+
+<Base>
+  <Hero
+    title="Data in, report out."
+    lead="renderreport builds PDF reports from components and theme tokens. Describe the report in Rust or JSON; the engine writes the Typst source and compiles it in-process, with PDF/UA-1 enforced. No typst binary, no Typst to learn."
+  >
+    <Install
+      commands={[
+        { label: 'cargo', command: 'cargo add renderreport' },
+        { label: 'cli', command: 'curl -fsSL https://raw.githubusercontent.com/casoon/renderreport/main/install.sh | sh' },
+        { label: 'npm', command: 'npm install @casoon/renderreport' },
+      ]}
+    />
+    <Badges>
+      <Badge>MIT</Badge>
+      <Badge>crates.io 0.6.0</Badge>
+      <Badge>Rust 1.92+</Badge>
+      <Badge>Typst 0.15</Badge>
+      <Badge>PDF/UA-1</Badge>
+    </Badges>
+    <img
+      slot="output"
+      src={renderSvg}
+      width="528"
+      height="188"
+      style="display:block;width:100%;height:auto"
+      alt="Terminal: renderreport render health-check.json -o health-check.pdf prints Written 35217 bytes to health-check.pdf; renderreport list-components | tail -1 prints 80 component(s)."
+    />
+  </Hero>
+
+  <Facts
+    items={[
+      { value: '80', label: 'built-in components in 8 categories' },
+      { value: '0', label: 'external typst binaries or subprocesses' },
+      { value: '4', label: 'ways in: Rust, CLI, npm, Wasm' },
+      { value: 'UA-1', label: 'PDF standard enforced on every render' },
+    ]}
+  />
+
+  <Features
+    items={[
+      {
+        title: 'Components, not markup',
+        body: 'Score cards, findings, tables, timelines, pricing cards and 75 more. Each takes plain data; layout hints keep headings with their content and cards in one piece.',
+      },
+      {
+        title: 'Theme tokens',
+        body: 'Colours, fonts, spacing and margins are named tokens that every component reads. Merge the default theme, a pack theme and your own, token by token.',
+      },
+      {
+        title: 'Accessible by default',
+        body: 'Every PDF is tagged and checked against PDF/UA-1 while it is written. A missing title, language or alt text fails the render instead of shipping silently.',
+      },
+      {
+        title: 'Runs where your data is',
+        body: 'Rust library, a CLI that reads JSON (also via npm), and a Wasm build for JavaScript hosts such as Cloudflare Workers, with bundled fonts.',
+      },
+    ]}
+  />
+
+  <section class="how">
+    <h2 class="cp-label">How it works</h2>
+    <p>
+      Every way in produces the same render request. The engine merges the themes, writes the Typst source
+      and compiles it in-process.
+      <a href={url('docs/concepts/how-it-works/')}>How a report is rendered</a> walks through each step.
+    </p>
+    <Diagram name="pipeline" />
+  </section>
+
+  <BuildOutput
+    heading="Rendered by renderreport"
+    caption="examples/requests/health-check.json, rendered with the CLI. examples/regenerate.sh rebuilds every PDF on this site from the current checkout."
+    file="examples/requests/health-check.pdf"
+  >
+    <div style="padding:18px"><Fragment set:html={pdfViewer('health-check', 'health-check.pdf, rendered by renderreport')} /></div>
+  </BuildOutput>
+
+  <Quickstart
+    lead="Three steps from data to a PDF. The documentation covers components, themes, the JSON format and Wasm."
+    steps={[
+      'Add the crate with <code>cargo add renderreport</code>.',
+      'Build a report from components with <code>engine.report(…)</code>.',
+      'Write the bytes from <code>engine.render_pdf</code> to a file.',
+    ]}
+  >
+    <CodeBlock code={quickstart} lang="rust" title="src/main.rs" label="Rust" />
+  </Quickstart>
+</Base>
+
+<style>
+  .how {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+  .how a {
+    text-decoration: underline;
+  }
+</style>
