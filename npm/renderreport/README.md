@@ -115,7 +115,7 @@ your platform and downloads the matching binary from GitHub Releases:
 | Platform | Architecture |
 |---|---|
 | Linux | x64, ARM64 |
-| macOS | x64 (Intel), ARM64 (Apple Silicon) |
+| macOS | ARM64 (Apple Silicon) |
 | Windows | x64, ARM64 |
 
 ## Rust Library
