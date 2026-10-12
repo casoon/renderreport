@@ -75,6 +75,33 @@ impl Direction {
     const UP: Self = Self { dx: 0, dy: -1 };
     const UP_LEFT: Self = Self { dx: -1, dy: -1 };
     const DOWN_LEFT: Self = Self { dx: -1, dy: 1 };
+
+    /// Bit for the line axis this direction runs along — a direction and its
+    /// reverse (e.g. RIGHT/LEFT) share one axis.
+    fn axis_bit(self) -> u8 {
+        match (self.dx, self.dy) {
+            (_, 0) => 0b0001,
+            (0, _) => 0b0010,
+            (dx, dy) if dx == dy => 0b0100,
+            _ => 0b1000,
+        }
+    }
+
+    /// Reading direction as a clockwise angle from "right", in degrees. The
+    /// puzzle page draws its direction arrows by rotating "→" — the embedded
+    /// font has no diagonal arrow glyphs.
+    fn angle_deg(self) -> i32 {
+        match (self.dx, self.dy) {
+            (1, 0) => 0,
+            (1, 1) => 45,
+            (0, 1) => 90,
+            (-1, 1) => 135,
+            (-1, 0) => 180,
+            (-1, -1) => 225,
+            (0, -1) => 270,
+            _ => 315,
+        }
+    }
 }
 
 /// WordSearch component builder and generator
@@ -142,6 +169,18 @@ fn word_list_label(language: &str, with_translation: bool) -> &'static str {
         ("es", false) => "Palabras a encontrar",
         (_, true) => "Zu suchende und zu übersetzende Wörter",
         (_, false) => "Zu suchende Wörter",
+    }
+}
+
+/// Label in front of the direction arrows on the puzzle page (unrecognized
+/// codes fall back to German). Kept short: it shares one line with the
+/// description, even with all eight arrows.
+fn directions_label(language: &str) -> &'static str {
+    match language {
+        "en" => "Directions:",
+        "fr" => "Directions :",
+        "es" => "Direcciones:",
+        _ => "Suchrichtungen:",
     }
 }
 
@@ -263,6 +302,8 @@ impl Component for WordSearch {
 
         let mut grid: Vec<Vec<Option<char>>> = vec![vec![None; width]; height];
         let mut solution_cells: HashSet<(usize, usize)> = HashSet::new();
+        // Per cell: axis bits (see `Direction::axis_bit`) of the words through it.
+        let mut cell_axes: Vec<Vec<u8>> = vec![vec![0; width]; height];
 
         // Clean & prepare words (uppercase, ascii/german chars)
         let mut clean_words: Vec<String> = self
@@ -328,8 +369,24 @@ impl Component for WordSearch {
                         (c as usize, r as usize)
                     };
 
+                    // Keep at least one letter between words on the same line:
+                    // no cell of this word, nor the cell directly before or
+                    // after it, may already belong to a word along the same
+                    // axis. Otherwise words would run into each other
+                    // ("CATDOG") or overlap lengthwise.
+                    let axis = dir.axis_bit();
+                    let touches_same_axis = (-1..=len as isize).any(|i| {
+                        let c = start_col as isize + dir.dx * i;
+                        let r = start_row as isize + dir.dy * i;
+                        c >= 0
+                            && c < width as isize
+                            && r >= 0
+                            && r < height as isize
+                            && cell_axes[r as usize][c as usize] & axis != 0
+                    });
+
                     // Check if placement is valid (cells empty or match char)
-                    let mut fits = true;
+                    let mut fits = !touches_same_axis;
                     for (i, &ch) in chars.iter().enumerate() {
                         let (c, r) = cell_at(i);
                         if let Some(existing) = grid[r][c] {
@@ -345,6 +402,7 @@ impl Component for WordSearch {
                         for (i, &ch) in chars.iter().enumerate() {
                             let (c, r) = cell_at(i);
                             grid[r][c] = Some(ch);
+                            cell_axes[r][c] |= axis;
                             solution_cells.insert((c, r));
                         }
                         placed_words.push(word.clone());
@@ -370,11 +428,25 @@ impl Component for WordSearch {
             })
             .collect();
 
-        // Use original words or placed clean words
+        // Only the grid needs the cleaned form — the word list shows each
+        // placed word as entered (uppercased, spaces kept: "GUINEA PIG").
+        let original_by_clean_word: HashMap<String, String> = self
+            .words
+            .iter()
+            .map(|w| (clean_word(w), w.trim().to_uppercase()))
+            .collect();
         let display_words = if placed_words.is_empty() {
             self.words.clone()
         } else {
             placed_words
+                .iter()
+                .map(|w| {
+                    original_by_clean_word
+                        .get(w)
+                        .cloned()
+                        .unwrap_or_else(|| w.clone())
+                })
+                .collect()
         };
 
         // Look up each displayed word's translation by its cleaned form, so
@@ -390,6 +462,10 @@ impl Component for WordSearch {
             )
             .filter_map(|(word, translation)| translation.map(|t| (clean_word(word), t)))
             .collect();
+
+        let has_translations = display_words
+            .iter()
+            .any(|w| translation_by_clean_word.contains_key(&clean_word(w)));
 
         let word_entries: Vec<serde_json::Value> = display_words
             .iter()
@@ -410,7 +486,10 @@ impl Component for WordSearch {
             "words": word_entries,
             "show_solution": self.show_solution,
             "columns_word_list": self.columns_word_list,
-            "word_list_label": word_list_label(&self.language, !translation_by_clean_word.is_empty()),
+            "has_translations": has_translations,
+            "word_list_label": word_list_label(&self.language, has_translations),
+            "directions_label": directions_label(&self.language),
+            "direction_angles": directions.iter().map(|d| d.angle_deg()).collect::<Vec<_>>(),
         })
     }
 }
@@ -476,5 +555,49 @@ mod tests {
             .unwrap();
 
         assert_eq!(ws1.to_data(), ws2.to_data());
+    }
+
+    #[test]
+    fn test_wordsearch_direction_angles_follow_settings() {
+        let angles = |allow_diagonal, allow_reverse| {
+            let ws = WordSearch {
+                words: vec!["AB".into()],
+                allow_diagonal,
+                allow_reverse,
+                ..WordSearch::default()
+            };
+            ws.to_data()["direction_angles"].clone()
+        };
+        assert_eq!(angles(false, false), serde_json::json!([0, 90]));
+        assert_eq!(angles(true, false), serde_json::json!([0, 90, 45]));
+        assert_eq!(angles(true, true).as_array().unwrap().len(), 8);
+    }
+
+    #[test]
+    fn test_wordsearch_word_list_keeps_spaces() {
+        let ws = WordSearch::builder()
+            .words(vec!["guinea pig"])
+            .grid_size(12, 12)
+            .build()
+            .unwrap();
+        assert_eq!(ws.to_data()["words"][0]["text"], "GUINEA PIG");
+    }
+
+    #[test]
+    fn test_wordsearch_keeps_gap_between_words_on_same_line() {
+        // A 4×1 grid only fits both words back to back ("ABCD"), which the
+        // gap rule forbids — so exactly one of them may be placed.
+        for seed in 1..50 {
+            let ws = WordSearch {
+                words: vec!["AB".into(), "CD".into()],
+                width: 4,
+                height: 1,
+                allow_diagonal: false,
+                seed: Some(seed),
+                ..WordSearch::default()
+            };
+            let data = ws.to_data();
+            assert_eq!(data["words"].as_array().unwrap().len(), 1, "seed {seed}");
+        }
     }
 }

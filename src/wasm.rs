@@ -10,7 +10,8 @@ use wasm_bindgen::prelude::*;
 
 use crate::components::{Component, WordSearch};
 use crate::engine::{Engine, EngineConfig};
-use crate::render::RenderRequest;
+use crate::render::{PageSetup, RenderRequest};
+use crate::theme::{Theme, TokenValue};
 
 fn wasm_engine() -> Result<Engine, JsValue> {
     let config = EngineConfig {
@@ -191,11 +192,22 @@ pub fn render_wordsearch(request_json: &str) -> Result<Vec<u8>, JsValue> {
         pack_id: None,
         title: None,
         subtitle: None,
-        theme: None,
+        // Without the running header (see `page_setup`) the top margin only
+        // needs to be print-safe; the freed height goes to grid and table.
+        theme: Some(
+            Theme::default_theme().with_overrides(
+                [(
+                    "page.margin-top".to_string(),
+                    TokenValue::Size("10mm".into()),
+                )]
+                .into(),
+            ),
+        ),
         components: vec![
             json!({
                 "type": "section",
-                "data": { "title": req.title, "level": 2, "content": [] }
+                // PDF/UA-1 requires the first heading to be level 1.
+                "data": { "title": req.title, "level": 1, "content": [] }
             }),
             json!({
                 "type": "textblock",
@@ -229,7 +241,12 @@ pub fn render_wordsearch(request_json: &str) -> Result<Vec<u8>, JsValue> {
         ]
         .into_iter()
         .collect(),
-        page_setup: Default::default(),
+        // Every puzzle page repeats the title as its heading, so the running
+        // header would only cost height.
+        page_setup: PageSetup {
+            show_header: false,
+            ..Default::default()
+        },
     };
 
     wasm_engine()?
