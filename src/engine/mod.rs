@@ -186,14 +186,15 @@ impl Engine {
         // typically don't set `RenderRequest.title` (the component renders its
         // own dashboard-style title instead of the plain built-in title page).
         // PDF/UA-1 requires a document title regardless, so fall back to the
-        // cover page's own title so `#set document(title: ..)` (and the
-        // running header, which also reads `report-title`) still get one.
-        let cover_page_title = fallback_cover_page_title(&request.components);
+        // cover page's own title (or the first section's, for reports without
+        // a cover page) so `#set document(title: ..)` (and the running
+        // header, which also reads `report-title`) still get one.
+        let fallback_title = fallback_document_title(&request.components);
         let title_str = request
             .title
             .as_deref()
             .filter(|t| !t.is_empty())
-            .or(cover_page_title.as_deref())
+            .or(fallback_title.as_deref())
             .unwrap_or("");
         let date_str = request
             .metadata
@@ -579,21 +580,25 @@ fn escape_for_typst_markup(s: &str) -> String {
     out
 }
 
-/// Finds the title of the first top-level `cover-page` component, if any.
+/// Finds the title of the first top-level `cover-page` component, or else of
+/// the first top-level `section`, if any.
 ///
 /// Used as a document-title fallback when the caller didn't set
 /// `RenderRequest.title` — see the call site in `generate_typst_source`.
-fn fallback_cover_page_title(components: &[serde_json::Value]) -> Option<String> {
-    components.iter().find_map(|c| {
-        if c.get("type").and_then(|t| t.as_str()) != Some("cover-page") {
-            return None;
-        }
-        let data = c.get("data").unwrap_or(c);
-        data.get("title")
-            .and_then(|t| t.as_str())
-            .filter(|t| !t.is_empty())
-            .map(str::to_string)
-    })
+fn fallback_document_title(components: &[serde_json::Value]) -> Option<String> {
+    let first_title_of = |component_type: &str| {
+        components.iter().find_map(|c| {
+            if c.get("type").and_then(|t| t.as_str()) != Some(component_type) {
+                return None;
+            }
+            let data = c.get("data").unwrap_or(c);
+            data.get("title")
+                .and_then(|t| t.as_str())
+                .filter(|t| !t.is_empty())
+                .map(str::to_string)
+        })
+    };
+    first_title_of("cover-page").or_else(|| first_title_of("section"))
 }
 
 /// Collect all component type IDs referenced anywhere in a component list,
