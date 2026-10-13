@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/casoon/renderreport",
+    "url": "git+https://github.com/casoon/renderreport.git",
     "directory": "npm/renderreport"
   },
   "keywords": ["report", "pdf", "typst", "audit", "generator"],
