@@ -8,169 +8,114 @@
   },
   "components": [
     {
+      "type": "section",
       "data": {
-        "content": [],
-        "level": 1,
-        "title": "Summary"
-      },
-      "type": "section"
+        "title": "Summary",
+        "level": 1
+      }
     },
     {
+      "type": "grid-component",
       "data": {
-        "column_gap": "16pt",
         "columns": 3,
-        "item_min_height": null,
         "items": [
           {
-            "colspan": 1,
             "content": {
+              "type": "score-card",
               "data": {
-                "computed_status": "warning",
-                "description": "Lighthouse, mobile",
-                "good_threshold": 90,
-                "height": null,
-                "inverted": false,
-                "max_score": 100,
-                "score": 78,
-                "status": null,
                 "title": "Performance",
-                "variant": "standard",
-                "warn_threshold": 50
-              },
-              "type": "score-card"
+                "score": 78,
+                "description": "Lighthouse, mobile"
+              }
             }
           },
           {
-            "colspan": 1,
             "content": {
+              "type": "score-card",
               "data": {
-                "computed_status": "good",
-                "description": "axe, 42 pages",
-                "good_threshold": 90,
-                "height": null,
-                "inverted": false,
-                "max_score": 100,
-                "score": 91,
-                "status": null,
                 "title": "Accessibility",
-                "variant": "standard",
-                "warn_threshold": 50
-              },
-              "type": "score-card"
+                "score": 91,
+                "description": "axe, 42 pages"
+              }
             }
           },
           {
-            "colspan": 1,
             "content": {
+              "type": "score-card",
               "data": {
-                "computed_status": "warning",
+                "title": "SEO",
+                "score": 64,
                 "description": "Crawl of 1,280 URLs",
                 "good_threshold": 80,
-                "height": null,
-                "inverted": false,
-                "max_score": 100,
-                "score": 64,
-                "status": null,
-                "title": "SEO",
-                "variant": "standard",
                 "warn_threshold": 60
-              },
-              "type": "score-card"
+              }
             }
           }
-        ],
-        "row_gap": "16pt",
-        "title": null
-      },
-      "type": "grid-component"
+        ]
+      }
     },
     {
       "type": "progress-bar",
       "data": {
         "label": "Home: pages passing Core Web Vitals",
-        "value": 96.0,
-        "max": 100.0,
-        "show_percentage": true,
-        "color": null,
-        "percentage": 96.0
+        "value": 96.0
       }
     },
     {
       "type": "progress-bar",
       "data": {
         "label": "Product: pages passing Core Web Vitals",
-        "value": 88.0,
-        "max": 100.0,
-        "show_percentage": true,
-        "color": null,
-        "percentage": 88.0
+        "value": 88.0
       }
     },
     {
       "type": "progress-bar",
       "data": {
         "label": "Checkout: pages passing Core Web Vitals",
-        "value": 81.0,
-        "max": 100.0,
-        "show_percentage": true,
-        "color": null,
-        "percentage": 81.0
+        "value": 81.0
       }
     },
     {
       "type": "progress-bar",
       "data": {
         "label": "Category: pages passing Core Web Vitals",
-        "value": 54.0,
-        "max": 100.0,
-        "show_percentage": true,
-        "color": null,
-        "percentage": 54.0
+        "value": 54.0
       }
     },
     {
+      "type": "section",
       "data": {
-        "content": [],
-        "level": 1,
-        "title": "Findings"
-      },
-      "type": "section"
+        "title": "Findings",
+        "level": 1
+      }
     },
     {
+      "type": "finding",
       "data": {
-        "affected": null,
-        "category": "Performance",
-        "description": "Images on category pages have no width and height, so the layout shifts while they load.",
-        "label_affected": null,
-        "label_recommendation": null,
-        "recommendation": "Set width and height on every hero image and serve them as AVIF.",
+        "title": "Category pages load hero images without size hints",
         "severity": "high",
-        "title": "Category pages load hero images without size hints"
-      },
-      "type": "finding"
+        "description": "Images on category pages have no width and height, so the layout shifts while they load.",
+        "recommendation": "Set width and height on every hero image and serve them as AVIF.",
+        "category": "Performance"
+      }
     },
     {
+      "type": "finding",
       "data": {
-        "affected": null,
-        "category": "SEO",
-        "description": "Old product URLs redirect twice before reaching the current page.",
-        "label_affected": null,
-        "label_recommendation": null,
-        "recommendation": "Point each old URL directly at its final target.",
+        "title": "212 URLs return a redirect chain",
         "severity": "medium",
-        "title": "212 URLs return a redirect chain"
-      },
-      "type": "finding"
+        "description": "Old product URLs redirect twice before reaching the current page.",
+        "recommendation": "Point each old URL directly at its final target.",
+        "category": "SEO"
+      }
     },
     {
+      "type": "callout",
       "data": {
-        "callout_type": "info",
-        "content": "Generated with the renderreport CLI from examples/requests/health-check.json.",
-        "inverted": false,
+        "variant": "info",
         "title": "About this report",
-        "variant": "info"
-      },
-      "type": "callout"
+        "content": "Generated with the renderreport CLI from examples/requests/health-check.json."
+      }
     }
   ]
 }

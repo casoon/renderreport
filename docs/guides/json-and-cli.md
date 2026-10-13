@@ -39,16 +39,25 @@ reference lists every field.
 
 ## Component data
 
-Component data has no published JSON Schema yet. The fields are the ones each component's Rust
-builder writes, and a template may expect fields that the builder computes, such as a score
-card's `computed_status`. The reliable way to get a shape:
+The fields of a component are the fields of its Rust struct on
+[docs.rs](https://docs.rs/renderreport), in snake case. Only the fields without a default are
+required; for a score card that is `title` and `score`:
 
-1. Build the component once in Rust.
-2. Print the request with `serde_json::to_string_pretty(&request)`.
-3. Use that as the template for the JSON your program writes.
+```json
+{ "type": "score-card", "data": { "title": "Accessibility", "score": 91 } }
+```
 
-[examples/requests/health-check.json](https://github.com/casoon/renderreport/blob/main/examples/requests/health-check.json)
-was made this way.
+Before rendering, the engine runs each built-in component's data through its struct, the same way
+the Rust builder does: defaults are filled in, and derived fields such as a score card's
+`computed_status` or a word search's grid are computed. Fields the struct does not know are kept.
+Data that does not fit the struct (a required field missing, a wrong type) is passed on unchanged,
+and the render fails with the Typst error, naming the component.
+
+To check what a request turns into, write the Typst source instead of the PDF:
+
+```sh
+renderreport render report.json --typ -o report.typ
+```
 
 ## From Node
 

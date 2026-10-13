@@ -13,6 +13,10 @@ optional theme, page setup, assets and the list of components. The Rust builder,
 reads JSON) and the Wasm export all produce the same struct. See
 [the render request](../../reference/render-request/).
 
+Component data from JSON then runs through the component's Rust struct, as if a builder had
+written it: defaults are filled in and derived fields, such as a score card's status, are
+computed. See [component data](../../guides/json-and-cli/#component-data).
+
 ## 2. The theme
 
 The engine merges three themes, later ones winning per token: its default theme, the default

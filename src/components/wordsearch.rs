@@ -105,7 +105,11 @@ impl Direction {
 }
 
 /// WordSearch component builder and generator
+///
+/// Missing fields take their values from [`WordSearch::default`], so JSON
+/// data needs only `words`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct WordSearch {
     /// Optional title for the puzzle
     pub title: Option<String>,

@@ -4,7 +4,7 @@
 [![Crates.io](https://img.shields.io/crates/v/renderreport.svg)](https://crates.io/crates/renderreport)
 [![Documentation](https://docs.rs/renderreport/badge.svg)](https://docs.rs/renderreport)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Rust Version](https://img.shields.io/badge/rust-1.70%2B-blue.svg)](https://www.rust-lang.org)
+[![Rust Version](https://img.shields.io/badge/rust-1.92%2B-blue.svg)](https://www.rust-lang.org)
 
 > ⚠️ **Early Development Stage** - This project is in active early development. APIs may change, and some features are still being implemented and optimized.
 
@@ -55,7 +55,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-renderreport = "0.5"
+renderreport = "0.6"
 ```
 
 ### CLI
@@ -83,7 +83,7 @@ std::fs::write("report.typ", &source)?;
 
 ## Components
 
-**59+ production-ready components** organized into 8 semantic categories:
+**80 built-in components** in 8 categories (`renderreport list-components` prints them all):
 
 1. **Layout & Structure** — Section, Grid, Columns, FlowGroup, PageBreak
 2. **Text & Editorial** — TextBlock, Label, Eyebrow
@@ -187,7 +187,7 @@ system/font-path fonts are present.
 
 ```toml
 [dependencies]
-renderreport = { version = "0.3", default-features = false, features = ["wasm"] }
+renderreport = { version = "0.6", default-features = false, features = ["wasm"] }
 ```
 
 ```bash

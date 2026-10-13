@@ -59,9 +59,10 @@ let report = engine.report("default").theme(theme) /* … */ .build();
 }
 ```
 
-A value starting with `#` becomes a colour; any other string is written to Typst as it is, so
-sizes like `22mm` work directly. A font name is a Typst string and needs its own quotes:
-`"font.body": "\"Inter\""`.
+A value starting with `#` becomes a colour, and the font tokens (`font.body`, `font.heading`,
+`font.mono`) take a plain font name such as `"Inter"`. Any other string is written to Typst as it
+is, so sizes like `22mm` work directly, and so does a font fallback list:
+`"font.body": "(\"Inter\", \"Arial\")"`.
 
 The [themed health check](../../../showcase/health-check-themed/) is the
 [health check request](../../../showcase/health-check/) with exactly such a block added.

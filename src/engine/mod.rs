@@ -12,7 +12,7 @@ pub use config::EngineConfig;
 pub use world::ReportWorld;
 
 use crate::components::catalog::LayoutHint;
-use crate::components::ComponentRegistry;
+use crate::components::{normalize_components, ComponentRegistry};
 use crate::pack::{Pack, PackId, PackLoader};
 use crate::render::{RenderOutput, RenderRequest};
 use crate::theme::Theme;
@@ -130,6 +130,7 @@ impl Engine {
 
     /// Render a report
     pub fn render(&self, request: &RenderRequest) -> Result<RenderOutput> {
+        let request = &normalized(request);
         let theme = self.resolve_theme(request);
         let typst_source = self.generate_typst_source(request, &theme)?;
         let pdf_bytes = self.compile_typst(&typst_source, request)?;
@@ -143,6 +144,7 @@ impl Engine {
     /// (e.g. `typstyle`), and downstream tooling that wants to inspect or
     /// post-process the source before compilation.
     pub fn render_typ(&self, request: &RenderRequest) -> Result<String> {
+        let request = &normalized(request);
         let theme = self.resolve_theme(request);
         self.generate_typst_source(request, &theme)
     }
@@ -480,6 +482,14 @@ impl Engine {
 
         typst_compile::compile_to_pdf(source, &self.font_cache, request)
     }
+}
+
+/// The request with every built-in component's data completed the way its
+/// Rust builder would have written it, see [`normalize_components`].
+fn normalized(request: &RenderRequest) -> RenderRequest {
+    let mut request = request.clone();
+    normalize_components(&mut request.components);
+    request
 }
 
 /// Convert a JSON value to a Typst literal expression.

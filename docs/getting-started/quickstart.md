@@ -61,8 +61,8 @@ renderreport render report.json -o report.pdf
 ```
 
 Each component is `{ "type": "<component-id>", "data": { … } }`. The fields in `data` are the
-ones the component's Rust builder writes, so the easiest way to get a complete shape is to build a
-request in Rust once and print it with `serde_json::to_string_pretty(&request)`. The
+fields of the component's Rust struct; only those without a default are required, and the engine
+fills in the rest (see [component data](../../guides/json-and-cli/#component-data)). The
 [health check example](../../../showcase/health-check/) shows a full request next to its PDF.
 
 ## Next steps

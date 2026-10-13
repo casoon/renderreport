@@ -11,6 +11,12 @@ let source: String = engine.render_typ(&report)?;
 std::fs::write("report.typ", &source)?;
 ```
 
+From the CLI, `--typ` writes the same source for a JSON request:
+
+```sh
+renderreport render report.json --typ -o report.typ
+```
+
 The source is self-contained apart from images and fonts: theme tokens, helpers, page setup, the
 functions of the components in use and one call per component, in that order (see
 [how a report is rendered](../../concepts/how-it-works/)).

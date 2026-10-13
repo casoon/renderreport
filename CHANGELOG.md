@@ -6,7 +6,21 @@ All notable changes to this project are documented in this file. The format foll
 
 ## [Unreleased]
 
+### Added
+
+- Component data from JSON needs only the fields its Rust builder requires: the engine fills in
+  defaults and derived fields (a score card's `computed_status`, a callout's type, a word search's
+  grid) before rendering. Unknown fields are kept; data that does not fit is passed on unchanged.
+- CLI: `renderreport render --typ` writes the generated Typst source instead of the PDF.
+
 ### Fixed
+
+- Typst errors read as message, failing component and hints instead of the diagnostic's debug
+  form with internal span ids.
+- Theme tokens `font.body`, `font.heading` and `font.mono` accept a plain font name from JSON or
+  TOML; before, it was written to Typst unquoted and the render failed. Rust themes no longer lose
+  their fonts in a JSON round trip.
+- README: Rust 1.92, version 0.6 and 80 components instead of outdated values.
 
 - Bar charts: vertical bars stand on a shared baseline instead of hanging from the top; every
   series is drawn (grouped bars in legend colours), not only the first; values keep one decimal.

@@ -16,11 +16,14 @@ Arguments:
   [INPUT]  Path to JSON input file (reads from stdin if omitted)
 
 Options:
-  -o, --output <OUTPUT>  Output PDF path [default: report.pdf]
+  -o, --output <OUTPUT>  Output path [default: report.pdf, or report.typ with --typ]
+      --typ              Write the generated Typst source instead of compiling it to PDF
 ```
 
-Reads a [render request](../render-request/) and writes the PDF. Exit code 0 on success, 1 with
-`Error: …` on stderr for unreadable input, invalid JSON or a failed render.
+Reads a [render request](../render-request/) and writes the PDF, or with `--typ` the Typst source
+the engine would compile (see [the generated Typst source](../../guides/typst-source/)). Exit
+code 0 on success, 1 with `Error: …` and the cause on stderr for unreadable input, invalid JSON
+or a failed render.
 
 The CLI engine uses the default configuration: packs from `./packs` and
 `~/.renderreport/packs`, system fonts plus the bundled Fira Sans.

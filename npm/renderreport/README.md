@@ -71,7 +71,8 @@ A report is a `RenderRequest`:
 Each component is `{ "type": "<component-id>", "data": { … } }`. The
 [render request reference](https://casoon.github.io/renderreport/docs/reference/render-request/)
 lists every field, and the [JSON guide](https://casoon.github.io/renderreport/docs/guides/json-and-cli/)
-explains how to get the complete data shape of a component.
+explains which fields a component needs: only those its Rust builder requires, the engine fills
+in the rest.
 
 ## Supported Platforms
 

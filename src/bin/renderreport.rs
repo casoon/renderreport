@@ -24,9 +24,13 @@ enum Commands {
         /// Path to JSON input file (reads from stdin if omitted)
         input: Option<PathBuf>,
 
-        /// Output PDF path
-        #[arg(short, long, default_value = "report.pdf")]
-        output: PathBuf,
+        /// Output path [default: report.pdf, or report.typ with --typ]
+        #[arg(short, long)]
+        output: Option<PathBuf>,
+
+        /// Write the generated Typst source instead of compiling it to PDF
+        #[arg(long)]
+        typ: bool,
     },
 
     /// List all registered component types
@@ -131,7 +135,7 @@ fn run(cli: Cli) -> anyhow::Result<()> {
             list_components(markdown, category.as_deref());
             return Ok(());
         }
-        Commands::Render { input, output } => {
+        Commands::Render { input, output, typ } => {
             let json = match input {
                 Some(path) => std::fs::read_to_string(&path)
                     .with_context(|| format!("failed to read input file {}", path.display()))?,
@@ -148,13 +152,22 @@ fn run(cli: Cli) -> anyhow::Result<()> {
                 serde_json::from_str(&json).context("failed to parse request JSON")?;
 
             let engine = Engine::new().context("failed to initialize render engine")?;
-            let pdf = engine
-                .render_pdf(&request)
-                .context("failed to render PDF")?;
+            let (bytes, default_output) = if typ {
+                let source = engine
+                    .render_typ(&request)
+                    .context("failed to generate Typst source")?;
+                (source.into_bytes(), "report.typ")
+            } else {
+                let pdf = engine
+                    .render_pdf(&request)
+                    .context("failed to render PDF")?;
+                (pdf, "report.pdf")
+            };
 
-            std::fs::write(&output, &pdf)
+            let output = output.unwrap_or_else(|| PathBuf::from(default_output));
+            std::fs::write(&output, &bytes)
                 .with_context(|| format!("failed to write output file {}", output.display()))?;
-            eprintln!("Written {} bytes to {}", pdf.len(), output.display());
+            eprintln!("Written {} bytes to {}", bytes.len(), output.display());
         }
     }
 

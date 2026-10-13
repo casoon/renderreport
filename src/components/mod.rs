@@ -22,12 +22,14 @@ pub mod catalog;
 pub mod charts;
 pub mod crosstab;
 mod descriptors;
+mod normalize;
 mod registry;
 mod standard;
 pub mod text;
 pub mod wordsearch;
 
 pub use catalog::{ComponentCatalog, ComponentCategory, ComponentDescriptor, LayoutHint};
+pub(crate) use normalize::normalize_components;
 pub use registry::{ComponentId, ComponentRegistry};
 pub use standard::*;
 pub use wordsearch::{WordSearch, WordSearchBuilder};

@@ -2,6 +2,8 @@
 
 use std::sync::Arc;
 
+use typst::diag::{SourceDiagnostic, Tracepoint};
+
 use crate::engine::world::{FontCache, ReportWorld};
 use crate::error::{Error, RenderError};
 use crate::render::RenderRequest;
@@ -45,24 +47,53 @@ pub fn compile_to_pdf(
             let pdf_result = typst_pdf::pdf(&document, &options);
             match pdf_result {
                 Ok(pdf_bytes) => Ok(pdf_bytes),
-                Err(errors) => {
-                    let error_messages: Vec<String> =
-                        errors.iter().map(|e| format!("{:?}", e)).collect();
-                    Err(Error::Render(RenderError::TypstCompilation(
-                        error_messages.join("\n"),
-                    )))
-                }
+                Err(errors) => Err(Error::Render(RenderError::TypstCompilation(
+                    describe_diagnostics(&errors),
+                ))),
             }
         }
-        Err(errors) => {
-            let error_messages: Vec<String> = errors
-                .iter()
-                .map(|e| format!("{:?}: {}", e.span, e.message))
-                .collect();
-
-            Err(Error::Render(RenderError::TypstCompilation(
-                error_messages.join("\n"),
-            )))
-        }
+        Err(errors) => Err(Error::Render(RenderError::TypstCompilation(
+            describe_diagnostics(&errors),
+        ))),
     }
+}
+
+/// One line per diagnostic: the message, the component whose template raised
+/// it, and Typst's hints — instead of the diagnostic's debug form, whose span
+/// ids mean nothing outside this process.
+fn describe_diagnostics(diagnostics: &[SourceDiagnostic]) -> String {
+    diagnostics
+        .iter()
+        .map(|diagnostic| {
+            let mut line = diagnostic.message.to_string();
+            if let Some(component) = failing_component(diagnostic) {
+                line.push_str(&format!(" (in component `{component}`)"));
+            }
+            for hint in &diagnostic.hints {
+                line.push_str(&format!("; hint: {}", hint.v));
+            }
+            line
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+/// The outermost function call in the diagnostic's trace. The report content
+/// calls one component function per component, so for an error inside a
+/// template that call names the component.
+fn failing_component(diagnostic: &SourceDiagnostic) -> Option<&str> {
+    let name = diagnostic
+        .trace
+        .iter()
+        .rev()
+        .find_map(|point| match &point.v {
+            Tracepoint::Call(Some(name)) => Some(name.as_str()),
+            _ => None,
+        })?;
+    // `image` is emitted as `report-image` to avoid Typst's built-in.
+    Some(if name == "report-image" {
+        "image"
+    } else {
+        name
+    })
 }

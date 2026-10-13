@@ -8,7 +8,7 @@
 //! - `page.*` - Page layout tokens
 //! - `component.*` - Component-specific tokens
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use std::collections::HashMap;
 
 /// A single token value
@@ -50,10 +50,29 @@ impl TokenValue {
 }
 
 /// Collection of theme tokens
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ThemeTokens {
     #[serde(flatten)]
     tokens: HashMap<String, TokenValue>,
+}
+
+/// Untagged `TokenValue` reads every string as `Color`, which is written to
+/// Typst as-is — a font name would end up as an unquoted identifier. So for
+/// the font-family tokens a plain string becomes `Font`; a value that is
+/// already a Typst expression (`"\"Inter\""`, `("Inter", "Arial")`) stays raw.
+impl<'de> Deserialize<'de> for ThemeTokens {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let mut tokens = HashMap::<String, TokenValue>::deserialize(deserializer)?;
+        for (key, value) in &mut tokens {
+            let is_font_family = key.starts_with("font.") && !key.starts_with("font.size.");
+            if let TokenValue::Color(name) = value {
+                if is_font_family && !name.starts_with(['"', '(']) {
+                    *value = TokenValue::Font(std::mem::take(name));
+                }
+            }
+        }
+        Ok(Self { tokens })
+    }
 }
 
 impl ThemeTokens {
@@ -240,5 +259,31 @@ mod tests {
         assert!(tokens.get("color.primary").is_some());
         assert!(tokens.get("font.body").is_some());
         assert!(tokens.get("spacing.4").is_some());
+    }
+
+    #[test]
+    fn test_font_family_tokens_from_json() {
+        let tokens: ThemeTokens = serde_json::from_value(serde_json::json!({
+            "font.body": "Inter",
+            "font.heading": "\"Fira Sans\"",
+            "font.mono": "(\"JetBrains Mono\", \"Menlo\")",
+            "font.size.base": "11pt",
+            "color.primary": "#0F766E",
+        }))
+        .unwrap();
+        let typst = |key: &str| tokens.get(key).unwrap().to_typst();
+        assert_eq!(typst("font.body"), "\"Inter\"");
+        assert_eq!(typst("font.heading"), "\"Fira Sans\"");
+        assert_eq!(typst("font.mono"), "(\"JetBrains Mono\", \"Menlo\")");
+        assert_eq!(typst("font.size.base"), "11pt");
+        assert_eq!(typst("color.primary"), "rgb(\"#0F766E\")");
+    }
+
+    #[test]
+    fn test_default_tokens_survive_json_round_trip() {
+        let tokens = ThemeTokens::default();
+        let json = serde_json::to_value(&tokens).unwrap();
+        let back: ThemeTokens = serde_json::from_value(json).unwrap();
+        assert_eq!(back.to_typst_definitions(), tokens.to_typst_definitions());
     }
 }
