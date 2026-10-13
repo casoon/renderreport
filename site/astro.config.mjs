@@ -12,7 +12,7 @@ export default defineConfig({
       description:
         'Data-driven PDF reports from components and theme tokens, rendered by an embedded Typst engine. Rust library, CLI, npm package and Wasm.',
       repo: 'casoon/renderreport',
-      version: '0.6.0',
+      version: '0.6.1',
       license: 'MIT',
       mdxComponents: './src/mdx-components.ts',
       packages: [

@@ -4,7 +4,7 @@ All notable changes to this project are documented in this file. The format foll
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Releases before 0.3.0 are listed on the
 [GitHub releases page](https://github.com/casoon/renderreport/releases).
 
-## [Unreleased]
+## [0.6.1] - 2026-10-13
 
 ### Added
 
@@ -21,7 +21,6 @@ All notable changes to this project are documented in this file. The format foll
   TOML; before, it was written to Typst unquoted and the render failed. Rust themes no longer lose
   their fonts in a JSON round trip.
 - README: Rust 1.92, version 0.6 and 80 components instead of outdated values.
-
 - Bar charts: vertical bars stand on a shared baseline instead of hanging from the top; every
   series is drawn (grouped bars in legend colours), not only the first; values keep one decimal.
 - CLI: errors show their cause down to the Typst diagnostic instead of only

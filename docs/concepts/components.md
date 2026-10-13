@@ -43,7 +43,7 @@ renderreport list-components --markdown
 ```
 
 The [component catalog](../../../showcase/component-catalog/) renders every component with sample
-data. The table below is the output of `renderreport list-components --markdown` for 0.6.0.
+data. The table below is the output of `renderreport list-components --markdown` for 0.6.1.
 
 ## All components
 
