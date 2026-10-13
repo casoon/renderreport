@@ -2,7 +2,10 @@
 
 Data-driven report generation with Typst as embedded render engine.
 
-Build professional PDF reports without learning Typst. Use components, themes, and template packs to create reports from structured data.
+Build PDF reports without learning Typst: describe the report as JSON components, and the
+`renderreport` CLI renders it to PDF. This package installs that CLI.
+
+**Docs and examples:** [casoon.github.io/renderreport](https://casoon.github.io/renderreport/)
 
 ## Installation
 
@@ -10,107 +13,67 @@ Build professional PDF reports without learning Typst. Use components, themes, a
 npm install @casoon/renderreport
 ```
 
-The correct binary for your platform is installed automatically.
+`postinstall` downloads the binary for your platform from the GitHub release of this version and
+verifies its SHA-256 checksum.
 
 ## Usage
 
-### Node.js API
-
-```js
-const { render, renderSync } = require("@casoon/renderreport");
-
-// Async
-const pdf = await render({
-  template_id: "default",
-  title: "My Report",
-  subtitle: "Generated with RenderReport",
-  metadata: {
-    author: "Casoon",
-    date: "2025-01-15"
-  },
-  components: [
-    {
-      type: "score-card",
-      data: { title: "Performance", score: 92 }
-    },
-    {
-      type: "callout",
-      data: { variant: "info", content: "Everything looks great!" }
-    }
-  ]
-});
-
-require("fs").writeFileSync("report.pdf", pdf);
-
-// Sync
-const pdfSync = renderSync(reportDefinition);
-
-// Write directly to file
-await render(reportDefinition, { output: "report.pdf" });
-```
-
-### CLI
+The package provides the `renderreport` command; it has no JavaScript API.
 
 ```bash
-# From JSON file
-npx renderreport render input.json -o report.pdf
+# From a JSON file
+npx renderreport render report.json -o report.pdf
 
 # From stdin
-cat input.json | npx renderreport render -o report.pdf
+cat report.json | npx renderreport render -o report.pdf
+
+# All component types of the installed version
+npx renderreport list-components
 ```
 
-## JSON Schema
+On failure the CLI prints the error, including the Typst diagnostic, to stderr and exits with
+code 1.
 
-The report definition follows the `RenderRequest` format:
+### From Node.js
+
+Call the CLI as a child process and pass the request on stdin:
+
+```js
+const { execFileSync } = require("node:child_process");
+
+execFileSync("npx", ["renderreport", "render", "-o", "report.pdf"], {
+  input: JSON.stringify(request),
+});
+```
+
+For JavaScript runtimes without child processes, such as Cloudflare Workers, renderreport also
+builds to Wasm; see the [Wasm guide](https://casoon.github.io/renderreport/docs/guides/wasm/).
+
+## Report format
+
+A report is a `RenderRequest`:
 
 ```json
 {
   "template_id": "default",
-  "title": "Report Title",
-  "subtitle": "Optional Subtitle",
-  "metadata": {
-    "author": "Author Name",
-    "date": "2025-01-15"
-  },
+  "title": "Website Health Check",
+  "metadata": { "author": "Web Team" },
   "components": [
+    { "type": "section", "data": { "title": "Summary", "level": 1, "content": [] } },
     {
-      "type": "component-id",
-      "data": { }
+      "type": "callout",
+      "data": { "callout_type": "info", "title": "Note", "content": "Generated from JSON." }
     }
   ]
 }
 ```
 
-## Available Components
-
-| Component | ID | Description |
-|---|---|---|
-| ScoreCard | `score-card` | Metric with score visualization |
-| Finding | `finding` | Audit finding with severity |
-| AuditTable | `audit-table` | Tabular data |
-| Section | `section` | Document section heading |
-| Callout | `callout` | Highlighted info box |
-| SummaryBox | `summary-box` | Executive summary widget |
-| MetricCard | `metric-card` | Key metric display |
-| HeroSummary | `hero-summary` | Hero section with metrics |
-| Chart | `chart` | Bar, Line, Pie, Area, Scatter, Radar |
-| Sparkline | `sparkline` | Inline sparkline chart |
-| Gauge | `gauge` | Gauge/thermometer visualization |
-| Barcode | `barcode` | Code128, QR, EAN-13, and more |
-| List | `list` | Ordered/unordered list |
-| ProgressBar | `progress-bar` | Progress visualization |
-| KeyValueList | `key-value-list` | Key-value pairs |
-| CoverPage | `cover-page` | Report cover page |
-| BenchmarkTable | `benchmark-table` | Benchmark comparison |
-| Crosstab | `crosstab` | Cross-tabulation |
-| TextBlock | `textblock` | Multi-line text block |
-| Label | `label` | Styled label |
-| WordSearch | `word-search` | Word search puzzle with solution highlighting |
+Each component is `{ "type": "<component-id>", "data": { … } }`. The
+[render request reference](https://casoon.github.io/renderreport/docs/reference/render-request/)
+lists every field, and the [JSON guide](https://casoon.github.io/renderreport/docs/guides/json-and-cli/)
+explains how to get the complete data shape of a component.
 
 ## Supported Platforms
-
-A single `@casoon/renderreport` install works everywhere — `postinstall` detects
-your platform and downloads the matching binary from GitHub Releases:
 
 | Platform | Architecture |
 |---|---|
@@ -120,7 +83,7 @@ your platform and downloads the matching binary from GitHub Releases:
 
 ## Rust Library
 
-This is the Node.js wrapper. For the Rust library, see [crates.io/crates/renderreport](https://crates.io/crates/renderreport).
+The engine is a Rust crate: [crates.io/crates/renderreport](https://crates.io/crates/renderreport).
 
 ## License
 

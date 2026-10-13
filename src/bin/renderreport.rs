@@ -45,9 +45,28 @@ fn main() {
     let cli = Cli::parse();
 
     if let Err(e) = run(cli) {
-        eprintln!("Error: {e}");
+        eprintln!("Error: {}", error_chain(&e));
         process::exit(1);
     }
+}
+
+/// The whole context chain down to the root cause (e.g. the Typst diagnostic),
+/// joined with ": ". Library errors already repeat their source in their own
+/// message, so a cause that its predecessor contains is skipped.
+fn error_chain(e: &anyhow::Error) -> String {
+    let mut out = String::new();
+    let mut previous = String::new();
+    for cause in e.chain() {
+        let message = cause.to_string();
+        if !previous.contains(&message) {
+            if !out.is_empty() {
+                out.push_str(": ");
+            }
+            out.push_str(&message);
+        }
+        previous = message;
+    }
+    out
 }
 
 fn list_components(markdown: bool, category_filter: Option<&str>) {

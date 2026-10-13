@@ -10,6 +10,9 @@ All notable changes to this project are documented in this file. The format foll
 
 - Bar charts: vertical bars stand on a shared baseline instead of hanging from the top; every
   series is drawn (grouped bars in legend colours), not only the first; values keep one decimal.
+- CLI: errors show their cause down to the Typst diagnostic instead of only
+  `failed to render PDF`.
+- npm README: describes the CLI the package installs instead of a Node API it does not ship.
 
 ## [0.6.0] - 2026-10-12
 

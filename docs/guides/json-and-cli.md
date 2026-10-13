@@ -13,9 +13,12 @@ cat report.json | renderreport render -o report.pdf
 ```
 
 Without an input path the request is read from stdin. Without `-o` the PDF is written to
-`report.pdf`. On success the CLI prints the number of bytes written; on failure it prints an
-error to stderr and exits with code 1. To see the Typst diagnostic of a failed render, render the
-same request from Rust, where the error carries it.
+`report.pdf`. On success the CLI prints the number of bytes written; on failure it prints the
+error with its cause, down to the Typst diagnostic, to stderr and exits with code 1:
+
+```text
+Error: failed to render PDF: Render error: Typst compilation failed: … dictionary does not contain key "callout_type"
+```
 
 ## Shape of the request
 
