@@ -4,6 +4,13 @@ All notable changes to this project are documented in this file. The format foll
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Releases before 0.3.0 are listed on the
 [GitHub releases page](https://github.com/casoon/renderreport/releases).
 
+## [Unreleased]
+
+### Fixed
+
+- Bar charts: vertical bars stand on a shared baseline instead of hanging from the top; every
+  series is drawn (grouped bars in legend colours), not only the first; values keep one decimal.
+
 ## [0.6.0] - 2026-10-12
 
 ### Breaking

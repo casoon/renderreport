@@ -25,14 +25,22 @@
   )
 }
 
-// A single series encodes magnitude, not identity — every bar takes the same
-// hue (no legend box; the chart title already names what's plotted). Reserve
-// `chart-colors` cycling for charts that render more than one series.
+// Value label for a bar: whole numbers without decimals, others to one decimal.
+#let chart-bar-value(v) = if calc.fract(v) == 0 { str(int(v)) } else { str(calc.round(v, digits: 1)) }
+
+// Bar colour of series `i`. A single series encodes magnitude, not identity, so
+// it always takes the primary colour; more series cycle through
+// `chart-colors` in legend order.
+#let chart-bar-color(i) = chart-colors.at(calc.rem(i, chart-colors.len()))
+
+// Categories come from the first series; every series is matched to them by
+// position. Bars stand on a shared baseline, one per series in each category.
 #let chart-bar-vertical(data) = {
-  let points = if data.series.len() > 0 { data.series.at(0).data } else { () }
-  let max_val = if points.len() > 0 {
-    calc.max(..points.map(p => p.value), 1)
-  } else { 100 }
+  let series = data.series
+  let points = if series.len() > 0 { series.at(0).data } else { () }
+  let values = series.map(s => s.data.map(p => p.value)).flatten()
+  let max_val = if values.len() > 0 { calc.max(..values, 1) } else { 100 }
+  let grouped = series.len() > 1
 
   rect(
     width: 100%,
@@ -49,25 +57,43 @@
         v(4pt)
       }
 
-      let chart_height = 140
+      let chart_height = 140pt
+      let value_size = if grouped { 6.5pt } else { 8pt }
+      let bar(si, i) = {
+        let p = series.at(si).data.at(i, default: none)
+        if p == none { return [] }
+        stack(
+          dir: ttb,
+          spacing: 3pt,
+          text(size: value_size, weight: "bold", fill: color-text, chart-bar-value(p.value)),
+          rect(
+            width: 100%,
+            height: calc.max(p.value / max_val, 0.02) * chart_height,
+            fill: chart-bar-color(si),
+            radius: (top: 3pt),
+          ),
+        )
+      }
+
       grid(
         columns: (1fr,) * points.len(),
         column-gutter: 12pt,
-        ..points.enumerate().map(((i, p)) => {
-          let bar_height = calc.max(p.value / max_val * chart_height, 4)
-          align(center, {
-            text(size: 8pt, weight: "bold", fill: color-text, str(calc.round(p.value)))
-            v(4pt)
-            rect(
-              width: 100%,
-              height: bar_height * 1pt,
-              fill: color-primary,
-              radius: (top: 3pt),
-            )
-            v(6pt)
-            text(size: 7pt, fill: color-text-muted, p.label)
-          })
-        })
+        row-gutter: 6pt,
+        align: center + bottom,
+        // Plot row: room for the tallest bar and its value label, bars aligned
+        // to the bottom edge, which is the baseline.
+        ..range(points.len()).map(i => block(
+          width: 100%,
+          height: chart_height + value_size + 6pt,
+          stroke: (bottom: 0.5pt + color-border),
+          align(bottom, grid(
+            columns: (1fr,) * series.len(),
+            column-gutter: 3pt,
+            align: center + bottom,
+            ..range(series.len()).map(si => bar(si, i)),
+          )),
+        )),
+        ..points.map(p => text(size: 7pt, fill: color-text-muted, p.label)),
       )
 
       if x_label != none {
@@ -81,13 +107,14 @@
 // Rows instead of columns: the label owns the full row width and wraps
 // normally, so it stays readable regardless of how many categories there are
 // or how long their text is — unlike fixed-width columns, which get narrower
-// (and the label more cramped) as the category count grows.
+// (and the label more cramped) as the category count grows. With several
+// series, each category gets one bar per series under its label.
 #let chart-bar-horizontal(data) = {
-  let points = if data.series.len() > 0 { data.series.at(0).data } else { () }
-  let max_val = if points.len() > 0 {
-    calc.max(..points.map(p => p.value), 1)
-  } else { 100 }
-  let bar-height = 10pt
+  let series = data.series
+  let points = if series.len() > 0 { series.at(0).data } else { () }
+  let values = series.map(s => s.data.map(p => p.value)).flatten()
+  let max_val = if values.len() > 0 { calc.max(..values, 1) } else { 100 }
+  let bar-height = if series.len() > 1 { 8pt } else { 10pt }
 
   rect(
     width: 100%,
@@ -104,21 +131,25 @@
 
       for (i, p) in points.enumerate() {
         if i > 0 { v(spacing-3) }
-        let bar_frac = calc.max(p.value / max_val, 0.03)
         text(size: 8.5pt, fill: color-text, p.label)
         v(spacing-1)
-        grid(
-          columns: (1fr, auto),
-          column-gutter: spacing-2,
-          align: (left + horizon, right + horizon),
-          rect(
-            width: bar_frac * 100%,
-            height: bar-height,
-            fill: color-primary,
-            radius: (right: 3pt),
-          ),
-          text(size: 8pt, weight: "bold", fill: color-text, str(calc.round(p.value))),
-        )
+        for (si, s) in series.enumerate() {
+          let sp = s.data.at(i, default: none)
+          if sp == none { continue }
+          if si > 0 { v(2pt) }
+          grid(
+            columns: (1fr, auto),
+            column-gutter: spacing-2,
+            align: (left + horizon, right + horizon),
+            rect(
+              width: calc.max(sp.value / max_val, 0.03) * 100%,
+              height: bar-height,
+              fill: chart-bar-color(si),
+              radius: (right: 3pt),
+            ),
+            text(size: 8pt, weight: "bold", fill: color-text, chart-bar-value(sp.value)),
+          )
+        }
       }
     }
   )
