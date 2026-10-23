@@ -1,7 +1,9 @@
 //! Chart components
 //! Inspired by JasperReports Chart Components and BIRT Charts
 
+use super::catalog::{ComponentCategory, LayoutHint};
 use super::Component;
+use crate::component_catalog;
 use serde::{Deserialize, Serialize};
 
 /// Chart types supported
@@ -14,6 +16,15 @@ pub enum ChartType {
     Area,
     Scatter,
     Radar,
+}
+
+component_catalog! {
+    id: "chart",
+    data: Chart,
+    template: include_str!("../../templates/components/chart.typ"),
+    description: "Bar, line, or area chart rendered from data arrays",
+    category: ComponentCategory::DataComparison,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Basic chart component
@@ -135,6 +146,15 @@ impl Component for Chart {
     }
 }
 
+component_catalog! {
+    id: "sparkline",
+    data: Sparkline,
+    template: include_str!("../../templates/components/sparkline.typ"),
+    description: "Compact inline sparkline trend chart",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Sparkline - Small inline chart
 /// Inspired by Pentaho Sparkline elements
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -199,6 +219,15 @@ impl Component for Sparkline {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "gauge",
+    data: Gauge,
+    template: include_str!("../../templates/components/gauge.typ"),
+    description: "Radial gauge visualization for a single metric",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Gauge/Meter display

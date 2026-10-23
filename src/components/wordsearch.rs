@@ -3,7 +3,9 @@
 //! Generates a parameter-driven word search puzzle grid with word placement logic,
 //! random letter fill, and optional solution tracking.
 
+use super::catalog::{ComponentCategory, LayoutHint};
 use super::Component;
+use crate::component_catalog;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 
@@ -102,6 +104,15 @@ impl Direction {
             _ => 315,
         }
     }
+}
+
+component_catalog! {
+    id: "word-search",
+    data: WordSearch,
+    template: include_str!("../../templates/components/word_search.typ"),
+    description: "Parameter-driven word search puzzle generator with word list and solution highlighting",
+    category: ComponentCategory::Infographics,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// WordSearch component builder and generator

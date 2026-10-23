@@ -11,7 +11,7 @@
 use serde::de::DeserializeOwned;
 use serde_json::Value;
 
-use super::Component;
+use super::{Component, ComponentCatalog};
 
 /// Normalizes every component in `components`, including components nested
 /// in other components' data (grid items, flow groups, columns).
@@ -52,93 +52,11 @@ fn normalize_value(value: &mut Value) {
 /// `to_data` of the built-in component `id` deserialized from `data`, or
 /// `None` for unknown ids and data that does not fit the struct.
 fn normalize_data(id: &str, data: &Value) -> Option<Value> {
-    match id {
-        "audit-table" => typed::<super::standard::AuditTable>(data),
-        #[cfg(feature = "barcodes")]
-        "barcode" => typed::<super::barcode::Barcode>(data),
-        "before-after" => typed::<super::standard::BeforeAfter>(data),
-        "benchmark-table" => typed::<super::standard::BenchmarkTable>(data),
-        "benefit-strip" => typed::<super::advanced::BenefitStrip>(data),
-        "big-number" => typed::<super::advanced::BigNumber>(data),
-        "callout" => typed::<super::standard::Callout>(data),
-        "card-dashboard" => typed::<super::standard::CardDashboard>(data),
-        "chart" => typed::<super::charts::Chart>(data),
-        "checklist-panel" => typed::<super::advanced::ChecklistPanel>(data),
-        "columns" => typed::<super::advanced::Columns>(data),
-        "comparison-block" => typed::<super::advanced::ComparisonBlock>(data),
-        "comparison-cluster" => typed::<super::advanced::ComparisonCluster>(data),
-        "cover-page" => typed::<super::standard::CoverPage>(data),
-        "crosstab" => typed::<super::crosstab::Crosstab>(data),
-        "cta-box" => typed::<super::standard::CTABox>(data),
-        "date-field" => typed::<super::text::DateField>(data),
-        "device-preview" => typed::<super::advanced::DevicePreview>(data),
-        "diagnosis-panel" => typed::<super::advanced::DiagnosisPanel>(data),
-        "divider" => typed::<super::advanced::Divider>(data),
-        "dominant-issue-spotlight" => typed::<super::advanced::DominantIssueSpotlight>(data),
-        "eyebrow" => typed::<super::text::Eyebrow>(data),
-        "fact-box" => typed::<super::standard::FactBox>(data),
-        "faq-list" => typed::<super::advanced::FaqList>(data),
-        "feature-grid" => typed::<super::standard::FeatureGrid>(data),
-        "finding" => typed::<super::standard::Finding>(data),
-        "flow-group" => typed::<super::advanced::FlowGroup>(data),
-        "funnel" => typed::<super::standard::Funnel>(data),
-        "gauge" => typed::<super::charts::Gauge>(data),
-        "glossary-list" => typed::<super::advanced::GlossaryList>(data),
-        "grid-component" => typed::<super::advanced::Grid>(data),
-        "hero-summary" => typed::<super::standard::HeroSummary>(data),
-        "image" => typed::<super::standard::Image>(data),
-        "impact-grid" => typed::<super::advanced::ImpactGrid>(data),
-        "key-value-list" => typed::<super::advanced::KeyValueList>(data),
-        "label" => typed::<super::text::Label>(data),
-        "list" => typed::<super::advanced::List>(data),
-        "logo-strip" => typed::<super::advanced::LogoStrip>(data),
-        "metric-card" => typed::<super::standard::MetricCard>(data),
-        "metric-strip" => typed::<super::advanced::MetricStrip>(data),
-        "module-comparison" => typed::<super::standard::ModuleComparison>(data),
-        "number-field" => typed::<super::text::NumberField>(data),
-        "page-break" => typed::<super::advanced::PageBreak>(data),
-        "phase-block" => typed::<super::advanced::PhaseBlock>(data),
-        "pivot-table" => typed::<super::crosstab::PivotTable>(data),
-        "portfolio-summary" => typed::<super::standard::PortfolioSummary>(data),
-        "pricing-card" => typed::<super::advanced::PricingCard>(data),
-        "problem-solution" => typed::<super::standard::ProblemSolution>(data),
-        "process-flow" => typed::<super::standard::ProcessFlow>(data),
-        "product-hero" => typed::<super::standard::ProductHero>(data),
-        "progress-bar" => typed::<super::advanced::ProgressBar>(data),
-        "pull-quote" => typed::<super::advanced::PullQuote>(data),
-        "quote-block" => typed::<super::standard::QuoteBlock>(data),
-        "recommendation-card" => typed::<super::advanced::RecommendationCard>(data),
-        "resource-field" => typed::<super::text::ResourceField>(data),
-        "roadmap-block" => typed::<super::standard::RoadmapBlock>(data),
-        "score-band" => typed::<super::standard::ScoreBand>(data),
-        "score-card" => typed::<super::standard::ScoreCard>(data),
-        "section" => typed::<super::standard::Section>(data),
-        "section-header-split" => typed::<super::advanced::SectionHeaderSplit>(data),
-        "severity-overview" => typed::<super::standard::SeverityOverview>(data),
-        "side-label" => typed::<super::advanced::SideLabel>(data),
-        "sparkline" => typed::<super::charts::Sparkline>(data),
-        "spotlight-card" => typed::<super::advanced::SpotlightCard>(data),
-        "stat" => typed::<super::standard::Stat>(data),
-        "stat-pair" => typed::<super::standard::StatPair>(data),
-        "status-pill" => typed::<super::standard::StatusPill>(data),
-        "step-card-row" => typed::<super::advanced::StepCardRow>(data),
-        "summary-box" => typed::<super::standard::SummaryBox>(data),
-        "table-of-contents" => typed::<super::advanced::TableOfContents>(data),
-        "tag-cloud" => typed::<super::standard::TagCloud>(data),
-        "testimonial" => typed::<super::standard::Testimonial>(data),
-        "textblock" => typed::<super::text::TextBlock>(data),
-        "timeline" => typed::<super::standard::Timeline>(data),
-        "trend-tile" => typed::<super::standard::TrendTile>(data),
-        "use-case-card" => typed::<super::advanced::UseCaseCard>(data),
-        "watermark" => typed::<super::advanced::Watermark>(data),
-        "why-it-matters" => typed::<super::standard::WhyItMatters>(data),
-        "word-search" => typed::<super::wordsearch::WordSearch>(data),
-        "wrong-right-block" => typed::<super::advanced::WrongRightBlock>(data),
-        _ => None,
-    }
+    ComponentCatalog::get(id)?.normalize?(data)
 }
 
-fn typed<T: Component + DeserializeOwned>(data: &Value) -> Option<Value> {
+/// The [`NormalizeFn`](super::catalog::NormalizeFn) for component struct `T`.
+pub fn typed<T: Component + DeserializeOwned>(data: &Value) -> Option<Value> {
     serde_json::from_value::<T>(data.clone())
         .ok()
         .map(|c| c.to_data())

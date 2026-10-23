@@ -1,7 +1,9 @@
 //! Barcode components
 //! Inspired by JasperReports Barcode (Barbecue/Barcode4j) and Pentaho Barcode
 
+use super::catalog::{ComponentCategory, LayoutHint};
 use super::Component;
+use crate::component_catalog;
 use serde::{Deserialize, Serialize};
 
 /// Barcode format types
@@ -30,6 +32,15 @@ pub enum BarcodeFormat {
     Itf,
     /// Codabar
     Codabar,
+}
+
+component_catalog! {
+    id: "barcode",
+    data: Barcode,
+    template: include_str!("../../templates/components/barcode.typ"),
+    description: "1D/2D barcode (EAN-13, QR, DataMatrix, etc.)",
+    category: ComponentCategory::MediaAssets,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Barcode component

@@ -1,9 +1,20 @@
 //! Crosstab (Pivot Table) components
 //! Inspired by JasperReports Crosstab and BIRT Cross Tab
 
+use super::catalog::{ComponentCategory, LayoutHint};
 use super::Component;
+use crate::component_catalog;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+
+component_catalog! {
+    id: "crosstab",
+    data: Crosstab,
+    template: include_str!("../../templates/components/crosstab.typ"),
+    description: "Cross-tabulation table with row/column summaries",
+    category: ComponentCategory::DataComparison,
+    layout_hint: LayoutHint::Breakable,
+}
 
 /// Crosstab/Pivot Table component
 /// Allows data aggregation in a tabular format with row/column grouping
@@ -91,6 +102,15 @@ impl Component for Crosstab {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "pivot-table",
+    data: PivotTable,
+    template: include_str!("../../templates/components/pivot_table.typ"),
+    description: "Pivot table with aggregated multi-dimensional data",
+    category: ComponentCategory::DataComparison,
+    layout_hint: LayoutHint::Breakable,
 }
 
 /// Simple pivot result for pre-aggregated data

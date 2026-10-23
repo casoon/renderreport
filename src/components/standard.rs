@@ -1,6 +1,8 @@
 //! Standard component implementations
 
+use super::catalog::{ComponentCategory, LayoutHint};
 use super::{Component, ScoreStatus, Severity};
+use crate::component_catalog;
 use serde::{Deserialize, Serialize};
 
 /// Visual layout variant for a score card.
@@ -16,6 +18,15 @@ pub enum ScoreCardVariant {
     Inverted,
     /// No progress bar, reduced padding
     Compact,
+}
+
+component_catalog! {
+    id: "score-card",
+    data: ScoreCard,
+    template: include_str!("../../templates/components/score_card.typ"),
+    description: "Score card with gauge-style visualization and status indicator",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Score card component for displaying metrics
@@ -150,6 +161,15 @@ impl Component for ScoreCard {
     }
 }
 
+component_catalog! {
+    id: "finding",
+    data: Finding,
+    template: include_str!("../../templates/components/finding.typ"),
+    description: "Audit finding with severity indicator and recommendation block",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Finding component for audit issues
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Finding {
@@ -218,6 +238,15 @@ impl Component for Finding {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "audit-table",
+    data: AuditTable,
+    template: include_str!("../../templates/components/audit_table.typ"),
+    description: "Tabular data for audit results with severity columns",
+    category: ComponentCategory::DataComparison,
+    layout_hint: LayoutHint::Breakable,
 }
 
 /// Audit table for tabular data
@@ -322,6 +351,15 @@ impl Component for AuditTable {
     }
 }
 
+component_catalog! {
+    id: "section",
+    data: Section,
+    template: include_str!("../../templates/components/section.typ"),
+    description: "Document section heading with optional subtitle",
+    category: ComponentCategory::Layout,
+    layout_hint: LayoutHint::KeepWithNext,
+}
+
 /// Section component for document structure
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Section {
@@ -367,6 +405,17 @@ impl Component for Section {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "image",
+    // Avoids a collision with Typst's built-in `image(...)`.
+    fn_name: "report-image",
+    data: Image,
+    template: include_str!("../../templates/components/image.typ"),
+    description: "Image with optional caption and alignment",
+    category: ComponentCategory::MediaAssets,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Image component
@@ -449,6 +498,15 @@ impl CalloutVariant {
             Self::Neutral => "neutral",
         }
     }
+}
+
+component_catalog! {
+    id: "callout",
+    data: Callout,
+    template: include_str!("../../templates/components/callout.typ"),
+    description: "Highlighted information box with icon and variant styling",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Callout/admonition component
@@ -538,6 +596,15 @@ impl Component for Callout {
     }
 }
 
+component_catalog! {
+    id: "summary-box",
+    data: SummaryBox,
+    template: include_str!("../../templates/components/summary_box.typ"),
+    description: "Executive summary widget with key metrics",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Summary box for executive summaries
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SummaryBox {
@@ -599,6 +666,15 @@ impl Component for SummaryBox {
 
 // ── Primitive Components ──────────────────────────────────────────────
 
+component_catalog! {
+    id: "status-pill",
+    data: StatusPill,
+    template: include_str!("../../templates/components/status_pill.typ"),
+    description: "Inline status badge with color coding",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Status pill badge — colored label for status display
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StatusPill {
@@ -658,6 +734,15 @@ impl Component for StatusPill {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "tag-cloud",
+    data: TagCloud,
+    template: include_str!("../../templates/components/tag_cloud.typ"),
+    description: "Tag cloud with weighted font sizes",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Wrapping cloud of status-pill badges (flows inline, auto-wraps)
@@ -722,6 +807,15 @@ impl Component for TagCloud {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "stat",
+    data: Stat,
+    template: include_str!("../../templates/components/stat.typ"),
+    description: "Single statistic display with value and label",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Single KPI stat with optional trend indicator
@@ -809,6 +903,15 @@ impl StatPairEntry {
     }
 }
 
+component_catalog! {
+    id: "stat-pair",
+    data: StatPair,
+    template: include_str!("../../templates/components/stat_pair.typ"),
+    description: "Side-by-side pair of stat displays",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Two-stat side-by-side layout with optional vertical divider
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StatPair {
@@ -842,6 +945,15 @@ fn default_seventy() -> u32 {
 }
 fn default_fifty() -> u32 {
     50
+}
+
+component_catalog! {
+    id: "score-band",
+    data: ScoreBand,
+    template: include_str!("../../templates/components/score_band.typ"),
+    description: "Score band visualization with threshold markers",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Horizontal score band with color-coded segments and marker
@@ -888,6 +1000,15 @@ impl Component for ScoreBand {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "trend-tile",
+    data: TrendTile,
+    template: include_str!("../../templates/components/trend_tile.typ"),
+    description: "Trend tile with value, delta, and sparkline",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Compact trend tile with direction arrow
@@ -952,6 +1073,15 @@ impl Component for TrendTile {
 
 // ── New Composite Components ──────────────────────────────────────────
 
+component_catalog! {
+    id: "metric-card",
+    data: MetricCard,
+    template: include_str!("../../templates/components/metric_card.typ"),
+    description: "Compact metric card with value, unit, and trend indicator",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Compact metric card for KPI displays (flexible string values, unlike ScoreCard)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MetricCard {
@@ -1000,6 +1130,15 @@ impl Component for MetricCard {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "hero-summary",
+    data: HeroSummary,
+    template: include_str!("../../templates/components/hero_summary.typ"),
+    description: "Full-width hero summary with title, subtitle, and key metrics",
+    category: ComponentCategory::MarketingSales,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Hero summary for the first content page after TOC
@@ -1108,6 +1247,15 @@ impl Component for HeroSummary {
     }
 }
 
+component_catalog! {
+    id: "card-dashboard",
+    data: CardDashboard,
+    template: include_str!("../../templates/components/card_dashboard.typ"),
+    description: "Multi-card dashboard layout with configurable columns",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::Breakable,
+}
+
 /// Card dashboard showing scores as a horizontal card strip
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CardDashboard {
@@ -1173,6 +1321,15 @@ impl Component for CardDashboard {
     }
 }
 
+component_catalog! {
+    id: "roadmap-block",
+    data: RoadmapBlock,
+    template: include_str!("../../templates/components/roadmap_block.typ"),
+    description: "Project roadmap block with phases and milestones",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::Breakable,
+}
+
 /// Roadmap block with categorized columns
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RoadmapBlock {
@@ -1214,6 +1371,15 @@ impl Component for RoadmapBlock {
 }
 
 // ─── Severity Overview ──────────────────────────────────────────────────────
+
+component_catalog! {
+    id: "severity-overview",
+    data: SeverityOverview,
+    template: include_str!("../../templates/components/severity_overview.typ"),
+    description: "Severity distribution overview with count badges",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
+}
 
 /// Visual severity breakdown with cards and severity strip
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1305,6 +1471,17 @@ impl CoverModuleGauge {
             score,
         }
     }
+}
+
+component_catalog! {
+    id: "cover-page",
+    data: CoverPage,
+    template: include_str!("../../templates/components/cover_page.typ"),
+    description: "Full-page cover with title, logo, and metadata",
+    category: ComponentCategory::Layout,
+    // The cover is the first page and emits its own trailing page break, so it
+    // must NOT request a leading break (that would produce a blank page 1).
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Professional cover page with score preview
@@ -1457,6 +1634,15 @@ impl Component for CoverPage {
 
 // ─── Module Comparison ──────────────────────────────────────────────────────
 
+component_catalog! {
+    id: "module-comparison",
+    data: ModuleComparison,
+    template: include_str!("../../templates/components/module_comparison.typ"),
+    description: "Side-by-side module comparison with feature matrix",
+    category: ComponentCategory::DataComparison,
+    layout_hint: LayoutHint::Breakable,
+}
+
 /// Horizontal score comparison rows for modules
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ModuleComparison {
@@ -1527,6 +1713,15 @@ impl Component for ModuleComparison {
 
 // ─── Portfolio Summary ──────────────────────────────────────────────────────
 
+component_catalog! {
+    id: "portfolio-summary",
+    data: PortfolioSummary,
+    template: include_str!("../../templates/components/portfolio_summary.typ"),
+    description: "Portfolio summary with aggregate scores across items",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Portfolio-level summary cards for batch reports
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PortfolioSummary {
@@ -1584,6 +1779,15 @@ impl Component for PortfolioSummary {
 }
 
 // ─── Benchmark Table ────────────────────────────────────────────────────────
+
+component_catalog! {
+    id: "benchmark-table",
+    data: BenchmarkTable,
+    template: include_str!("../../templates/components/benchmark_table.typ"),
+    description: "Benchmark comparison table with scored rows",
+    category: ComponentCategory::DataComparison,
+    layout_hint: LayoutHint::Breakable,
+}
 
 /// Ranking table for batch report website comparison
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1701,6 +1905,15 @@ pub struct FeatureGridItem {
     pub status: Option<String>,
 }
 
+component_catalog! {
+    id: "feature-grid",
+    data: FeatureGrid,
+    template: include_str!("../../templates/components/feature_grid.typ"),
+    description: "Grid of feature items with icon, title, and description",
+    category: ComponentCategory::MarketingSales,
+    layout_hint: LayoutHint::Breakable,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FeatureGrid {
     pub items: Vec<FeatureGridItem>,
@@ -1737,6 +1950,15 @@ impl Component for FeatureGrid {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "cta-box",
+    data: CTABox,
+    template: include_str!("../../templates/components/cta_box.typ"),
+    description: "Call-to-action box with headline, body, and button label",
+    category: ComponentCategory::MarketingSales,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Call to action block
@@ -1790,6 +2012,15 @@ impl Component for CTABox {
     }
 }
 
+component_catalog! {
+    id: "testimonial",
+    data: Testimonial,
+    template: include_str!("../../templates/components/testimonial.typ"),
+    description: "Customer testimonial quote with attribution",
+    category: ComponentCategory::MarketingSales,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Customer quote / testimonial
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Testimonial {
@@ -1839,6 +2070,15 @@ pub struct ProcessStep {
     pub description: Option<String>,
     #[serde(default)]
     pub icon: Option<String>,
+}
+
+component_catalog! {
+    id: "process-flow",
+    data: ProcessFlow,
+    template: include_str!("../../templates/components/process_flow.typ"),
+    description: "Horizontal or vertical process flow with numbered steps",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Linear process visualization
@@ -1891,6 +2131,15 @@ pub struct TimelineItem {
     pub status: Option<String>,
 }
 
+component_catalog! {
+    id: "timeline",
+    data: Timeline,
+    template: include_str!("../../templates/components/timeline.typ"),
+    description: "Project timeline with milestones and status indicators",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::Breakable,
+}
+
 /// Project phases / milestone timeline
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Timeline {
@@ -1930,6 +2179,15 @@ pub struct FunnelStep {
     pub color: Option<String>,
 }
 
+component_catalog! {
+    id: "funnel",
+    data: Funnel,
+    template: include_str!("../../templates/components/funnel.typ"),
+    description: "Conversion funnel visualization with stage counts",
+    category: ComponentCategory::Infographics,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Conversion funnel visualization
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Funnel {
@@ -1956,6 +2214,15 @@ impl Component for Funnel {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "problem-solution",
+    data: ProblemSolution,
+    template: include_str!("../../templates/components/problem_solution.typ"),
+    description: "Two-column problem/solution comparison block",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Two-part problem/solution block
@@ -2019,6 +2286,15 @@ impl Component for ProblemSolution {
     }
 }
 
+component_catalog! {
+    id: "before-after",
+    data: BeforeAfter,
+    template: include_str!("../../templates/components/before_after.typ"),
+    description: "Before/after comparison with labeled panels",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Before/after comparison block
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BeforeAfter {
@@ -2072,6 +2348,15 @@ impl Component for BeforeAfter {
     }
 }
 
+component_catalog! {
+    id: "why-it-matters",
+    data: WhyItMatters,
+    template: include_str!("../../templates/components/why_it_matters.typ"),
+    description: "Highlighted explanation block for key insights",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Context / relevance block for storytelling
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WhyItMatters {
@@ -2117,6 +2402,15 @@ impl Component for WhyItMatters {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "fact-box",
+    data: FactBox,
+    template: include_str!("../../templates/components/fact_box.typ"),
+    description: "Fact box with a prominent statistic and supporting text",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Inline info/fact box
@@ -2185,6 +2479,15 @@ impl Component for FactBox {
     }
 }
 
+component_catalog! {
+    id: "quote-block",
+    data: QuoteBlock,
+    template: include_str!("../../templates/components/quote_block.typ"),
+    description: "Styled block quote with attribution",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Quote / pull quote block
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QuoteBlock {
@@ -2222,6 +2525,15 @@ impl Component for QuoteBlock {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "product-hero",
+    data: ProductHero,
+    template: include_str!("../../templates/components/product_hero.typ"),
+    description: "Product hero block with image, headline, and description",
+    category: ComponentCategory::MarketingSales,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Product/Project hero page — for introducing a product or project

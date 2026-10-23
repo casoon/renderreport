@@ -93,11 +93,13 @@ This test must pass before any renderreport release.
 
 A component consists of three parts:
 
-1. **Rust struct** in `src/components/standard.rs` or `advanced.rs` — derive `Serialize`,
-   implement `Component` (`component_id()` + `to_data()`).
+1. **Rust struct** in `src/components/standard.rs` or `advanced.rs` — derive `Serialize`
+   and `Deserialize`, implement `Component` (`component_id()` + `to_data()`).
 2. **Typst template** in `templates/components/<name>.typ` — a `#let` function named with
    hyphens matching the component ID.
-3. **Registry entry** in `src/components/registry.rs` — `self.register(ComponentId::new("name"), include_str!(...))`.
+3. **Catalog entry** — a `component_catalog!` call directly above the struct, with
+   `data: <Struct>` so JSON input is normalized through it. This one entry also registers
+   the template and adds the component to the `grid-component` / `flow-group` dispatchers.
 
 ### Optional title — use `component-title()`
 

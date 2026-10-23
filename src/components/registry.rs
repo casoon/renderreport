@@ -68,6 +68,8 @@ impl ComponentRegistry {
         let descs: Vec<&'static crate::components::catalog::ComponentDescriptor> =
             ComponentCatalog::all().collect();
         let ids: Vec<&'static str> = descs.iter().map(|d| d.id).collect();
+        let templates: HashMap<&'static str, String> =
+            descs.iter().map(|d| (d.id, standard_template(d))).collect();
 
         // Build edges: dep -> set of components that reference it.
         let references = |template: &str, candidate: &str| -> bool {
@@ -87,7 +89,7 @@ impl ComponentRegistry {
         let mut dependents: HashMap<&'static str, Vec<&'static str>> = HashMap::new();
         for d in &descs {
             for dep in &ids {
-                if *dep != d.id && references(d.template, dep) {
+                if *dep != d.id && references(&templates[d.id], dep) {
                     dependents.entry(dep).or_default().push(d.id);
                     if let Some(deg) = indegree.get_mut(d.id) {
                         *deg += 1;
@@ -112,7 +114,7 @@ impl ComponentRegistry {
             // `ready` is sorted ascending; pop the lexicographically smallest by
             // keeping it sorted descending instead.
             if let Some(desc) = desc_by_id.get(id) {
-                self.register(ComponentId::new(desc.id), desc.template.to_string());
+                self.register(ComponentId::new(desc.id), templates[desc.id].clone());
                 emitted += 1;
             }
             if let Some(children) = dependents.get(id) {
@@ -143,7 +145,7 @@ impl ComponentRegistry {
             remaining.sort_unstable();
             for id in remaining {
                 if let Some(desc) = desc_by_id.get(id) {
-                    self.register(ComponentId::new(desc.id), desc.template.to_string());
+                    self.register(ComponentId::new(desc.id), templates[desc.id].clone());
                 }
             }
         }
@@ -188,6 +190,52 @@ impl ComponentRegistry {
         self.insertion_order.iter().collect()
     }
 }
+
+/// The template a built-in component is registered with: its catalog template,
+/// prefixed for the dispatchers (`grid-component`, `flow-group`) with a
+/// dispatch function over every catalog component.
+fn standard_template(desc: &crate::components::catalog::ComponentDescriptor) -> String {
+    match desc.id {
+        "grid-component" => format!(
+            "// Grid Component\n// Dispatch generated from the component catalog.\n\n{}\n\n{}",
+            dispatch_function("_grid-dispatch", GRID_FALLBACK),
+            desc.template.trim_start()
+        ),
+        "flow-group" => format!(
+            "// Flow Group Component\n// Dispatch generated from the component catalog.\n\n{}\n\n{}",
+            dispatch_function("_flow-dispatch", FLOW_FALLBACK),
+            desc.template.trim_start()
+        ),
+        _ => desc.template.to_string(),
+    }
+}
+
+/// `#let {name}(c)` calling the component function for `c.type`, sorted by id
+/// for deterministic output; `fallback` continues the `if` chain for items
+/// that are not `{type, data}` components.
+fn dispatch_function(name: &str, fallback: &str) -> String {
+    use crate::components::catalog::ComponentCatalog;
+
+    let mut descs: Vec<_> = ComponentCatalog::all().collect();
+    descs.sort_unstable_by_key(|d| d.id);
+
+    let mut s = format!(
+        "#let {name}(c) = {{\n  if type(c) == dictionary and \"type\" in c and \"data\" in c {{\n    let comp-type = c.at(\"type\")\n    let comp-data = c.at(\"data\")\n"
+    );
+    for (i, d) in descs.iter().enumerate() {
+        let kw = if i == 0 { "if" } else { "else if" };
+        s.push_str(&format!(
+            "    {kw} comp-type == \"{}\" {{ {}(comp-data) }}\n",
+            d.id, d.fn_name
+        ));
+    }
+    s.push_str(fallback);
+    s
+}
+
+const FLOW_FALLBACK: &str = "    else {\n      text(size: 9pt, fill: gray, \"[\" + comp-type + \"]\")\n    }\n  } else if type(c) == str {\n    text(size: 10pt, c)\n  } else {\n    [#c]\n  }\n}";
+
+const GRID_FALLBACK: &str = "    else {\n      // Fallback for unknown types\n      text(size: 9pt, fill: gray, \"[\" + comp-type + \"]\")\n    }\n  } else if type(c) == dictionary {\n    // Raw data without type wrapper — generic display\n    let inner = c\n    if inner.at(\"title\", default: none) != none {\n      text(weight: \"bold\", size: 10pt, inner.title)\n      if inner.at(\"score\", default: none) != none {\n        v(4pt)\n        text(size: 20pt, weight: \"bold\", str(inner.score))\n        if inner.at(\"max_score\", default: none) != none {\n          text(size: 10pt, fill: gray, \" / \" + str(inner.max_score))\n        }\n      }\n      if inner.at(\"description\", default: none) != none {\n        v(4pt)\n        text(size: 9pt, fill: gray, inner.description)\n      }\n    } else {\n      for (key, val) in inner {\n        if type(val) == str or type(val) == int or type(val) == float {\n          text(size: 9pt)[#text(weight: \"bold\")[#key:] #str(val)]\n          linebreak()\n        }\n      }\n    }\n  } else if type(c) == str {\n    text(size: 10pt, c)\n  } else {\n    [#c]\n  }\n}";
 
 impl std::fmt::Debug for ComponentRegistry {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

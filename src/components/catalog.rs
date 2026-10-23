@@ -32,7 +32,20 @@ pub struct ComponentDescriptor {
     pub category: ComponentCategory,
     /// Layout hint used by the engine to inject keep-together / page-break logic.
     pub layout_hint: LayoutHint,
+    /// Typst function name the template defines (usually equal to `id`).
+    pub fn_name: &'static str,
+    /// Runs JSON data through the component's struct, filling in the fields
+    /// its builder derives (see `normalize_components`). `None` for
+    /// components without a Rust struct.
+    pub normalize: Option<NormalizeFn>,
 }
+
+/// Deserializes component data into its struct and returns `to_data()`, or
+/// `None` when the data does not fit the struct.
+pub type NormalizeFn = fn(&serde_json::Value) -> Option<serde_json::Value>;
+
+#[doc(hidden)]
+pub use super::normalize::typed as __normalize;
 
 inventory::collect!(ComponentDescriptor);
 
@@ -109,11 +122,16 @@ impl ComponentCatalog {
 
 /// Register a component with the global [`crate::ComponentCatalog`].
 ///
+/// Place the call next to the component's struct. `fn_name` is only needed
+/// when the Typst function name differs from `id`; `data` names the struct
+/// that JSON data is normalized through.
+///
 /// # Example
 ///
 /// ```rust,ignore
 /// component_catalog! {
 ///     id: "finding",
+///     data: Finding,
 ///     template: include_str!("../../templates/components/finding.typ"),
 ///     description: "Audit finding card with severity indicator",
 ///     category: ComponentCategory::NarrativeStorytelling,
@@ -122,8 +140,17 @@ impl ComponentCatalog {
 /// ```
 #[macro_export]
 macro_rules! component_catalog {
+    (@fn_name $id:literal) => { $id };
+    (@fn_name $id:literal, $fn_name:literal) => { $fn_name };
+    (@normalize) => { None };
+    (@normalize $data:ty) => {
+        Some($crate::components::catalog::__normalize::<$data>
+            as $crate::components::catalog::NormalizeFn)
+    };
     (
         id: $id:literal,
+        $(fn_name: $fn_name:literal,)?
+        $(data: $data:ty,)?
         template: $template:expr,
         description: $desc:literal,
         category: $cat:expr,
@@ -136,6 +163,8 @@ macro_rules! component_catalog {
                 description: $desc,
                 category: $cat,
                 layout_hint: $hint,
+                fn_name: $crate::component_catalog!(@fn_name $id $(, $fn_name)?),
+                normalize: $crate::component_catalog!(@normalize $($data)?),
             }
         }
     };

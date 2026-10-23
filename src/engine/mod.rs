@@ -643,11 +643,9 @@ fn collect_types_in_value(v: &serde_json::Value, used: &mut std::collections::Ha
 }
 
 fn component_function_name(component_type: &str) -> &str {
-    match component_type {
-        // Avoid collision with Typst's built-in `image(...)`.
-        "image" => "report-image",
-        _ => component_type,
-    }
+    use crate::components::catalog::ComponentCatalog;
+
+    ComponentCatalog::get(component_type).map_or(component_type, |d| d.fn_name)
 }
 
 impl Default for Engine {

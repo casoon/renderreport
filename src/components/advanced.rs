@@ -1,7 +1,18 @@
 //! Advanced components inspired by JasperReports, Eclipse BIRT, and Pentaho Reporting
 
+use super::catalog::{ComponentCategory, LayoutHint};
 use super::Component;
+use crate::component_catalog;
 use serde::{Deserialize, Serialize};
+
+component_catalog! {
+    id: "list",
+    data: List,
+    template: include_str!("../../templates/components/list.typ"),
+    description: "Bullet or numbered list with optional icons",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::Breakable,
+}
 
 /// List component that iterates over data records
 /// Inspired by JasperReports List Component
@@ -107,6 +118,15 @@ impl Component for List {
     }
 }
 
+component_catalog! {
+    id: "divider",
+    data: Divider,
+    template: include_str!("../../templates/components/divider.typ"),
+    description: "Horizontal rule separator with optional label",
+    category: ComponentCategory::Layout,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Horizontal separator/divider
 /// Inspired by BIRT Band Elements
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -191,6 +211,15 @@ impl Component for Divider {
     }
 }
 
+component_catalog! {
+    id: "grid-component",
+    data: Grid,
+    template: include_str!("../../templates/components/grid_body.typ"),
+    description: "Multi-column grid layout dispatching to any component type",
+    category: ComponentCategory::Layout,
+    layout_hint: LayoutHint::Breakable,
+}
+
 /// Grid/Multi-column layout container
 /// Inspired by Pentaho Block/Row Layout
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -270,6 +299,15 @@ impl Component for Grid {
     }
 }
 
+component_catalog! {
+    id: "flow-group",
+    data: FlowGroup,
+    template: include_str!("../../templates/components/flow_group_body.typ"),
+    description: "Soft keep-together wrapper for heading + first content block",
+    category: ComponentCategory::Layout,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Flow group with optional soft keep-together behavior
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FlowGroup {
@@ -323,6 +361,15 @@ impl Component for FlowGroup {
     }
 }
 
+component_catalog! {
+    id: "page-break",
+    data: PageBreak,
+    template: include_str!("../../templates/components/page_break.typ"),
+    description: "Explicit page break",
+    category: ComponentCategory::Layout,
+    layout_hint: LayoutHint::AlwaysNewPage,
+}
+
 /// Page break for multi-page reports
 /// Inspired by BIRT Page Setup
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -347,6 +394,15 @@ impl Component for PageBreak {
     fn to_data(&self) -> serde_json::Value {
         serde_json::json!({})
     }
+}
+
+component_catalog! {
+    id: "watermark",
+    data: Watermark,
+    template: include_str!("../../templates/components/watermark.typ"),
+    description: "Page-level watermark overlay",
+    category: ComponentCategory::MediaAssets,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Watermark for background content
@@ -414,6 +470,15 @@ impl Component for Watermark {
     }
 }
 
+component_catalog! {
+    id: "progress-bar",
+    data: ProgressBar,
+    template: include_str!("../../templates/components/progress_bar.typ"),
+    description: "Horizontal progress bar with percentage label",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Progress bar / completion indicator
 /// Inspired by JasperReports Chart Components
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -477,6 +542,15 @@ impl Component for ProgressBar {
         }
         data
     }
+}
+
+component_catalog! {
+    id: "key-value-list",
+    data: KeyValueList,
+    template: include_str!("../../templates/components/key_value_list.typ"),
+    description: "Two-column key/value list for structured data",
+    category: ComponentCategory::DataComparison,
+    layout_hint: LayoutHint::Breakable,
 }
 
 /// Key-Value pairs display
@@ -553,6 +627,15 @@ impl Component for KeyValueList {
     }
 }
 
+component_catalog! {
+    id: "table-of-contents",
+    data: TableOfContents,
+    template: include_str!("../../templates/components/table_of_contents.typ"),
+    description: "Auto-generated table of contents from section headings",
+    category: ComponentCategory::Layout,
+    layout_hint: LayoutHint::Breakable,
+}
+
 /// Table of Contents component
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TableOfContents {
@@ -617,6 +700,15 @@ fn default_divider_below() -> bool {
     true
 }
 
+component_catalog! {
+    id: "section-header-split",
+    data: SectionHeaderSplit,
+    template: include_str!("../../templates/components/section_header_split.typ"),
+    description: "Section header with title on left and metadata on right",
+    category: ComponentCategory::Layout,
+    layout_hint: LayoutHint::KeepWithNext,
+}
+
 /// Section header with 1/3 title and 2/3 body text side-by-side
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SectionHeaderSplit {
@@ -670,6 +762,15 @@ impl Component for SectionHeaderSplit {
 }
 
 // ─── PhaseBlock ──────────────────────────────────────────────────────────────
+
+component_catalog! {
+    id: "phase-block",
+    data: PhaseBlock,
+    template: include_str!("../../templates/components/phase_block.typ"),
+    description: "Project phase block with status, owner, and date range",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::KeepTogether,
+}
 
 /// A phase block for roadmap/plan displays
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -747,6 +848,15 @@ impl ChecklistRow {
     }
 }
 
+component_catalog! {
+    id: "checklist-panel",
+    data: ChecklistPanel,
+    template: include_str!("../../templates/components/checklist_panel.typ"),
+    description: "Checklist panel with pass/fail/warning rows",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::Breakable,
+}
+
 /// Card showing label–diagnosis pairs
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChecklistPanel {
@@ -815,6 +925,15 @@ impl MetricStripItem {
         self.status = Some(status.into());
         self
     }
+}
+
+component_catalog! {
+    id: "metric-strip",
+    data: MetricStrip,
+    template: include_str!("../../templates/components/metric_strip.typ"),
+    description: "Horizontal strip of compact metric items",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Horizontal row of equal KPI cells
@@ -888,6 +1007,15 @@ impl ImpactGridCard {
     }
 }
 
+component_catalog! {
+    id: "impact-grid",
+    data: ImpactGrid,
+    template: include_str!("../../templates/components/impact_grid.typ"),
+    description: "Grid of impact cards with title, score, and description",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Three-column impact card layout (user / risk / conversion)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ImpactGrid {
@@ -945,6 +1073,15 @@ impl SpotlightCardVariant {
             Self::Opportunity => "opportunity",
         }
     }
+}
+
+component_catalog! {
+    id: "spotlight-card",
+    data: SpotlightCard,
+    template: include_str!("../../templates/components/spotlight_card.typ"),
+    description: "Spotlight card with colored severity stripe and body",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// General-purpose spotlight card with left severity stripe
@@ -1026,6 +1163,15 @@ fn default_label_left() -> String {
 }
 fn default_label_right() -> String {
     "After".into()
+}
+
+component_catalog! {
+    id: "comparison-block",
+    data: ComparisonBlock,
+    template: include_str!("../../templates/components/comparison_block.typ"),
+    description: "Side-by-side comparison with labels and scores",
+    category: ComponentCategory::DataComparison,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Before/after code or text comparison block
@@ -1139,6 +1285,15 @@ fn default_three() -> usize {
     3
 }
 
+component_catalog! {
+    id: "comparison-cluster",
+    data: ComparisonCluster,
+    template: include_str!("../../templates/components/comparison_cluster.typ"),
+    description: "Clustered comparison of multiple items across criteria",
+    category: ComponentCategory::DataComparison,
+    layout_hint: LayoutHint::Breakable,
+}
+
 /// Grid of comparison items with optional title
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ComparisonCluster {
@@ -1179,6 +1334,15 @@ impl Component for ComparisonCluster {
 }
 
 // ─── SideLabel ───────────────────────────────────────────────────────────────
+
+component_catalog! {
+    id: "side-label",
+    data: SideLabel,
+    template: include_str!("../../templates/components/side_label.typ"),
+    description: "Vertical side label aligned alongside content",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::KeepTogether,
+}
 
 /// Two-column layout: left 1/3 heading, right 2/3 content (bullets or text).
 ///
@@ -1241,6 +1405,15 @@ impl Component for SideLabel {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "benefit-strip",
+    data: BenefitStrip,
+    template: include_str!("../../templates/components/benefit_strip.typ"),
+    description: "Horizontal strip of benefit items with icons",
+    category: ComponentCategory::MarketingSales,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Horizontal benefit strip (3–5 points)
@@ -1310,6 +1483,15 @@ impl Component for BenefitStrip {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "pricing-card",
+    data: PricingCard,
+    template: include_str!("../../templates/components/pricing_card.typ"),
+    description: "Pricing tier card with features and CTA",
+    category: ComponentCategory::MarketingSales,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Pricing / Plan card
@@ -1385,6 +1567,15 @@ impl Component for PricingCard {
     }
 }
 
+component_catalog! {
+    id: "recommendation-card",
+    data: RecommendationCard,
+    template: include_str!("../../templates/components/recommendation_card.typ"),
+    description: "Recommendation card with impact, effort, and priority badges",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Recommendation card
 /// Lighter than Finding: recommendation + impact + effort + priority
 /// For: Audit recommendations, best practices, improvements
@@ -1441,6 +1632,15 @@ impl Component for RecommendationCard {
     }
 }
 
+component_catalog! {
+    id: "step-card-row",
+    data: StepCardRow,
+    template: include_str!("../../templates/components/step_card_row.typ"),
+    description: "Horizontal row of numbered step cards",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Step card row
 /// Numbered steps displayed horizontally (2-4 steps)
 /// For: "How it works", process overview, methodology
@@ -1495,6 +1695,15 @@ impl Component for StepCardRow {
     }
 }
 
+component_catalog! {
+    id: "columns",
+    data: Columns,
+    template: include_str!("../../templates/components/columns.typ"),
+    description: "Asymmetric two-column layout with flexible width ratio",
+    category: ComponentCategory::Layout,
+    layout_hint: LayoutHint::Breakable,
+}
+
 /// Columns layout component
 /// Asymmetric two-column layout with flexible width ratio (e.g. 60/40, 70/30)
 /// For: Text + image, side-by-side content, mixed layouts
@@ -1544,6 +1753,15 @@ impl Component for Columns {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "device-preview",
+    data: DevicePreview,
+    template: include_str!("../../templates/components/device_preview.typ"),
+    description: "Device frame (desktop/mobile) with screenshot",
+    category: ComponentCategory::Infographics,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Device preview component for PDF cover pages.
@@ -1628,6 +1846,15 @@ impl Component for DevicePreview {
     }
 }
 
+component_catalog! {
+    id: "faq-list",
+    data: FaqList,
+    template: include_str!("../../templates/components/faq_list.typ"),
+    description: "Expandable FAQ list with question/answer pairs",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::Breakable,
+}
+
 /// FAQ list component
 /// Question-answer pairs for FAQs, knowledge bases, product docs
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1684,6 +1911,15 @@ impl Component for FaqList {
     }
 }
 
+component_catalog! {
+    id: "use-case-card",
+    data: UseCaseCard,
+    template: include_str!("../../templates/components/use_case_card.typ"),
+    description: "Use case card with scenario title, user, and outcome",
+    category: ComponentCategory::MarketingSales,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Use-case card component
 /// Single use case: context + problem + solution
 /// For: Product documentation, case studies, application examples
@@ -1731,6 +1967,15 @@ impl Component for UseCaseCard {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "logo-strip",
+    data: LogoStrip,
+    template: include_str!("../../templates/components/logo_strip.typ"),
+    description: "Horizontal strip of client/partner logos",
+    category: ComponentCategory::MediaAssets,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Logo strip component
@@ -1792,6 +2037,15 @@ impl Component for LogoStrip {
     }
 }
 
+component_catalog! {
+    id: "pull-quote",
+    data: PullQuote,
+    template: include_str!("../../templates/components/pull_quote.typ"),
+    description: "Large pull quote with decorative quotation marks",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Pull quote component
 /// Large, visually prominent single quote (centered, full-width)
 /// For: Key statements, expert opinions, marketing headlines
@@ -1825,6 +2079,15 @@ impl Component for PullQuote {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "big-number",
+    data: BigNumber,
+    template: include_str!("../../templates/components/big_number.typ"),
+    description: "Oversized numeric display for key statistics",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Big number component
@@ -1863,6 +2126,15 @@ impl Component for BigNumber {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "glossary-list",
+    data: GlossaryList,
+    template: include_str!("../../templates/components/glossary_list.typ"),
+    description: "Definition list for glossary terms",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::Breakable,
 }
 
 /// Glossary list component
@@ -1948,6 +2220,15 @@ impl DiagnosisRow {
     }
 }
 
+component_catalog! {
+    id: "diagnosis-panel",
+    data: DiagnosisPanel,
+    template: include_str!("../../templates/components/diagnosis_panel.typ"),
+    description: "Diagnosis panel with findings grouped by severity",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::Breakable,
+}
+
 /// Card with label–diagnosis rows and optional status indicators
 /// For: Technical overview, module diagnosis, quick health checks
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1978,6 +2259,15 @@ impl Component for DiagnosisPanel {
 }
 
 // ─── Dominant Issue Spotlight ────────────────────────────────────────────────
+
+component_catalog! {
+    id: "dominant-issue-spotlight",
+    data: DominantIssueSpotlight,
+    template: include_str!("../../templates/components/dominant_issue_spotlight.typ"),
+    description: "Full-width spotlight for the most critical finding",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::KeepTogether,
+}
 
 /// Full-width spotlight for a single dominant issue
 /// For: Highlighting the biggest problem in an audit report
@@ -2063,6 +2353,15 @@ impl Component for DominantIssueSpotlight {
 }
 
 // ─── Wrong/Right Block ───────────────────────────────────────────────────────
+
+component_catalog! {
+    id: "wrong-right-block",
+    data: WrongRightBlock,
+    template: include_str!("../../templates/components/wrong_right_block.typ"),
+    description: "Wrong vs. right comparison with annotated examples",
+    category: ComponentCategory::NarrativeStorytelling,
+    layout_hint: LayoutHint::KeepTogether,
+}
 
 /// Before/after comparison block (wrong vs. right)
 /// For: Code examples, best practice comparisons, fix demonstrations

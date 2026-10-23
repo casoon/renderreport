@@ -21,7 +21,6 @@ pub mod barcode;
 pub mod catalog;
 pub mod charts;
 pub mod crosstab;
-mod descriptors;
 mod normalize;
 mod registry;
 mod standard;

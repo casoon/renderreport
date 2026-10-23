@@ -1,8 +1,19 @@
 //! Text and field components
 //! Inspired by BIRT Label/Text/Data and Pentaho Text/Number/Date Fields
 
+use super::catalog::{ComponentCategory, LayoutHint};
 use super::Component;
+use crate::component_catalog;
 use serde::{Deserialize, Serialize};
+
+component_catalog! {
+    id: "label",
+    data: Label,
+    template: include_str!("../../templates/components/label.typ"),
+    description: "Styled text label with optional icon",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::KeepTogether,
+}
 
 /// Simple text label
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -64,6 +75,15 @@ impl Component for Label {
     }
 }
 
+component_catalog! {
+    id: "textblock",
+    data: TextBlock,
+    template: include_str!("../../templates/components/text.typ"),
+    description: "Rich text block with heading, body, and optional list",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::Breakable,
+}
+
 /// Multi-line text block
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TextBlock {
@@ -117,6 +137,15 @@ impl Component for TextBlock {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "number-field",
+    data: NumberField,
+    template: include_str!("../../templates/components/number_field.typ"),
+    description: "Formatted numeric field with unit and label",
+    category: ComponentCategory::MetricsKpis,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Number field with formatting
@@ -194,6 +223,15 @@ impl Component for NumberField {
     }
 }
 
+component_catalog! {
+    id: "date-field",
+    data: DateField,
+    template: include_str!("../../templates/components/date_field.typ"),
+    description: "Formatted date field with label",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::KeepTogether,
+}
+
 /// Date field with formatting
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DateField {
@@ -249,6 +287,15 @@ impl Component for DateField {
     }
 }
 
+component_catalog! {
+    id: "eyebrow",
+    data: Eyebrow,
+    template: include_str!("../../templates/components/eyebrow.typ"),
+    description: "Small eyebrow label above a heading",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::KeepWithNext,
+}
+
 /// Eyebrow label — small uppercase category marker
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Eyebrow {
@@ -290,6 +337,15 @@ impl Component for Eyebrow {
     fn to_data(&self) -> serde_json::Value {
         serde_json::to_value(self).unwrap_or_default()
     }
+}
+
+component_catalog! {
+    id: "resource-field",
+    data: ResourceField,
+    template: include_str!("../../templates/components/resource_field.typ"),
+    description: "Labeled resource reference with URL",
+    category: ComponentCategory::TextEditorial,
+    layout_hint: LayoutHint::KeepTogether,
 }
 
 /// Resource field for localized strings

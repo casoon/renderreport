@@ -6,6 +6,14 @@ All notable changes to this project are documented in this file. The format foll
 
 ## [0.6.2] - 2026-10-23
 
+### Changed
+
+- A component is registered by one `component_catalog!` call next to its struct. The macro takes
+  optional `fn_name` and `data` arguments; `ComponentDescriptor` gains `fn_name` and `normalize`.
+  The grid and flow-group dispatchers are generated from the catalog, so `components.toml` and
+  `build.rs` are gone. Without the `barcodes` feature, `barcode` is no longer registered.
+- The crate no longer ships stray PDFs and the rendered example outputs.
+
 ### Fixed
 
 - Wrong/right block: short examples (up to 900 characters) stay on one page; split across a page
