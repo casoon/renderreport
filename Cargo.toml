@@ -18,6 +18,7 @@ exclude = [
     "docs/",
     "fixtures/",
     "site/",
+    "examples/output/",
     "examples/requests/",
     "examples/terminal/",
 ]
