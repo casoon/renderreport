@@ -7,18 +7,60 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  test-beta:
+    name: Test (beta toolchain)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install beta toolchain
+        uses: dtolnay/rust-toolchain@beta
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Run tests
+        run: cargo test --all-features
+
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install tarpaulin
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-tarpaulin
+
+      - name: Generate coverage
+        run: cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v7
+        with:
+          files: ./cobertura.xml
+          fail_ci_if_error: false
+
   unused-deps-nightly:
     name: Unused Dependencies (nightly/udeps)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install nightly toolchain
         uses: dtolnay/rust-toolchain@nightly
 
       - name: Install cargo-udeps
-        run: cargo install cargo-udeps --locked
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-udeps
 
       - name: Run cargo-udeps
         run: cargo +nightly udeps --all-targets
@@ -26,8 +68,9 @@ jobs:
   kimun:
     name: Code Metrics (kimun)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install kimun
         run: cargo install kimun --locked
