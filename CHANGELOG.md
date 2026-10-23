@@ -4,6 +4,15 @@ All notable changes to this project are documented in this file. The format foll
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Releases before 0.3.0 are listed on the
 [GitHub releases page](https://github.com/casoon/renderreport/releases).
 
+## [Unreleased]
+
+### Fixed
+
+- Wrong/right block: short examples (up to 900 characters) stay on one page; split across a page
+  break, the label sat alone on one page and the code on the next.
+- Divider with `thickness: "0pt"` renders as weak spacing instead of a zero-width line. At the
+  end of a full page the line was still content and opened an otherwise blank page.
+
 ## [0.6.1] - 2026-10-13
 
 ### Added

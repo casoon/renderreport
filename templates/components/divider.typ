@@ -18,10 +18,17 @@
     (:)
   }
   
-  v(eval(data.spacing_above))
-  line(
-    length: 100%,
-    stroke: (paint: line-color, thickness: eval(data.thickness)) + line-style
-  )
-  v(eval(data.spacing_below))
+  let thickness = eval(data.thickness)
+  if thickness == 0pt {
+    // An invisible divider is pure spacing. A zero-width line is still
+    // content: at the end of a full page it opened a page of its own.
+    v(eval(data.spacing_above) + eval(data.spacing_below), weak: true)
+  } else {
+    v(eval(data.spacing_above))
+    line(
+      length: 100%,
+      stroke: (paint: line-color, thickness: thickness) + line-style
+    )
+    v(eval(data.spacing_below))
+  }
 }

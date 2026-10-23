@@ -5,7 +5,10 @@
   let wrong-label = if data.at("wrong_label", default: none) != none { data.wrong_label } else { "✗ Wrong" }
   let right-label = if data.at("right_label", default: none) != none { data.right_label } else { "✓ Right" }
 
-  block(width: 100%)[
+  // Short examples stay together: split across a page, the label sat alone
+  // on one page and the code on the next. Long examples may still break.
+  let length = str(data.wrong).len() + str(data.right).len()
+  block(width: 100%, breakable: length > 900)[
     #grid(
       columns: (1fr, 1fr),
       gutter: spacing-3,
