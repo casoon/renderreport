@@ -490,7 +490,7 @@
   #v(1fr)
   #block(width: 60pt, height: 4pt, fill: color-primary, radius: 2pt)
   #v(spacing-5)
-  #heading(level: 1)[#block(width: 100%)[#set par(leading: 0.4em); #text(size: 36pt, weight: "bold", fill: color-text, tracking: -0.02em)[Snapshot Report]]]
+  #heading(level: 1, outlined: false, bookmarked: true)[#block(width: 100%)[#set par(leading: 0.4em); #text(size: 36pt, weight: "bold", fill: color-text, tracking: -0.02em)[Snapshot Report]]]
   #v(spacing-3)
   #text(size: 18pt, fill: color-text-muted)[]
   #v(1fr)

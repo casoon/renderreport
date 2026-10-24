@@ -6,6 +6,13 @@ All notable changes to this project are documented in this file. The format foll
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-10-24
+
+### Fixed
+
+- **Table of contents:** the contents page no longer lists its own heading or the report title; both stay PDF bookmarks.
+- **AuditTable:** a row moves to the next page as a whole instead of splitting a cell across the page break.
+
 ## [0.7.0] - 2026-10-24
 
 ### Breaking

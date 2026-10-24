@@ -21,6 +21,9 @@
     ]
 
     #set text(size: font-size-sm)
+    // A row moves to the next page as a whole instead of splitting a cell's
+    // sentence across the page break.
+    #set table.cell(breakable: false)
 
     #table(
       columns: col-widths,
