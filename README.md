@@ -61,7 +61,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-renderreport = "0.6"
+renderreport = "0.7"
 ```
 
 ### CLI
