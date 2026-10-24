@@ -12,6 +12,10 @@ All notable changes to this project are documented in this file. The format foll
 
 - **CoverPage:** optional indicator strip (`with_indicator_gauges`) below the module gauges for values that are shown but not graded, in smaller neutral rings.
 
+### Changed
+
+- **CoverPage:** up to six module gauges share one row (more still wrap in rows of four).
+
 ### Fixed
 
 - **Table of contents:** the contents page no longer lists its own heading or the report title; both stay PDF bookmarks.

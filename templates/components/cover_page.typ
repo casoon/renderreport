@@ -143,7 +143,8 @@
       ]
     }
 
-    let cols = calc.min(data.module_gauges.len(), 4)
+    // Up to six gauges fit one row; more wrap in rows of four.
+    let cols = if data.module_gauges.len() <= 6 { data.module_gauges.len() } else { 4 }
     grid(
       columns: (1fr,) * cols,
       column-gutter: spacing-3,
@@ -157,17 +158,22 @@
   // they are not read as scored modules.
   let indicators = data.at("indicator_gauges", default: ())
   if indicators.len() > 0 {
-    v(5mm)
+    v(4mm)
     text(size: font-size-xs, weight: "bold", fill: color-text-muted, tracking: 1pt)[#data.at("indicators_label", default: "")]
     v(spacing-2)
 
-    let indicator-ring(name, score) = {
-      align(center)[
-        #box(width: 44pt, height: 44pt, {
-          let cx = 22pt
-          let cy = 22pt
-          let r = 17pt
-          place(center + horizon, circle(radius: r, stroke: 3pt + color-border, fill: none))
+    // Small ring with the name beside it: one compact line per indicator,
+    // so the strip fits under the module gauges on the cover page.
+    let indicator-item(name, score) = {
+      grid(
+        columns: (34pt, 1fr),
+        column-gutter: spacing-2,
+        align: left + horizon,
+        box(width: 34pt, height: 34pt, {
+          let cx = 17pt
+          let cy = 17pt
+          let r = 13pt
+          place(center + horizon, circle(radius: r, stroke: 2.5pt + color-border, fill: none))
           let frac = calc.min(1.0, calc.max(0.0, score / 100))
           if frac > 0 {
             let n = calc.max(2, int(calc.round(frac * 60)))
@@ -176,25 +182,22 @@
               (cx + r * calc.cos(ang), cy + r * calc.sin(ang))
             })
             place(top + left, curve(
-              stroke: (paint: color-text-muted, thickness: 3pt, cap: "round"),
+              stroke: (paint: color-text-muted, thickness: 2.5pt, cap: "round"),
               curve.move(pts.at(0)),
               ..pts.slice(1).map(p => curve.line(p)),
             ))
           }
-          place(center + horizon, text(weight: "bold", size: 11pt, fill: color-text-muted)[#score])
-        })
-        #v(spacing-1)
-        #box(width: 100%, height: 20pt,
-          align(center + top, text(size: font-size-xs, fill: color-text-muted)[#name])
-        )
-      ]
+          place(center + horizon, text(weight: "bold", size: 9pt, fill: color-text-muted)[#score])
+        }),
+        text(size: font-size-xs, fill: color-text-muted)[#name],
+      )
     }
 
-    // Four columns like the module strip, so the rings line up beneath it.
     grid(
-      columns: (1fr,) * 4,
+      columns: (1fr,) * calc.min(indicators.len(), 3),
       column-gutter: spacing-3,
-      ..indicators.map(m => indicator-ring(m.name, m.score)),
+      row-gutter: spacing-2,
+      ..indicators.map(m => indicator-item(m.name, m.score)),
     )
   }
 
