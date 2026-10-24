@@ -51,6 +51,8 @@ export interface CasoonPagesOptions {
   mdxComponents?: string;
   /** Language of the theme's own UI strings and of `<html lang>`. Default: "en". */
   lang?: Lang;
+  /** Lead paragraph of the showcase overview, instead of the theme's generic one. */
+  showcaseLead?: string;
 }
 
 export interface ResolvedConfig
@@ -98,6 +100,7 @@ export default function casoonPages(options: CasoonPagesOptions): AstroIntegrati
           hasShowcase: showcasePath !== null,
           demo: options.demo === false || options.demo === undefined ? '' : options.demo,
           lang: options.lang ?? 'en',
+          showcaseLead: options.showcaseLead ?? '',
         };
 
         const route = (pattern: string, file: string) =>

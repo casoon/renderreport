@@ -10,13 +10,16 @@ for example in simple_report custom_theme wordsearch_demo component_catalog; do
   cargo run --release --quiet --example "$example"
 done
 
-cargo build --release --quiet --features cli --bin renderreport
 for request in examples/requests/*.json; do
-  target/release/renderreport render "$request" -o "${request%.json}.pdf"
+  cargo run --release --quiet --features cli --bin renderreport -- render "$request" -o "${request%.json}.pdf"
 done
 
-# The hero scene of the site replays the CLI output above. After the byte count
-# or the component count changes, update examples/terminal/render.terminal.yaml
-# and rebuild its SVG:
+# The site hero shows page 2 of the health check (needs pdftoppm from poppler).
+pdftoppm -png -r 110 -singlefile -f 2 -l 2 examples/requests/health-check.pdf \
+  site/src/assets/health-check-page2
+
+# The README scene replays the CLI output above. After the byte count or the
+# component count changes, update examples/terminal/render.terminal.yaml and
+# rebuild its SVG:
 #   cd examples/terminal && npx -y -p @casoon/castwright@0.4.0 -p shiki \
 #     castwright build render.terminal.yaml --format svg -o .
