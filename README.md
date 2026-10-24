@@ -16,11 +16,13 @@ Build professional PDF reports without learning Typst. Use components, themes, a
 
 ## Features
 
-- **Component-based**: Build reports using pre-built components (ScoreCard, Finding, Table, etc.)
-- **Theme Tokens**: CSS-variable-like theming system for consistent styling
-- **Template Packs**: Extend with custom templates and components
-- **Embedded Typst**: No CLI dependency, Typst runs as a library
-- **Type-safe**: Full Rust API with compile-time guarantees
+- **80 components** — score cards, findings, tables, charts, timelines, pricing cards, barcodes
+  and more, each with a Rust builder and a JSON form.
+- **Theme tokens** — colours, fonts, spacing and page layout as named tokens, merged per request.
+- **Template packs** — page templates, components, themes and assets in a folder.
+- **Embedded Typst** — no Typst CLI; the engine compiles PDF/UA-1 tagged PDFs as a library.
+- **CLI, Rust and Wasm** — render from JSON on the command line, from Rust, or in a
+  Cloudflare Worker.
 
 ## Quick Start
 
@@ -69,197 +71,23 @@ published `.sha256` file and installs the binary to `/usr/local/bin`. Set
 `RENDERREPORT_INSTALL_DIR` to install elsewhere, or `VERSION` to pin a release. On Windows, take
 the `.zip` from the [releases page](https://github.com/casoon/renderreport/releases).
 
-## Inspecting the generated Typst source
+## Documentation
 
-`Engine::render_typ()` returns the intermediate `.typ` source that would
-be compiled to PDF. Useful for snapshot tests, custom lint/format
-pipelines (e.g. `typstyle`), or downstream tooling that wants to
-post-process the source before compilation.
+The [documentation](https://casoon.github.io/renderreport/) covers everything beyond the
+quick start:
 
-```rust
-let source: String = engine.render_typ(&report)?;
-std::fs::write("report.typ", &source)?;
-```
+- [Installation](https://casoon.github.io/renderreport/docs/getting-started/installation/) — library, CLI binaries, npm
+- [Components](https://casoon.github.io/renderreport/docs/concepts/components/) — all components, categories and page-break hints
+- [Themes and tokens](https://casoon.github.io/renderreport/docs/concepts/themes/)
+- [The CLI and JSON](https://casoon.github.io/renderreport/docs/guides/json-and-cli/)
+- [Render request](https://casoon.github.io/renderreport/docs/reference/render-request/)
+- [Template packs](https://casoon.github.io/renderreport/docs/guides/packs/)
+- [Report patterns](https://casoon.github.io/renderreport/docs/guides/patterns/)
+- [The generated Typst source](https://casoon.github.io/renderreport/docs/guides/typst-source/)
+- [Wasm and Cloudflare Workers](https://casoon.github.io/renderreport/docs/guides/wasm/)
+- [Library API](https://casoon.github.io/renderreport/docs/reference/library/) — full API on [docs.rs](https://docs.rs/renderreport)
 
-## Components
-
-**80 built-in components** in 8 categories (`renderreport list-components` prints them all):
-
-1. **Layout & Structure** — Section, Grid, Columns, FlowGroup, PageBreak
-2. **Text & Editorial** — TextBlock, Label, Eyebrow
-3. **Metrics & KPIs** — ScoreCard, Gauge, BigNumber, TrendTile, ProgressBar
-4. **Data & Comparison** — AuditTable, ComparisonBlock, Crosstab, PivotTable
-5. **Narrative & Storytelling** — Finding, QuoteBlock, WhyItMatters, ProblemSolution, BeforeAfter
-6. **Infographics** — ProcessFlow, Timeline, Funnel, RoadmapBlock, PhaseBlock, WordSearch
-7. **Marketing & Sales** — ProductHero, FeatureGrid, BenefitStrip, CTABox, PricingCard, Testimonial, UseCaseCard
-8. **Media & Assets** — Image, Barcode, Sparkline, Chart, List, FaqList, GlossaryList
-
-→ See [COMPONENTS.md](./COMPONENTS.md) for complete reference with examples.
-
-## Patterns
-
-Pre-configured report structures for common use cases:
-
-- **AuditPattern** — Security/compliance audits (findings, impact, roadmap, CTA)
-- **MarketingPattern** — Product showcases (hero, features, comparison, testimonials, pricing)
-- **ExecutivePattern** — C-level summaries (metrics, top findings, recommendation, timeline)
-| `Divider` | Horizontal separator line | BIRT Band Elements |
-| `Watermark` | Background watermark text | Pentaho Watermark |
-| `PageBreak` | Force page break | BIRT Page Setup |
-
-### Chart Components
-
-Visualize data with comprehensive chart types inspired by JasperReports Chart Components:
-
-| Component | Description | Chart Types |
-|-----------|-------------|-------------|
-| `Chart` | Full-featured charts | Bar, Line, Pie, Area, Scatter, Radar |
-| `Sparkline` | Inline mini-charts | Line, Bar |
-| `Gauge` | Progress/metric meters | Circular, Thermometer, Horizontal |
-
-### Data Analysis Components
-
-Complex data aggregation inspired by BIRT Cross Tabs and JasperReports Crosstabs:
-
-| Component | Description | Use Case |
-|-----------|-------------|----------|
-| `Crosstab` | Dynamic pivot table with aggregation | Sales by Region × Product |
-| `PivotTable` | Pre-aggregated pivot display | Summary reports |
-
-### Barcode Components
-
-Generate barcodes in multiple formats (inspired by JasperReports Barcode and Pentaho):
-
-| Component | Formats Supported |
-|-----------|------------------|
-| `Barcode` | Code128, Code39, EAN-13, EAN-8, UPC-A, UPC-E, QR Code, Data Matrix, PDF417, ITF, Codabar |
-
-### Text & Field Components
-
-Simple text display inspired by BIRT and Pentaho field elements:
-
-| Component | Description | Example Use |
-|-----------|-------------|-------------|
-| `Label` | Simple styled text | Headings, captions |
-| `Text` | Multi-line text block | Paragraphs, descriptions |
-| `NumberField` | Formatted numbers | Currency: $1,234.56, Percentage: 87.5% |
-| `DateField` | Formatted dates | 2024-03-15, 15.03.2024, 03/15/2024 |
-| `ResourceField` | Localized strings | i18n support |
-
-## Theming
-
-```rust
-use renderreport::theme::{Theme, TokenValue};
-
-let mut theme = Theme::new("brand", "Brand Theme");
-theme.tokens.set("color.primary", TokenValue::Color("#1a56db".into()));
-theme.tokens.set("color.ok", TokenValue::Color("#059669".into()));
-
-let report = engine.report("default")
-    .theme(theme)
-    // ...
-```
-
-See [docs/CONVENTIONS.md](docs/CONVENTIONS.md) for all available tokens.
-
-## Template Packs
-
-Load external packs for specialized reports:
-
-```rust
-engine.load_pack("seo-audit")?;
-
-let report = engine
-    .report("seo-report")
-    .pack("seo-audit")
-    // ...
-```
-
-Create your own packs with custom templates and components. See [@casoon/renderreport-packs](https://github.com/casoon/renderreport-packs).
-
-## WebAssembly / Cloudflare Workers
-
-Enable the `wasm` feature to compile the engine to `wasm32-unknown-unknown` and
-run it inside a JS host with no filesystem or system fonts available (e.g. a
-Cloudflare Worker). Fonts are embedded in the binary as a fallback
-(`EngineConfig::use_embedded_fonts`) and picked up automatically whenever no
-system/font-path fonts are present.
-
-```toml
-[dependencies]
-renderreport = { version = "0.6", default-features = false, features = ["wasm"] }
-```
-
-```bash
-cargo build --release --target wasm32-unknown-unknown --no-default-features --features wasm
-wasm-bindgen target/wasm32-unknown-unknown/release/renderreport.wasm --out-dir pkg --target web
-```
-
-```js
-import { initSync, render, render_wordsearch } from "./pkg/renderreport.js";
-import wasmModule from "./pkg/renderreport_bg.wasm"; // bundler-provided WebAssembly.Module
-
-initSync({ module: wasmModule });
-
-// Generic report from a RenderRequest
-const pdfBytes = render(JSON.stringify(renderRequest));
-
-// Purpose-built word search puzzle: title/explanation page, puzzle, solution —
-// the grid itself is always computed by the real WordSearch engine
-const wordSearchPdf = render_wordsearch(JSON.stringify({
-  title: "Animals",
-  words: ["CAT", "DOG", "OWL"],
-  translations: ["Katze", "Hund", null], // optional, per word
-  language: "en", // "de" | "en" | "fr" | "es"
-}));
-```
-
-The `barcodes` feature (Code128/QR/DataMatrix/…) is on by default for native
-use; disable it with `default-features = false` on targets where the extra
-dependency weight isn't needed (as in the wasm example above).
-
-## Project Structure
-
-```
-renderreport/
-├── src/
-│   ├── lib.rs           # Main library entry
-│   ├── engine/          # Core rendering engine
-│   ├── components/      # Standard components
-│   ├── theme/           # Theme & token system
-│   ├── pack/            # Pack loading system
-│   ├── render/          # Typst compilation
-│   └── vfs/             # Virtual filesystem
-├── templates/           # Built-in Typst templates
-├── packs/               # Bundled template packs
-├── examples/            # Usage examples
-└── docs/                # Documentation
-```
-
-## Roadmap
-
-### Phase 1: MVP (Current)
-- [x] Core engine with Typst integration
-- [x] Standard component library
-- [x] Theme token system
-- [x] Basic pack loading
-- [ ] Full test coverage
-
-### Phase 2: Pack System
-- [ ] Pack validation & versioning
-- [ ] Remote pack loading
-- [ ] Pack registry
-
-### Phase 3: Ecosystem
-- [ ] Preview server for development
-- [ ] Visual regression tests
-- [ ] HTML output (experimental)
-- [x] WASM support
-
-## Related Projects
-
-- [@casoon/renderreport-packs](https://github.com/casoon/renderreport-packs) - Official template packs
-- [@casoon/renderreport-examples](https://github.com/casoon/renderreport-examples) - Demo applications
+Contributing: [CONTRIBUTING.md](CONTRIBUTING.md). Changes: [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

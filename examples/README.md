@@ -202,4 +202,4 @@ Pre-generated PDFs are included in the repository for easy viewing. See [example
 
 ## Total: 25 Components
 
-For more information, see the main [README.md](../README.md) and [API documentation](../docs/API.md).
+For more information, see the main [README.md](../README.md) and the [documentation](https://casoon.github.io/renderreport/).

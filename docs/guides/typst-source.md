@@ -1,7 +1,7 @@
 ---
 title: The generated Typst source
 description: Get the .typ source the engine would compile, for snapshot tests, linting or your own post-processing.
-order: 4
+order: 5
 ---
 
 `Engine::render_typ` runs every step up to compilation and returns the Typst source as a string:

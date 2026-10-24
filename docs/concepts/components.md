@@ -32,6 +32,17 @@ Every component carries one hint that the engine applies when it writes the Typs
 | `keep-with-next` | Stays on the same page as the component after it (headings). |
 | `always-new-page` | Starts on a new page (cover page, explicit page break). |
 
+## Severity and score status
+
+Findings and issues take a `severity`; score cards derive a status from their thresholds. Both map
+to the status colour tokens of the [theme](../themes/):
+
+| Severity | Colour | | Score status | Colour |
+| --- | --- | --- | --- | --- |
+| `critical`, `high` | `color.bad` | | `good` | `color.ok` |
+| `medium` | `color.warn` | | `warning` | `color.warn` |
+| `low`, `info` | `color.ok` | | `bad` | `color.bad` |
+
 ## Listing them
 
 The CLI prints the catalog of the version you have installed:

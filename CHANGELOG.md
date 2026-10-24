@@ -29,8 +29,19 @@ All notable changes to this project are documented in this file. The format foll
 - **Components:** a component is registered by one `component_catalog!` call next to its
   struct; the grid and flow-group dispatchers are generated from the catalog.
 - **Crate:** no stray PDFs and rendered example outputs in the published package.
+- **Docs:** all documentation lives on the [project site](https://casoon.github.io/renderreport/);
+  new pages for [template packs](https://casoon.github.io/renderreport/docs/guides/packs/) and
+  [report patterns](https://casoon.github.io/renderreport/docs/guides/patterns/). The README is a
+  short entry point.
 - **Contributors:** CI runs on pull requests and `main` only; beta tests and coverage run on
   demand.
+- **Contributors:** component structs live in one module per catalog category; public paths
+  (`components::*`, `components::advanced::*`) are unchanged.
+
+### Fixed
+
+- **Packs:** the default search path `~/.renderreport/packs` resolves the home directory; before,
+  the `~` was taken literally.
 
 ## [0.6.2] - 2026-10-23
 

@@ -7,7 +7,7 @@ version = "0.1.0"
 description = "Standard template pack with default components, layouts, and themes"
 authors = ["Casoon <info@casoon.de>"]
 license = "MIT"
-repository = "https://github.com/casoon/renderreport-packs"
+repository = "https://github.com/casoon/renderreport"
 keywords = ["report", "standard", "default"]
 capabilities = ["charts", "tables", "images", "code-blocks"]
 

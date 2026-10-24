@@ -93,13 +93,22 @@ This test must pass before any renderreport release.
 
 A component consists of three parts:
 
-1. **Rust struct** in `src/components/standard.rs` or `advanced.rs` — derive `Serialize`
+1. **Rust struct** in the category module of `src/components/` (`layout.rs`, `metrics.rs`,
+   `narrative.rs`, …; the category matches the catalog entry) — derive `Serialize`
    and `Deserialize`, implement `Component` (`component_id()` + `to_data()`).
 2. **Typst template** in `templates/components/<name>.typ` — a `#let` function named with
    hyphens matching the component ID.
 3. **Catalog entry** — a `component_catalog!` call directly above the struct, with
    `data: <Struct>` so JSON input is normalized through it. This one entry also registers
    the template and adds the component to the `grid-component` / `flow-group` dispatchers.
+
+### Builder conventions
+
+- `new()` takes the required fields; `with_*()` sets optional fields (stored as `Option`, so the
+  template checks `!= none`); `add_*()` appends to collections.
+- Visual variants go through one method per concept: `variant()` (e.g. `SpotlightCard`,
+  `FactBox`), `severity()` (`Finding`), `tone()` (`CTABox`), `status()` (`Timeline`).
+- Derive `Serialize` and `Deserialize`; `to_data()` usually is `serde_json::to_value(self)`.
 
 ### Optional title — use `component-title()`
 

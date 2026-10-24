@@ -1,8 +1,13 @@
-# @casoon/renderreport-packs
+---
+title: Template packs
+description: Bundle templates, components, themes and assets in a folder and select them per request.
+order: 4
+---
 
-Official template packs for RenderReport.
+A pack is a folder with a `pack.toml` manifest. A request with `pack_id` uses everything the
+pack brings: its components, the template selected by `template_id`, its themes and its assets.
 
-## Available Packs
+## Bundled packs
 
 ### standard
 Templates `default` and `minimal`, themes `light`, `dark` and `print`.
@@ -11,7 +16,7 @@ Templates `default` and `minimal`, themes `light`, `dark` and `print`.
 Template `seo-report` (cover page, table of contents) and the components
 `lighthouse-scores` and `core-web-vitals`.
 
-## Pack Structure
+## Folder layout
 
 ```
 pack-name/
@@ -25,7 +30,7 @@ pack-name/
 └── assets/             # Fonts, images, etc.
 ```
 
-## Creating a Pack
+## Creating a pack
 
 ### 1. Create pack.toml
 
@@ -112,7 +117,7 @@ entry of the request. The template renders its own title page; the built-in one 
 Files under `assets/` are added to the Typst file system by their path inside `assets/`,
 e.g. `assets/logo.svg` is `image("/logo.svg", alt: "Logo")`.
 
-## Using Packs
+## Using a pack
 
 ```rust
 use renderreport::Engine;
@@ -131,14 +136,16 @@ let report = engine
 From the CLI: `renderreport render request.json --pack-path ./my-packs`, with `pack_id` and
 `template_id` set in the request JSON.
 
-## Pack Conventions
+## Manifest fields
 
-- Use kebab-case for IDs
-- Follow token naming conventions (see CONVENTIONS.md)
-- Include a README in your pack
-- Version using semver
-- Specify minimum engine version
+| Field | Required | Purpose |
+| --- | --- | --- |
+| `pack.name`, `pack.version` | yes | Pack name and semver version |
+| `pack.description`, `pack.authors`, `pack.license`, `pack.repository`, `pack.keywords`, `pack.capabilities` | no | Metadata |
+| `compatibility.min_engine_version`, `max_engine_version`, `typst_version` | no | Recorded, not checked yet |
+| `templates.<name>.file` | yes | File in `templates/`; `<name>` is the `template_id` |
+| `templates.<name>.default_theme` | no | A theme of this pack, merged when the template is used |
+| `themes.<name>.file`, `themes.<name>.default` | yes / no | File in `themes/`; `default = true` marks the pack's default theme |
+| `components.<id>.file` | yes | File in `components/` defining `#let <id>(data)` |
 
-## License
-
-MIT
+Use kebab-case for ids and template names.

@@ -7,7 +7,7 @@ version = "0.1.0"
 description = "SEO audit report templates with specialized components"
 authors = ["Casoon <info@casoon.de>"]
 license = "MIT"
-repository = "https://github.com/casoon/renderreport-packs"
+repository = "https://github.com/casoon/renderreport"
 keywords = ["report", "seo", "audit", "lighthouse"]
 capabilities = ["charts", "tables", "images", "screenshots"]
 

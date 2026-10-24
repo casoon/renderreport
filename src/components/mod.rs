@@ -23,15 +23,44 @@ pub mod charts;
 pub mod crosstab;
 mod normalize;
 mod registry;
-mod standard;
 pub mod text;
 pub mod wordsearch;
 
+mod data;
+mod editorial;
+mod infographics;
+mod layout;
+mod marketing;
+mod media;
+mod metrics;
+mod narrative;
+
 pub use catalog::{ComponentCatalog, ComponentCategory, ComponentDescriptor, LayoutHint};
+pub use data::{
+    AuditTable, BenchmarkColumn, BenchmarkRow, BenchmarkTable, ComparisonModule, ModuleComparison,
+    TableColumn,
+};
+pub use editorial::{
+    Callout, CalloutVariant, FactBox, QuoteBlock, StatusPill, TagCloud, TagCloudItem,
+};
+pub use infographics::{Funnel, FunnelStep};
+pub use layout::{CoverModuleGauge, CoverPage, Section};
+pub use marketing::{
+    CTABox, FeatureGrid, FeatureGridItem, HeroMetric, HeroSummary, ProductHero, Testimonial,
+};
+pub use media::Image;
+pub use metrics::{
+    CardDashboard, DashboardCard, MetricCard, PortfolioSummary, ScoreBand, ScoreCard,
+    ScoreCardVariant, SeverityOverview, Stat, StatPair, StatPairEntry, SummaryBox, SummaryItem,
+    TrendTile,
+};
+pub use narrative::{
+    ActionItem, BeforeAfter, Finding, ProblemSolution, ProcessFlow, ProcessStep, RoadmapBlock,
+    RoadmapColumn, Timeline, TimelineItem, WhyItMatters,
+};
 pub(crate) use normalize::normalize_components;
 pub(crate) use registry::{dispatcher_template, is_dispatcher};
 pub use registry::{ComponentId, ComponentRegistry};
-pub use standard::*;
 pub use wordsearch::{WordSearch, WordSearchBuilder};
 
 // Re-export new primitive and composite types

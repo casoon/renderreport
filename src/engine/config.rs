@@ -21,10 +21,9 @@ pub struct EngineConfig {
 impl Default for EngineConfig {
     fn default() -> Self {
         Self {
-            pack_paths: vec![
-                PathBuf::from("./packs"),
-                PathBuf::from("~/.renderreport/packs"),
-            ],
+            pack_paths: std::iter::once(PathBuf::from("./packs"))
+                .chain(home_dir().map(|home| home.join(".renderreport/packs")))
+                .collect(),
             font_paths: vec![],
             use_embedded_fonts: true,
             use_system_fonts: true,
@@ -85,4 +84,12 @@ impl EngineConfigBuilder {
     pub fn build(self) -> EngineConfig {
         self.config
     }
+}
+
+/// The user's home directory (`HOME`, or `USERPROFILE` on Windows).
+fn home_dir() -> Option<PathBuf> {
+    std::env::var_os("HOME")
+        .or_else(|| std::env::var_os("USERPROFILE"))
+        .filter(|home| !home.is_empty())
+        .map(PathBuf::from)
 }

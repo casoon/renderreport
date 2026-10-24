@@ -28,9 +28,11 @@ A request theme only needs the tokens it changes.
 | Colours | `color.primary`, `color.secondary`, `color.text`, `color.text-muted`, `color.background`, `color.surface`, `color.surface-soft`, `color.surface-alt`, `color.border` |
 | Status colours | `color.ok`, `color.warn`, `color.bad`, `color.info`, each with a `-soft` variant, and `color.accent-soft` |
 | Fonts | `font.body`, `font.heading`, `font.mono` |
+| Font sizes | `font.size.xs`, `font.size.sm`, `font.size.base`, `font.size.lg`, `font.size.xl`, `font.size.2xl`, `font.size.3xl` |
 | Spacing | `spacing.1` … `spacing.7` |
 | Tables | `table.header-bg`, `table.row-alt-bg`, `table.border`, `table.border-width` |
 | Page | `page.margin`, `page.margin-top`, `page.margin-bottom`, `page.header-height`, `page.footer-height` |
+| Components | `component.<id>.<property>`, e.g. `component.score-card.radius` |
 
 The default values are in `ThemeTokens::default()` in
 [src/theme/tokens.rs](https://github.com/casoon/renderreport/blob/main/src/theme/tokens.rs).
