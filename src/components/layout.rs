@@ -131,6 +131,14 @@ pub struct CoverPage {
     /// Per-module scores rendered as a circular-gauge strip on the cover.
     #[serde(default)]
     pub module_gauges: Vec<CoverModuleGauge>,
+    /// Optional second, smaller strip for values that are shown but not
+    /// graded (derived indicators). Rendered in a neutral colour so they do
+    /// not read like the scored modules above them.
+    #[serde(default)]
+    pub indicator_gauges: Vec<CoverModuleGauge>,
+    /// Label above the indicator strip.
+    #[serde(default)]
+    pub indicators_label: String,
     /// Computed from score thresholds
     #[serde(default)]
     computed_status: String,
@@ -166,6 +174,8 @@ impl CoverPage {
             critical_issues: 0,
             modules: vec![],
             module_gauges: vec![],
+            indicator_gauges: vec![],
+            indicators_label: String::new(),
             computed_status,
         }
     }
@@ -198,6 +208,16 @@ impl CoverPage {
 
     pub fn with_module_gauges(mut self, gauges: Vec<CoverModuleGauge>) -> Self {
         self.module_gauges = gauges;
+        self
+    }
+
+    pub fn with_indicator_gauges(
+        mut self,
+        label: impl Into<String>,
+        gauges: Vec<CoverModuleGauge>,
+    ) -> Self {
+        self.indicators_label = label.into();
+        self.indicator_gauges = gauges;
         self
     }
 

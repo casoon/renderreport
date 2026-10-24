@@ -78,3 +78,33 @@ fn table_rows_do_not_split_across_pages() {
         assert_eq!(begin, end, "row {row} split across pages");
     }
 }
+
+#[test]
+fn cover_renders_the_indicator_strip_below_the_module_gauges() {
+    let engine = Engine::new().expect("Engine::new failed");
+    let cover = CoverPage::new("Report", "example.com", 49, "F")
+        .with_module_gauges(vec![CoverModuleGauge::new("Accessibility", 49)])
+        .with_indicator_gauges(
+            "INDICATORS NOT WEIGHTED",
+            vec![
+                CoverModuleGauge::new("UX Indicator", 68),
+                CoverModuleGauge::new("Journey Indicator", 55),
+            ],
+        );
+    let request = engine
+        .report("default")
+        .metadata("lang", "en")
+        .add_component(cover)
+        .build();
+    let pdf = engine.render_pdf(&request).expect("render_pdf failed");
+    let first = page_texts(&pdf).into_iter().next().expect("cover page");
+    let modules = first.find("Accessibility").expect("module gauge");
+    let label = first
+        .find("INDICATORS NOT WEIGHTED")
+        .expect("indicator label");
+    assert!(
+        modules < label,
+        "indicators must follow the modules: {first}"
+    );
+    assert!(first.contains("UX Indicator") && first.contains("Journey Indicator"));
+}
