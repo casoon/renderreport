@@ -18,6 +18,8 @@ Arguments:
 Options:
   -o, --output <OUTPUT>  Output path [default: report.pdf, or report.typ with --typ]
       --typ              Write the generated Typst source instead of compiling it to PDF
+      --pack-path <DIR>  Directory to search for the pack named by the request's `pack_id`
+                         (repeatable; searched before the default `./packs`)
 ```
 
 Reads a [render request](../render-request/) and writes the PDF, or with `--typ` the Typst source
@@ -26,7 +28,8 @@ code 0 on success, 1 with `Error: …` and the cause on stderr for unreadable in
 or a failed render.
 
 The CLI engine uses the default configuration: packs from `./packs` and
-`~/.renderreport/packs`, system fonts plus the bundled Fira Sans.
+`~/.renderreport/packs` (after any `--pack-path`), system fonts plus the bundled Fira Sans. A
+request with `pack_id` loads that pack before rendering.
 
 ## `renderreport list-components`
 

@@ -12,7 +12,10 @@ pub use config::EngineConfig;
 pub use world::ReportWorld;
 
 use crate::components::catalog::LayoutHint;
-use crate::components::{normalize_components, ComponentRegistry};
+use crate::components::{
+    dispatcher_template, is_dispatcher, normalize_components, ComponentId, ComponentRegistry,
+};
+use crate::error::PackError;
 use crate::pack::{Pack, PackId, PackLoader};
 use crate::render::{RenderOutput, RenderRequest};
 use crate::theme::Theme;
@@ -131,7 +134,7 @@ impl Engine {
     /// Render a report
     pub fn render(&self, request: &RenderRequest) -> Result<RenderOutput> {
         let request = &normalized(request);
-        let theme = self.resolve_theme(request);
+        let theme = self.resolve_theme(request)?;
         let typst_source = self.generate_typst_source(request, &theme)?;
         let pdf_bytes = self.compile_typst(&typst_source, request)?;
         Ok(RenderOutput::Pdf(pdf_bytes))
@@ -145,18 +148,70 @@ impl Engine {
     /// post-process the source before compilation.
     pub fn render_typ(&self, request: &RenderRequest) -> Result<String> {
         let request = &normalized(request);
-        let theme = self.resolve_theme(request);
+        let theme = self.resolve_theme(request)?;
         self.generate_typst_source(request, &theme)
     }
 
-    /// Merge themes: default -> pack -> request
-    fn resolve_theme(&self, request: &RenderRequest) -> Theme {
+    /// The pack the request names, or `None` without `pack_id`. A pack that
+    /// is named but not loaded is an error rather than silently ignored.
+    fn request_pack(&self, request: &RenderRequest) -> Result<Option<&Pack>> {
+        let Some(pack_id) = &request.pack_id else {
+            return Ok(None);
+        };
+        match self.packs.get(pack_id) {
+            Some(pack) => Ok(Some(pack.as_ref())),
+            None => Err(PackError::NotFound(pack_id.to_string()).into()),
+        }
+    }
+
+    /// Name of the pack template the request selects. `template_id` "default"
+    /// falls back to the built-in layout when the pack has no such template;
+    /// any other unknown name is an error.
+    fn request_template<'p>(
+        &self,
+        pack: Option<&'p Pack>,
+        request: &RenderRequest,
+    ) -> Result<Option<&'p str>> {
+        let Some(pack) = pack else {
+            return Ok(None);
+        };
+        let name = request.template_id.as_str();
+        match pack.templates.get_key_value(name) {
+            Some((name, _)) => Ok(Some(name.as_str())),
+            None if name == "default" => Ok(None),
+            None => {
+                let mut available: Vec<&str> = pack.templates.keys().map(String::as_str).collect();
+                available.sort_unstable();
+                Err(PackError::TemplateNotFound {
+                    pack: pack.id.to_string(),
+                    template: name.to_string(),
+                    available: if available.is_empty() {
+                        "none".into()
+                    } else {
+                        available.join(", ")
+                    },
+                }
+                .into())
+            }
+        }
+    }
+
+    /// Merge themes: default -> pack -> pack template -> request
+    fn resolve_theme(&self, request: &RenderRequest) -> Result<Theme> {
         let mut theme = self.default_theme.clone();
 
-        if let Some(pack_id) = &request.pack_id {
-            if let Some(pack) = self.packs.get(pack_id) {
-                if let Some(pack_theme) = &pack.default_theme {
-                    theme.merge(pack_theme);
+        let pack = self.request_pack(request)?;
+        if let Some(pack) = pack {
+            if let Some(pack_theme) = &pack.default_theme {
+                theme.merge(pack_theme);
+            }
+            if let Some(template) = self.request_template(Some(pack), request)? {
+                let template_theme = pack.manifest.templates[template]
+                    .default_theme
+                    .as_ref()
+                    .and_then(|name| pack.themes.get(name));
+                if let Some(template_theme) = template_theme {
+                    theme.merge(template_theme);
                 }
             }
         }
@@ -165,7 +220,7 @@ impl Engine {
             theme.merge(request_theme);
         }
 
-        theme
+        Ok(theme)
     }
 
     /// Generate Typst source from request
@@ -246,24 +301,92 @@ impl Engine {
         // When flow-group or grid-component is present their dispatchers
         // reference every component function, so we fall back to including all.
         source.push_str("// Component Functions\n");
+        let pack = self.request_pack(request)?;
         let used_types = collect_used_component_types(&request.components);
         let needs_all = used_types.contains("flow-group") || used_types.contains("grid-component");
+        let wanted = |id: &str| needs_all || used_types.contains(id);
+
+        // A pack component with a built-in id overrides that component; any
+        // other id is new and is added to the dispatchers.
+        let mut pack_only: Vec<&str> = pack
+            .map(|p| p.components.keys().map(String::as_str).collect())
+            .unwrap_or_default();
+        pack_only.retain(|id| !self.components.has_component(&ComponentId::new(*id)));
+        pack_only.sort_unstable();
+        let pack_template_for = |id: &str| pack.and_then(|p| p.components.get(id));
+
         // Emit in registry insertion order — it is deliberately dependency-safe
         // (a template that calls another component's function is registered
         // after it; Typst resolves `#let`s sequentially). The order is made
         // deterministic across platforms at registration time (see registry.rs).
-        for component_id in self.components.list_components() {
-            if needs_all || used_types.contains(component_id.0.as_str()) {
-                if let Some(template) = self.components.get_template(component_id) {
+        // Pack-only components follow the built-ins they may call, and the
+        // dispatchers come last because they call all of them.
+        let (dispatchers, others): (Vec<&ComponentId>, Vec<&ComponentId>) = self
+            .components
+            .list_components()
+            .into_iter()
+            .partition(|id| is_dispatcher(&id.0));
+        for component_id in others {
+            if wanted(&component_id.0) {
+                let template = pack_template_for(&component_id.0)
+                    .or_else(|| self.components.get_template(component_id));
+                if let Some(template) = template {
                     source.push_str(template);
                     source.push_str("\n\n");
                 }
             }
         }
+        for id in &pack_only {
+            if wanted(id) {
+                source.push_str(&pack.expect("pack_only implies a pack").components[*id]);
+                source.push_str("\n\n");
+            }
+        }
+        for component_id in dispatchers {
+            if wanted(&component_id.0) {
+                let template = match pack_template_for(&component_id.0) {
+                    Some(template) => Some(template.clone()),
+                    None if !pack_only.is_empty() => {
+                        dispatcher_template(&component_id.0, &pack_only)
+                    }
+                    None => self.components.get_template(component_id).cloned(),
+                };
+                if let Some(template) = template {
+                    source.push_str(&template);
+                    source.push_str("\n\n");
+                }
+            }
+        }
+
+        // Pack template: wraps the whole content and renders its own title page.
+        let pack_template = match pack {
+            Some(p) => self
+                .request_template(Some(p), request)?
+                .map(|name| &p.templates[name]),
+            None => None,
+        };
+        if let Some(template) = pack_template {
+            let mut meta = serde_json::Map::new();
+            meta.insert("title".into(), title_str.into());
+            if let Some(subtitle) = &request.subtitle {
+                meta.insert("subtitle".into(), subtitle.as_str().into());
+            }
+            let mut metadata: Vec<_> = request.metadata.iter().collect();
+            metadata.sort_unstable();
+            for (key, value) in metadata {
+                meta.insert(key.clone(), value.as_str().into());
+            }
+            source.push_str("// Pack Template\n");
+            source.push_str(template);
+            source.push_str(&format!(
+                "\n\n#show: body => report({}, body)\n\n",
+                to_typst_dict(&serde_json::Value::Object(meta))
+            ));
+        }
 
         // Add report content
         source.push_str("// Report Content\n");
-        source.push_str(&self.generate_content(request)?);
+        source.push_str(&self.generate_content(request, pack_template.is_none())?);
 
         Ok(source)
     }
@@ -342,11 +465,11 @@ impl Engine {
     }
 
     /// Generate report content
-    fn generate_content(&self, request: &RenderRequest) -> Result<String> {
+    fn generate_content(&self, request: &RenderRequest, title_page: bool) -> Result<String> {
         let mut content = String::new();
 
-        // Title page
-        let has_title = request.title.as_ref().is_some_and(|t| !t.is_empty());
+        // Title page (a pack template renders its own)
+        let has_title = title_page && request.title.as_ref().is_some_and(|t| !t.is_empty());
         if has_title {
             let title = request.title.as_deref().unwrap_or("");
             let subtitle = request.subtitle.as_deref().unwrap_or("");
@@ -480,7 +603,13 @@ impl Engine {
     fn compile_typst(&self, source: &str, request: &RenderRequest) -> Result<Vec<u8>> {
         use crate::render::typst_compile;
 
-        typst_compile::compile_to_pdf(source, &self.font_cache, request)
+        // Pack assets are reachable from Typst under their path in `assets/`.
+        let pack_assets = self
+            .request_pack(request)?
+            .into_iter()
+            .flat_map(|pack| &pack.assets)
+            .map(|(name, bytes)| (name.as_str(), bytes.as_slice()));
+        typst_compile::compile_with_files(source, &self.font_cache, request, pack_assets)
     }
 }
 

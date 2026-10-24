@@ -4,15 +4,35 @@ All notable changes to this project are documented in this file. The format foll
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Releases before 0.3.0 are listed on the
 [GitHub releases page](https://github.com/casoon/renderreport/releases).
 
-## [0.6.2] - 2026-10-23
+## [Unreleased]
+
+### Breaking
+
+- **Packs:** a request's `pack_id` must name a loaded pack, and an unknown `template_id` with a
+  pack is an error (`default` keeps the built-in layout); before, both were ignored.
+- **Packs:** the loader refuses packs whose manifest lists missing files or whose components and
+  templates do not define their Typst function. Templates are keyed by their manifest name
+  (`seo-report`), not their file name.
+- **Components:** `ComponentDescriptor` has the new fields `fn_name` and `normalize`; without
+  the `barcodes` feature, `barcode` is no longer registered.
+
+### Added
+
+- **Packs:** pack components (also inside grids and flow groups, and as overrides of built-in
+  components), the template selected by `template_id`, its default theme and pack assets are
+  rendered. Details: [PACKS_README](https://github.com/casoon/renderreport/blob/main/docs/PACKS_README.md).
+- **Packs:** the bundled `standard` and `seo-audit` packs load and render.
+- **CLI:** `render --pack-path <DIR>`; a request with `pack_id` loads that pack.
 
 ### Changed
 
-- A component is registered by one `component_catalog!` call next to its struct. The macro takes
-  optional `fn_name` and `data` arguments; `ComponentDescriptor` gains `fn_name` and `normalize`.
-  The grid and flow-group dispatchers are generated from the catalog, so `components.toml` and
-  `build.rs` are gone. Without the `barcodes` feature, `barcode` is no longer registered.
-- The crate no longer ships stray PDFs and the rendered example outputs.
+- **Components:** a component is registered by one `component_catalog!` call next to its
+  struct; the grid and flow-group dispatchers are generated from the catalog.
+- **Crate:** no stray PDFs and rendered example outputs in the published package.
+- **Contributors:** CI runs on pull requests and `main` only; beta tests and coverage run on
+  demand.
+
+## [0.6.2] - 2026-10-23
 
 ### Fixed
 

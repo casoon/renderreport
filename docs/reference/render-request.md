@@ -9,17 +9,17 @@ order: 1
 
 | Field | Type | Default | Purpose |
 | --- | --- | --- | --- |
-| `template_id` | string | – | Report template; `default` for the built-in one |
+| `template_id` | string | – | Report template of the pack; `default` for the built-in one |
 | `components` | array | – | `{ "type": "<id>", "data": { … } }` per component, in document order |
 | `title` | string | none | Title page and PDF document title |
 | `subtitle` | string | none | Line under the title on the title page |
-| `pack_id` | string | none | Loaded pack whose default theme is merged in |
+| `pack_id` | string | none | Loaded pack whose template, components, themes and assets are used |
 | `theme` | object | none | `{ "id", "name", "tokens": { … } }`, see [themes](../../concepts/themes/) |
 | `metadata` | object | `{}` | String keys and values, see below |
 | `assets` | object | `{}` | Name → file path; files are added to the Typst file system |
 | `page_setup` | object | see below | Paper, orientation, margins, header and footer |
 
-With a `title`, the report opens with a title page. Without one, the PDF document title falls
+With a `title`, the report opens with a title page, unless a pack template renders its own. Without one, the PDF document title falls
 back to the first `cover-page` component's title, then the first `section`'s. PDF/UA-1 requires a
 document title, so a report with neither fails to render.
 

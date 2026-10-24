@@ -16,7 +16,8 @@ Per token, later themes win:
 1. The engine's default theme (`Theme::default_theme()`, or one set with
    `Engine::set_default_theme`).
 2. The default theme of the pack named in the request, if any.
-3. The theme in the request.
+3. The `default_theme` of the pack template the request selects, if any.
+4. The theme in the request.
 
 A request theme only needs the tokens it changes.
 

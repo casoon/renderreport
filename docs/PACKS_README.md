@@ -5,16 +5,11 @@ Official template packs for RenderReport.
 ## Available Packs
 
 ### standard
-Default components, layouts, and themes. Included with renderreport.
+Templates `default` and `minimal`, themes `light`, `dark` and `print`.
 
 ### seo-audit
-SEO audit report templates with Lighthouse scores, Core Web Vitals, and SEO-specific components.
-
-### web-quality (planned)
-Web quality audit reports with accessibility, performance, and best practices checks.
-
-### security-audit (planned)
-Security audit reports with vulnerability findings and compliance checks.
+Template `seo-report` (cover page, table of contents) and the components
+`lighthouse-scores` and `core-web-vitals`.
 
 ## Pack Structure
 
@@ -71,7 +66,13 @@ name = "Default Theme"
 # ... more tokens
 ```
 
+Every file the manifest lists must exist, or loading the pack fails.
+
 ### 3. Create Component (components/my_widget.typ)
+
+The manifest key is the component id. The file must define `#let <id>(data)`. A key that
+equals a built-in component id replaces that component (for `image`, define
+`report-image`). `overrides` in the manifest is not evaluated.
 
 ```typst
 #let my-widget(data) = {
@@ -89,8 +90,13 @@ name = "Default Theme"
 
 ### 4. Create Template (templates/my_report.typ)
 
+A template defines `#let report(meta, body)`. The engine wraps the report content with
+`#show: body => report(meta, body)`; `meta` holds `title`, `subtitle` and every `metadata`
+entry of the request. The template renders its own title page; the built-in one is skipped.
+
 ```typst
-#let my-report(title: none, body) = {
+#let report(meta, body) = {
+  let title = meta.at("title", default: none)
   if title != none {
     align(center)[
       #text(size: font-size-2xl, weight: "bold")[#title]
@@ -100,6 +106,11 @@ name = "Default Theme"
   body
 }
 ```
+
+### 5. Assets (optional)
+
+Files under `assets/` are added to the Typst file system by their path inside `assets/`,
+e.g. `assets/logo.svg` is `image("/logo.svg", alt: "Logo")`.
 
 ## Using Packs
 
@@ -113,9 +124,12 @@ let report = engine
     .report("my-report")
     .pack("my-pack")
     .title("Report Title")
-    // ... add components
+    // ... add components, e.g. "my-widget"
     .build();
 ```
+
+From the CLI: `renderreport render request.json --pack-path ./my-packs`, with `pack_id` and
+`template_id` set in the request JSON.
 
 ## Pack Conventions
 

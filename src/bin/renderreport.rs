@@ -4,6 +4,7 @@ use std::process;
 
 use anyhow::Context;
 use clap::{Parser, Subcommand};
+use renderreport::engine::EngineConfig;
 use renderreport::{ComponentCatalog, Engine, LayoutHint, RenderRequest};
 
 #[derive(Parser)]
@@ -31,6 +32,11 @@ enum Commands {
         /// Write the generated Typst source instead of compiling it to PDF
         #[arg(long)]
         typ: bool,
+
+        /// Directory to search for the pack named by the request's `pack_id`
+        /// (repeatable; searched before the default `./packs`)
+        #[arg(long = "pack-path", value_name = "DIR")]
+        pack_paths: Vec<PathBuf>,
     },
 
     /// List all registered component types
@@ -135,7 +141,12 @@ fn run(cli: Cli) -> anyhow::Result<()> {
             list_components(markdown, category.as_deref());
             return Ok(());
         }
-        Commands::Render { input, output, typ } => {
+        Commands::Render {
+            input,
+            output,
+            typ,
+            pack_paths,
+        } => {
             let json = match input {
                 Some(path) => std::fs::read_to_string(&path)
                     .with_context(|| format!("failed to read input file {}", path.display()))?,
@@ -151,7 +162,15 @@ fn run(cli: Cli) -> anyhow::Result<()> {
             let request: RenderRequest =
                 serde_json::from_str(&json).context("failed to parse request JSON")?;
 
-            let engine = Engine::new().context("failed to initialize render engine")?;
+            let mut config = EngineConfig::default();
+            config.pack_paths.splice(0..0, pack_paths);
+            let mut engine =
+                Engine::with_config(config).context("failed to initialize render engine")?;
+            if let Some(pack_id) = &request.pack_id {
+                engine
+                    .load_pack(&pack_id.0)
+                    .with_context(|| format!("failed to load pack {pack_id}"))?;
+            }
             let (bytes, default_output) = if typ {
                 let source = engine
                     .render_typ(&request)

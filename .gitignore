@@ -27,6 +27,7 @@ fixtures/snapshots/*.actual
 
 # Local planning notes
 todo.md
+plan/
 
 # Node / npm
 node_modules/

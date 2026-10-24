@@ -2,6 +2,7 @@
 
 use std::path::{Path, PathBuf};
 
+use crate::components::ComponentCatalog;
 use crate::error::{Error, PackError};
 use crate::pack::{Pack, PackManifest};
 use crate::theme::Theme;
@@ -55,48 +56,50 @@ impl PackLoader {
         pack.root_path = Some(path.to_path_buf());
 
         // Load templates
-        let templates_dir = path.join("templates");
-        if templates_dir.exists() {
-            for entry in manifest.templates.values() {
-                let template_path = templates_dir.join(&entry.file);
-                if template_path.exists() {
-                    let content = std::fs::read_to_string(&template_path)?;
-                    let name = template_path
-                        .file_stem()
-                        .and_then(|s| s.to_str())
-                        .unwrap_or("unknown")
-                        .to_string();
-                    pack.templates.insert(name, content);
-                }
+        for (name, entry) in &manifest.templates {
+            let content = read_listed_file(path, "templates", &entry.file)?;
+            if !defines_function(&content, "report") {
+                return Err(Error::Pack(PackError::InvalidStructure(format!(
+                    "templates/{} does not define `#let report(meta, body)`",
+                    entry.file
+                ))));
             }
+            pack.templates.insert(name.clone(), content);
         }
 
-        // Load components
-        let components_dir = path.join("components");
-        if components_dir.exists() {
-            for (name, entry) in &manifest.components {
-                let component_path = components_dir.join(&entry.file);
-                if component_path.exists() {
-                    let content = std::fs::read_to_string(&component_path)?;
-                    pack.components.insert(name.clone(), content);
-                }
+        // Load components. The manifest key is the component id; the file
+        // defines the Typst function of that name, or for an override of a
+        // built-in component, the built-in's function name.
+        for (id, entry) in &manifest.components {
+            let content = read_listed_file(path, "components", &entry.file)?;
+            let fn_name = ComponentCatalog::get(id).map_or(id.as_str(), |d| d.fn_name);
+            if !defines_function(&content, fn_name) {
+                return Err(Error::Pack(PackError::InvalidStructure(format!(
+                    "components/{} does not define `#let {fn_name}(data)`",
+                    entry.file
+                ))));
             }
+            pack.components.insert(id.clone(), content);
         }
 
         // Load themes
-        let themes_dir = path.join("themes");
-        if themes_dir.exists() {
-            for (name, entry) in &manifest.themes {
-                let theme_path = themes_dir.join(&entry.file);
-                if theme_path.exists() {
-                    let content = std::fs::read_to_string(&theme_path)?;
-                    let theme: Theme = toml::from_str(&content)?;
+        for (name, entry) in &manifest.themes {
+            let content = read_listed_file(path, "themes", &entry.file)?;
+            let theme: Theme = toml::from_str(&content)?;
 
-                    if entry.default {
-                        pack.default_theme = Some(theme.clone());
-                    }
+            if entry.default {
+                pack.default_theme = Some(theme.clone());
+            }
 
-                    pack.themes.insert(name.clone(), theme);
+            pack.themes.insert(name.clone(), theme);
+        }
+
+        for (name, entry) in &manifest.templates {
+            if let Some(theme) = &entry.default_theme {
+                if !pack.themes.contains_key(theme) {
+                    return Err(Error::Pack(PackError::InvalidStructure(format!(
+                        "template `{name}` names default theme `{theme}`, which pack.toml does not list"
+                    ))));
                 }
             }
         }
@@ -156,6 +159,25 @@ impl PackLoader {
 
         packs
     }
+}
+
+/// Reads `<pack>/<dir>/<file>`, a file the manifest lists; a missing file is
+/// an invalid pack rather than something to skip.
+fn read_listed_file(pack_path: &Path, dir: &str, file: &str) -> crate::Result<String> {
+    let file_path = pack_path.join(dir).join(file);
+    if !file_path.is_file() {
+        return Err(Error::Pack(PackError::InvalidStructure(format!(
+            "pack.toml lists {dir}/{file}, which does not exist"
+        ))));
+    }
+    Ok(std::fs::read_to_string(&file_path)?)
+}
+
+/// Whether Typst `source` defines a function `name` with `#let name(`.
+pub(crate) fn defines_function(source: &str, name: &str) -> bool {
+    source
+        .lines()
+        .any(|line| line.trim_start().starts_with(&format!("#let {name}(")))
 }
 
 impl Default for PackLoader {

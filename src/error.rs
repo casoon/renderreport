@@ -44,6 +44,13 @@ pub enum PackError {
 
     #[error("Invalid pack structure: {0}")]
     InvalidStructure(String),
+
+    #[error("Pack {pack} has no template `{template}` (available: {available})")]
+    TemplateNotFound {
+        pack: String,
+        template: String,
+        available: String,
+    },
 }
 
 /// Errors during rendering

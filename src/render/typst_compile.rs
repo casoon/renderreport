@@ -14,8 +14,23 @@ pub fn compile_to_pdf(
     font_cache: &Arc<FontCache>,
     request: &RenderRequest,
 ) -> crate::Result<Vec<u8>> {
+    compile_with_files(source, font_cache, request, std::iter::empty())
+}
+
+/// [`compile_to_pdf`] with `files` (path, bytes) added to the virtual
+/// filesystem before the request's own assets, which win on a clash.
+pub(crate) fn compile_with_files<'a>(
+    source: &str,
+    font_cache: &Arc<FontCache>,
+    request: &RenderRequest,
+    files: impl IntoIterator<Item = (&'a str, &'a [u8])>,
+) -> crate::Result<Vec<u8>> {
     // Create Typst world
     let world = ReportWorld::new(source.to_string(), font_cache.clone());
+
+    for (name, bytes) in files {
+        world.add_file(name, bytes);
+    }
 
     // Add assets to virtual filesystem
     for (name, path) in &request.assets {

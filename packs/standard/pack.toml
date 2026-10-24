@@ -9,6 +9,7 @@ authors = ["Casoon <info@casoon.de>"]
 license = "MIT"
 repository = "https://github.com/casoon/renderreport-packs"
 keywords = ["report", "standard", "default"]
+capabilities = ["charts", "tables", "images", "code-blocks"]
 
 [compatibility]
 min_engine_version = "0.1.0"
@@ -34,42 +35,3 @@ description = "Dark theme for screen viewing"
 [themes.print]
 file = "print.toml"
 description = "High-contrast theme optimized for printing"
-
-[components.score-card]
-file = "score_card.typ"
-description = "Score card with progress visualization"
-
-[components.finding]
-file = "finding.typ"
-description = "Audit finding with severity indicator"
-
-[components.audit-table]
-file = "audit_table.typ"
-description = "Data table for audit results"
-
-[components.summary-box]
-file = "summary_box.typ"
-description = "Executive summary widget"
-
-[components.callout]
-file = "callout.typ"
-description = "Information callout box"
-
-[components.section]
-file = "section.typ"
-description = "Document section with heading"
-
-[components.image]
-file = "image.typ"
-description = "Image with caption"
-
-[components.chart]
-file = "chart.typ"
-description = "Simple bar/pie chart"
-
-capabilities = [
-    "charts",
-    "tables",
-    "images",
-    "code-blocks",
-]

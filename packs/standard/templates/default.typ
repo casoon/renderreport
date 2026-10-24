@@ -1,54 +1,46 @@
 // Default Report Template
-// Standard layout with header, footer, and content area
+// Title page, then content pages with a running header and a page-count footer.
+//
+// `meta` holds `title`, `subtitle` and every `metadata` entry of the request
+// (e.g. `author`, `date`).
 
-// Page setup is handled by the engine based on theme tokens
-// This template defines the document structure
+#let report(meta, body) = {
+  let title = meta.at("title", default: none)
+  let subtitle = meta.at("subtitle", default: none)
+  let author = meta.at("author", default: none)
+  let date = meta.at("date", default: none)
 
-#let report(
-  title: none,
-  subtitle: none,
-  author: none,
-  date: none,
-  logo: none,
-  body
-) = {
   // Title page
   if title != none {
     align(center + horizon)[
-      #if logo != none {
-        image(logo, width: 40%)
-        v(spacing-6)
-      }
-      
       #text(size: font-size-2xl, weight: "bold", fill: color-text)[#title]
-      
+
       #if subtitle != none {
         v(spacing-3)
         text(size: font-size-lg, fill: color-text-muted)[#subtitle]
       }
-      
+
       #v(spacing-6)
-      
+
       #if author != none {
         text(size: font-size-base, fill: color-text-muted)[#author]
         v(spacing-2)
       }
-      
+
       #if date != none {
         text(size: font-size-sm, fill: color-text-muted)[#date]
       }
     ]
     pagebreak()
   }
-  
-  // Set page header/footer for content pages
+
   set page(
     header: context {
       if counter(page).get().first() > 1 {
         grid(
           columns: (1fr, auto),
           align(left)[#text(size: font-size-sm, fill: color-text-muted)[#title]],
-          align(right)[#text(size: font-size-sm, fill: color-text-muted)[#date]]
+          align(right)[#text(size: font-size-sm, fill: color-text-muted)[#date]],
         )
         v(spacing-2)
         line(length: 100%, stroke: 0.5pt + color-border)
@@ -58,27 +50,14 @@
       line(length: 100%, stroke: 0.5pt + color-border)
       v(spacing-2)
       grid(
-        columns: (1fr, auto, 1fr),
+        columns: (1fr, auto),
         align(left)[#text(size: font-size-sm, fill: color-text-muted)[#author]],
-        align(center)[#text(size: font-size-sm, fill: color-text-muted)[
-          Page #counter(page).display() of #locate(loc => counter(page).final(loc).first())
+        align(right)[#text(size: font-size-sm, fill: color-text-muted)[
+          Page #counter(page).display() of #counter(page).final().first()
         ]],
-        align(right)[#text(size: font-size-sm, fill: color-text-muted)[A technical auditing platform by casoon.de]]
       )
-    }
+    },
   )
-  
-  // Content
-  body
-}
 
-// Table of contents helper
-#let toc() = {
-  heading(level: 1)[Table of Contents]
-  outline(
-    title: none,
-    indent: auto,
-    depth: 3
-  )
-  pagebreak()
+  body
 }

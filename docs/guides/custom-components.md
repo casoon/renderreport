@@ -50,10 +50,20 @@ engine.load_pack("seo-audit")?;
 let report = engine.report("seo-report").pack("seo-audit") /* … */ .build();
 ```
 
-What rendering uses from a pack today: its **default theme**, merged between the engine's
-default theme and the request theme. The templates and components of a pack are loaded and
-available through `Engine::get_pack`, but the engine does not yet add them to the Typst
-source. To use a pack component now, register its template as shown above.
+A request with `pack_id` uses everything the pack brings:
+
+- **Components** — usable by their id like built-in ones, also inside `grid-component` and
+  `flow-group`. A pack component with a built-in id replaces that component.
+- **Template** — selected by `template_id`. It wraps the whole report and renders its own title
+  page. `template_id: "default"` keeps the built-in layout when the pack has no `default`
+  template; any other unknown name is an error.
+- **Themes** — the pack's default theme, then the template's `default_theme`, are merged
+  between the engine's default theme and the request theme.
+- **Assets** — files from `assets/` are reachable from Typst by their path, e.g.
+  `image("/logo.svg")`.
+
+A pack named in the request must be loaded (`Engine::load_pack` or `Engine::register_pack`),
+otherwise rendering fails.
 
 The manifest format and folder layout are described in
 [docs/PACKS_README.md](https://github.com/casoon/renderreport/blob/main/docs/PACKS_README.md).

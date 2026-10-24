@@ -170,7 +170,7 @@ Load external packs for specialized reports:
 engine.load_pack("seo-audit")?;
 
 let report = engine
-    .report("seo-audit")
+    .report("seo-report")
     .pack("seo-audit")
     // ...
 ```

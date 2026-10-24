@@ -29,6 +29,7 @@ pub mod wordsearch;
 
 pub use catalog::{ComponentCatalog, ComponentCategory, ComponentDescriptor, LayoutHint};
 pub(crate) use normalize::normalize_components;
+pub(crate) use registry::{dispatcher_template, is_dispatcher};
 pub use registry::{ComponentId, ComponentRegistry};
 pub use standard::*;
 pub use wordsearch::{WordSearch, WordSearchBuilder};

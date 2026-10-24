@@ -68,8 +68,10 @@ impl ComponentRegistry {
         let descs: Vec<&'static crate::components::catalog::ComponentDescriptor> =
             ComponentCatalog::all().collect();
         let ids: Vec<&'static str> = descs.iter().map(|d| d.id).collect();
-        let templates: HashMap<&'static str, String> =
-            descs.iter().map(|d| (d.id, standard_template(d))).collect();
+        let templates: HashMap<&'static str, String> = descs
+            .iter()
+            .map(|d| (d.id, standard_template(d, &[])))
+            .collect();
 
         // Build edges: dep -> set of components that reference it.
         let references = |template: &str, candidate: &str| -> bool {
@@ -193,40 +195,57 @@ impl ComponentRegistry {
 
 /// The template a built-in component is registered with: its catalog template,
 /// prefixed for the dispatchers (`grid-component`, `flow-group`) with a
-/// dispatch function over every catalog component.
-fn standard_template(desc: &crate::components::catalog::ComponentDescriptor) -> String {
+/// dispatch function over every catalog component plus `extra_ids`
+/// (components defined outside the catalog, e.g. by a pack).
+fn standard_template(
+    desc: &crate::components::catalog::ComponentDescriptor,
+    extra_ids: &[&str],
+) -> String {
     match desc.id {
         "grid-component" => format!(
             "// Grid Component\n// Dispatch generated from the component catalog.\n\n{}\n\n{}",
-            dispatch_function("_grid-dispatch", GRID_FALLBACK),
+            dispatch_function("_grid-dispatch", GRID_FALLBACK, extra_ids),
             desc.template.trim_start()
         ),
         "flow-group" => format!(
             "// Flow Group Component\n// Dispatch generated from the component catalog.\n\n{}\n\n{}",
-            dispatch_function("_flow-dispatch", FLOW_FALLBACK),
+            dispatch_function("_flow-dispatch", FLOW_FALLBACK, extra_ids),
             desc.template.trim_start()
         ),
         _ => desc.template.to_string(),
     }
 }
 
+/// Whether `id` is a dispatcher, whose template calls every component.
+pub(crate) fn is_dispatcher(id: &str) -> bool {
+    matches!(id, "grid-component" | "flow-group")
+}
+
+/// The template of dispatcher `id` with `extra_ids` added to its dispatch.
+pub(crate) fn dispatcher_template(id: &str, extra_ids: &[&str]) -> Option<String> {
+    let desc = crate::components::catalog::ComponentCatalog::get(id)?;
+    is_dispatcher(id).then(|| standard_template(desc, extra_ids))
+}
+
 /// `#let {name}(c)` calling the component function for `c.type`, sorted by id
 /// for deterministic output; `fallback` continues the `if` chain for items
 /// that are not `{type, data}` components.
-fn dispatch_function(name: &str, fallback: &str) -> String {
+fn dispatch_function(name: &str, fallback: &str, extra_ids: &[&str]) -> String {
     use crate::components::catalog::ComponentCatalog;
 
-    let mut descs: Vec<_> = ComponentCatalog::all().collect();
-    descs.sort_unstable_by_key(|d| d.id);
+    let mut entries: Vec<(&str, &str)> = ComponentCatalog::all()
+        .map(|d| (d.id, d.fn_name))
+        .chain(extra_ids.iter().map(|id| (*id, *id)))
+        .collect();
+    entries.sort_unstable();
 
     let mut s = format!(
         "#let {name}(c) = {{\n  if type(c) == dictionary and \"type\" in c and \"data\" in c {{\n    let comp-type = c.at(\"type\")\n    let comp-data = c.at(\"data\")\n"
     );
-    for (i, d) in descs.iter().enumerate() {
+    for (i, (id, fn_name)) in entries.iter().enumerate() {
         let kw = if i == 0 { "if" } else { "else if" };
         s.push_str(&format!(
-            "    {kw} comp-type == \"{}\" {{ {}(comp-data) }}\n",
-            d.id, d.fn_name
+            "    {kw} comp-type == \"{id}\" {{ {fn_name}(comp-data) }}\n"
         ));
     }
     s.push_str(fallback);
