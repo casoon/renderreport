@@ -103,7 +103,7 @@ fn copy_for(language: &str) -> Copy {
         "en" => Copy {
             explanation: "How it works: find all the listed words in the letter grid — they can be hidden horizontally, vertically, or diagonally. The solution with highlighted words is on the last page.",
             about_title: "About this PDF",
-            about_content: "This puzzle was generated with renderreport — a PDF engine written in Rust with Typst as its rendering core (https://renderreport.casoon.de).",
+            about_content: "This puzzle was generated with renderreport — a PDF engine written in Rust with Typst as its rendering core (https://casoon.github.io/renderreport/).",
             solution_prefix: "Solution: ",
             solution_description: "All hidden words are highlighted.",
             default_description: "Find all the hidden words in the letter grid!",
@@ -113,7 +113,7 @@ fn copy_for(language: &str) -> Copy {
         "fr" => Copy {
             explanation: "Comment jouer : trouvez tous les mots dans la grille de lettres – ils peuvent être cachés horizontalement, verticalement ou en diagonale. La solution avec les mots surlignés se trouve sur la dernière page.",
             about_title: "À propos de ce PDF",
-            about_content: "Ce puzzle a été généré avec renderreport – un moteur PDF écrit en Rust avec Typst comme noyau de rendu (https://renderreport.casoon.de).",
+            about_content: "Ce puzzle a été généré avec renderreport – un moteur PDF écrit en Rust avec Typst comme noyau de rendu (https://casoon.github.io/renderreport/).",
             solution_prefix: "Solution : ",
             solution_description: "Tous les mots cachés sont surlignés.",
             default_description: "Trouvez tous les mots cachés dans la grille de lettres !",
@@ -123,7 +123,7 @@ fn copy_for(language: &str) -> Copy {
         "es" => Copy {
             explanation: "Cómo funciona: encuentra todas las palabras en la cuadrícula de letras – pueden estar ocultas en horizontal, vertical o diagonal. La solución con las palabras resaltadas está en la última página.",
             about_title: "Sobre este PDF",
-            about_content: "Este rompecabezas fue generado con renderreport – un motor de PDF escrito en Rust con Typst como núcleo de renderizado (https://renderreport.casoon.de).",
+            about_content: "Este rompecabezas fue generado con renderreport – un motor de PDF escrito en Rust con Typst como núcleo de renderizado (https://casoon.github.io/renderreport/).",
             solution_prefix: "Solución: ",
             solution_description: "Todas las palabras ocultas están resaltadas.",
             default_description: "¡Encuentra todas las palabras ocultas en la cuadrícula de letras!",
@@ -133,7 +133,7 @@ fn copy_for(language: &str) -> Copy {
         _ => Copy {
             explanation: "So funktioniert's: Finde alle gesuchten Wörter im Buchstabengitter – sie können waagerecht, senkrecht oder diagonal versteckt sein. Die Lösung mit farbig hervorgehobenen Wörtern findest du auf der letzten Seite.",
             about_title: "Über dieses PDF",
-            about_content: "Dieses Rätsel wurde mit renderreport erzeugt – einer in Rust geschriebenen PDF-Engine mit Typst als Rendering-Kern (https://renderreport.casoon.de).",
+            about_content: "Dieses Rätsel wurde mit renderreport erzeugt – einer in Rust geschriebenen PDF-Engine mit Typst als Rendering-Kern (https://casoon.github.io/renderreport/).",
             solution_prefix: "Lösung: ",
             solution_description: "Alle versteckten Wörter sind hervorgehoben.",
             default_description: "Finde alle versteckten Wörter im Buchstabengitter!",
@@ -232,7 +232,7 @@ pub fn render_wordsearch(request_json: &str) -> Result<Vec<u8>, JsValue> {
             ("author".to_string(), "renderreport".to_string()),
             (
                 "footer_link_url".to_string(),
-                "https://renderreport.casoon.de".to_string(),
+                "https://casoon.github.io/renderreport/".to_string(),
             ),
             (
                 "footer_tagline".to_string(),
