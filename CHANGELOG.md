@@ -6,6 +6,12 @@ All notable changes to this project are documented in this file. The format foll
 
 ## [Unreleased]
 
+### Changed
+
+- **Docs:** the start page of the [project site](https://casoon.github.io/renderreport/) shows
+  the rendered health-check report next to the install commands instead of the JSON request
+  above it.
+
 ## [0.7.1] - 2026-10-24
 
 ### Added

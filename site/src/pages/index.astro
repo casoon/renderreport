@@ -6,22 +6,19 @@ import {
   CodeBlock,
   Facts,
   Features,
-  FileSet,
   Hero,
   Install,
   Quickstart,
 } from '@casoon/pages-theme/components';
 import Base from '@casoon/pages-theme/layouts/Base.astro';
 import { url } from '@casoon/pages-theme/lib/url.ts';
-import healthCheckJson from '../../../examples/requests/health-check.json?raw';
 import healthCheckPage from '../assets/health-check-page2.png?url';
 import Diagram from '../components/Diagram.astro';
 import { pdfViewer } from '../showcase';
 
-// The hero shows the start of the real request and page 2 of the PDF the CLI rendered from it
-// (examples/regenerate.sh rebuilds both).
-const requestExcerpt = `${healthCheckJson.split('\n').slice(0, 16).join('\n')}\n    …\n  ]\n}`;
-const pdfKiB = '34 KiB';
+// The hero shows the upper part of page 2 of the PDF the CLI rendered from
+// examples/requests/health-check.json (examples/regenerate.sh rebuilds both).
+const pdfKiB = '34\u00a0KiB';
 
 const quickstart = `use renderreport::prelude::*;
 
@@ -46,27 +43,9 @@ fn main() -> renderreport::Result<()> {
 
 <Base>
   <Hero
-    layout="stack"
-    command="renderreport render health-check.json"
     title="Data in, report out."
-    lead="renderreport builds PDF reports from components and theme tokens. Describe the report in Rust or JSON; the engine writes the Typst source and compiles it in-process, with PDF/UA-1 enforced. No typst binary, no Typst to learn."
+    lead="renderreport builds PDF reports from components and theme tokens. Describe the report in Rust or JSON; the engine writes the Typst source and compiles it in-process, with PDF/⁠UA-⁠1 enforced. No typst binary, no Typst to learn."
   >
-    <CodeBlock slot="source" code={requestExcerpt} lang="json" title="health-check.json" label="JSON" />
-    <FileSet
-      slot="output"
-      view="tabs"
-      files={[{ id: 'pdf', name: 'health-check.pdf', size: pdfKiB, note: 'page 2 of 3' }]}
-    >
-      <a slot="pdf" href={url('examples/health-check.pdf')}>
-        <img
-          src={healthCheckPage}
-          width="910"
-          height="1287"
-          alt="Page 2 of health-check.pdf: a Summary section with three score cards (Performance 78, Accessibility 91, SEO 64), four progress bars for pages passing Core Web Vitals, and a high-severity finding about hero images without size hints."
-          style="display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:6px"
-        />
-      </a>
-    </FileSet>
     <Install
       commands={[
         { label: 'cargo', command: 'cargo add renderreport' },
@@ -81,6 +60,20 @@ fn main() -> renderreport::Result<()> {
       <Badge>Typst 0.15</Badge>
       <Badge>PDF/UA-1</Badge>
     </Badges>
+    <figure slot="output" class="page">
+      <a href={url('examples/health-check.pdf')}>
+        <img
+          src={healthCheckPage}
+          width="910"
+          height="1287"
+          alt="Page 2 of health-check.pdf, upper part: a Summary section with three score cards (Performance 78, Accessibility 91, SEO 64) and progress bars for pages passing Core Web Vitals (Home 96 %, Product 88 %)."
+        />
+      </a>
+      <figcaption>
+        Page 2 of <code>health-check.pdf</code> ({pdfKiB}), rendered by the CLI from{' '}
+        <code>examples/requests/health-check.json</code>.
+      </figcaption>
+    </figure>
   </Hero>
 
   <Facts
@@ -117,7 +110,7 @@ fn main() -> renderreport::Result<()> {
     <h2 class="cp-label">How it works</h2>
     <p>
       Every way in produces the same render request. The engine merges the themes, writes the Typst source
-      and compiles it in-process.
+      and compiles it in-process.{' '}
       <a href={url('docs/concepts/how-it-works/')}>How a report is rendered</a> walks through each step.
     </p>
     <Diagram name="pipeline" />
@@ -144,6 +137,32 @@ fn main() -> renderreport::Result<()> {
 </Base>
 
 <style>
+  /* The upper part of the page: header, score cards and the first bars. */
+  .page {
+    margin: 0;
+  }
+  .page a {
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 910 / 645;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: var(--shadow);
+  }
+  .page img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .page figcaption {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+  .page code {
+    font-size: 12.5px;
+  }
   .how {
     max-width: var(--max);
     margin: 0 auto;
