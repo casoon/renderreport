@@ -10,7 +10,6 @@ export default defineConfig({
     casoonPages({
       name: 'renderreport',
       tagline: 'PDF reports from data',
-      website: 'https://renderreport.casoon.de',
       description:
         'Data-driven PDF reports from components and theme tokens, rendered by an embedded Typst engine. Rust library, CLI, npm package and Wasm.',
       repo: 'casoon/renderreport',

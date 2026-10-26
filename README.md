@@ -16,7 +16,7 @@ Build professional PDF reports without learning Typst. Use components, themes, a
   <img src="https://raw.githubusercontent.com/casoon/renderreport/main/examples/terminal/render.svg" width="528" height="188" alt="Terminal: renderreport render health-check.json -o health-check.pdf prints Written 35217 bytes to health-check.pdf; renderreport list-components | tail -1 prints 80 component(s).">
 </p>
 
-**Website:** [renderreport.casoon.de](https://renderreport.casoon.de/en/) · **Docs and examples:** [casoon.github.io/renderreport](https://casoon.github.io/renderreport/)
+**Docs and examples:** [casoon.github.io/renderreport](https://casoon.github.io/renderreport/)
 
 ## Features
 
