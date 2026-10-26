@@ -32,6 +32,11 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -88,6 +93,11 @@ jobs:
           $hash = (Get-FileHash "${{ env.ARCHIVE_NAME }}" -Algorithm SHA256).Hash.ToLower()
           "$hash  ${{ env.ARCHIVE_NAME }}" | Out-File -Encoding ascii "${{ env.ARCHIVE_NAME }}.sha256"
 
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: ${{ env.ARCHIVE_NAME }}
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -119,6 +129,8 @@ jobs:
   release:
     needs: [build, catalog]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -129,10 +141,36 @@ jobs:
           path: artifacts
           merge-multiple: true
 
+      - name: Combine checksums
+        run: cat artifacts/*.sha256 > artifacts/SHA256SUMS
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: artifacts/*
           generate_release_notes: true
 
+  publish-npm:
+    needs: release
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: npm/renderreport
 
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Update npm (Trusted Publishing needs >= 11.5)
+        run: npm install -g npm@latest
+
+      - name: Publish
+        run: npm publish --access public

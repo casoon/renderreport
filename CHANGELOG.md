@@ -6,8 +6,15 @@ All notable changes to this project are documented in this file. The format foll
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-10-26
+
+### Added
+
+- **Releases:** the binaries carry a signed build provenance attestation (verify with `gh attestation verify`) and the release lists a combined `SHA256SUMS`.
+
 ### Changed
 
+- **npm:** `@casoon/renderreport` is published from the release workflow via Trusted Publishing (with provenance), after approval in the `npm` environment.
 - **Docs:** the start page of the [project site](https://casoon.github.io/renderreport/) shows
   the rendered health-check report next to the install commands instead of the JSON request
   above it.
