@@ -75,6 +75,15 @@ published `.sha256` file and installs the binary to `/usr/local/bin`. Set
 `RENDERREPORT_INSTALL_DIR` to install elsewhere, or `VERSION` to pin a release. On Windows, take
 the `.zip` from the [releases page](https://github.com/casoon/renderreport/releases).
 
+Official binaries come only from the GitHub releases of `casoon/renderreport` — built there by
+the release workflow, never on a developer machine. The npm package is published from the same
+workflow. To verify a download by hand, check the hash and the signed build provenance:
+
+```sh
+shasum -a 256 -c renderreport-v<version>-<target>.tar.gz.sha256
+gh attestation verify renderreport-v<version>-<target>.tar.gz --repo casoon/renderreport
+```
+
 ## Documentation
 
 The [documentation](https://casoon.github.io/renderreport/) covers everything beyond the
