@@ -21,5 +21,5 @@ pdftoppm -png -r 110 -singlefile -f 2 -l 2 examples/requests/health-check.pdf \
 # The README scene replays the CLI output above. After the byte count or the
 # component count changes, update examples/terminal/render.terminal.yaml and
 # rebuild its SVG:
-#   cd examples/terminal && npx -y -p @casoon/castwright@0.4.0 -p shiki \
+#   cd examples/terminal && npx -y -p @casoon/castwright@0.5.0 -p shiki \
 #     castwright build render.terminal.yaml --format svg -o .
