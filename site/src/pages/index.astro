@@ -3,6 +3,7 @@ import {
   Badge,
   Badges,
   BuildOutput,
+  CallToAction,
   CodeBlock,
   Facts,
   Features,
@@ -11,7 +12,7 @@ import {
   Quickstart,
 } from '@casoon/pages-theme/components';
 import Base from '@casoon/pages-theme/layouts/Base.astro';
-import { url } from '@casoon/pages-theme/lib/url.ts';
+import { url } from '@casoon/pages-theme/url';
 import healthCheckPage from '../assets/health-check-page2.png?url';
 import Diagram from '../components/Diagram.astro';
 import { pdfViewer } from '../showcase';
@@ -134,6 +135,12 @@ fn main() -> renderreport::Result<()> {
   >
     <CodeBlock code={quickstart} lang="rust" title="src/main.rs" label="Rust" />
   </Quickstart>
+
+  <CallToAction
+    title="Your first PDF in three steps."
+    href={url('docs/getting-started/quickstart/')}
+    label="Read the quickstart"
+  />
 </Base>
 
 <style>
