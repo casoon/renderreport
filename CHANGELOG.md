@@ -6,6 +6,8 @@ All notable changes to this project are documented in this file. The format foll
 
 ## [Unreleased]
 
+## [0.7.3] - 2026-11-11
+
 ### Added
 
 - **BenchmarkTable:** the headers of the fixed rank, domain, score, accessibility and
