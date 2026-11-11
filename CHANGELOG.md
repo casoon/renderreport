@@ -6,6 +6,11 @@ All notable changes to this project are documented in this file. The format foll
 
 ## [Unreleased]
 
+### Added
+
+- **BenchmarkTable:** the headers of the fixed rank, domain, score, accessibility and
+  critical-issues columns can be set (`with_labels`); without them the German defaults stay.
+
 ### Changed
 
 - **Docs:** the project site uses the current shared theme (0.12.12) and ends with a link to the
