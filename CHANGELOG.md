@@ -30,6 +30,10 @@ All notable changes to this project are documented in this file. The format foll
 - **Docs:** the project site uses the current shared theme (0.12.3) and ends with a link to the
   quickstart.
 
+### Fixed
+
+- **Components:** `section.content` was accepted but never rendered, so nested components vanished silently. A section is only the heading (the Rust field is kept for compatibility, auditmysite does not set it); `validate` now reports a non-empty `content` with "put its components after it in `components`", the field's schema description says so, and the docs and the agent skill follow. Rendering is unchanged.
+
 ## [0.7.2] - 2026-10-26
 
 ### Added

@@ -44,3 +44,22 @@ fn an_alias_is_a_known_component_type() {
     let issues = validate_request(request, &["table"]);
     assert_eq!(issues.len(), 0, "{issues:?}");
 }
+
+#[test]
+fn nested_section_content_is_reported_but_an_empty_one_is_valid() {
+    let request = |content: &str| {
+        format!(
+            r#"{{ "template_id": "default", "components": [
+                {{ "type": "section", "data": {{ "title": "A", "content": {content} }} }}
+            ] }}"#
+        )
+    };
+    assert!(validate_request(&request("[]"), &[]).is_empty());
+    let issues = validate_request(
+        &request(r#"[{ "type": "textblock", "data": { "content": "x" } }]"#),
+        &[],
+    );
+    assert_eq!(issues.len(), 1, "{issues:?}");
+    assert_eq!(issues[0].path, "components[0].data.content");
+    assert!(issues[0].message.contains("after it"), "{}", issues[0]);
+}

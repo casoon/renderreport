@@ -66,8 +66,8 @@ Not for: a single table or a few numbers (answer in text), editing existing PDFs
    last.
 
 Use `section` for every part, with `level` 1 for parts and 2 or 3 below them. A `section` is
-only the heading: put its components after it in the same `components` array. Content nested
-in a section's `content` is not rendered. Group side by side with `grid-component`.
+only the heading: put its components after it in the same `components` array. `section.content`
+is not rendered (`validate` reports a non-empty one). Group side by side with `grid-component`.
 
 Page breaks: start a long part on a new page with `{ "type": "page-break", "data": null }`.
 Components marked `keep-together` in the catalog move to the next page as a whole instead of
@@ -114,7 +114,7 @@ renderreport from markdown notes.md --emit-request > request.json
 | `unknown variant `urgent`, expected one of ...` | An enum value outside the list; the message lists the allowed ones. |
 | `expected unit struct PageBreak` | Components without fields take `"data": null`, not `{}`. |
 | `unknown component type` | Wrong id, or the component belongs to a pack. Pack components exist only with `pack_id` in the request and `--pack-path <dir>` if the pack is not in `./packs`. |
-| Valid, but content is missing in the PDF | Content was nested in `section.content`. Move it after the section. |
+| `` section: `content` is not rendered `` | Content was nested in `section.content`. Move it after the section. |
 
 `validate` reports one error per component at a time; fix, run again, repeat until
 `Request is valid`.

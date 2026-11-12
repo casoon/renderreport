@@ -115,6 +115,20 @@ fn check_component(value: &Value, path: &str, extra: &[&str], issues: &mut Vec<I
         }),
     }
 
+    if id == "section"
+        && data
+            .get("content")
+            .and_then(Value::as_array)
+            .is_some_and(|content| !content.is_empty())
+    {
+        issues.push(Issue {
+            path: format!("{path}.data.content"),
+            message: "section: `content` is not rendered; a section is only the heading, \
+                      put its components after it in `components`"
+                .into(),
+        });
+    }
+
     check_nested(data, &format!("{path}.data"), extra, issues);
 }
 

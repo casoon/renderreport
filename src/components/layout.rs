@@ -23,7 +23,8 @@ pub struct Section {
     /// Heading level (1-6)
     #[serde(default = "default_level")]
     pub level: u8,
-    /// Section content (nested components)
+    /// Not rendered: a section is only the heading, put its components after
+    /// it in `components`. `validate` reports a non-empty value.
     #[serde(default)]
     pub content: Vec<serde_json::Value>,
 }

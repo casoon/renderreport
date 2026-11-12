@@ -170,7 +170,7 @@ for sparklines and gauges.
 | `roadmap-block` | Narrative & Storytelling | Breakable | Project roadmap block with phases and milestones |
 | `score-band` | Metrics & KPIs | KeepTogether | Score band visualization with threshold markers |
 | `score-card` | Metrics & KPIs | KeepTogether | Score card with gauge-style visualization and status indicator |
-| `section` | Layout | KeepWithNext | Document section heading with optional subtitle |
+| `section` | Layout | KeepWithNext | Document section heading with optional subtitle; `content` is not rendered, put the components after the section |
 | `section-header-split` | Layout | KeepWithNext | Section header with title on left and metadata on right |
 | `severity-overview` | Metrics & KPIs | KeepTogether | Severity distribution overview with count badges |
 | `side-label` | Text & Editorial | KeepTogether | Vertical side label aligned alongside content |
