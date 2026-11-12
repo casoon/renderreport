@@ -9,7 +9,7 @@
       "data": {
         "variant": "info",
         "title": "Example data",
-        "content": "The figures are invented. The layout follows the fields of agentmeter --json (summary, projects, findings) and the findings output of agentmeter. agentmeter does not write PDFs; this request was assembled by hand."
+        "content": "Invented figures in the layout of agentmeter --json. Assembled by hand."
       }
     },
     { "type": "section", "data": { "title": "Summary", "level": 1 } },
@@ -29,8 +29,7 @@
       "data": {
         "items": [
           { "key": "Observed", "value": "2026-08-02 to 2026-10-31, 41,260 requests in all" },
-          { "key": "Output", "value": "9.4 M tokens" },
-          { "key": "Compactions", "value": "11 (auto 11, manual 0)" },
+          { "key": "Output", "value": "9.4 M tokens, 11 compactions (auto 11, manual 0)" },
           { "key": "Data quality", "value": "every line readable, 5 of 5 rules measurable" }
         ]
       }
