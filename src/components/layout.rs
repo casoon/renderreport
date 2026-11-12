@@ -16,6 +16,7 @@ component_catalog! {
 
 /// Section component for document structure
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Section {
     /// Section title
     pub title: String,
@@ -65,6 +66,7 @@ impl Component for Section {
 
 /// One module's score for the cover gauge strip.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct CoverModuleGauge {
     pub name: String,
     pub score: u32,
@@ -92,6 +94,7 @@ component_catalog! {
 
 /// Professional cover page with score preview
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct CoverPage {
     pub brand: String,
     pub title: String,
@@ -270,6 +273,7 @@ component_catalog! {
 /// Horizontal separator/divider
 /// Inspired by BIRT Band Elements
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Divider {
     /// Divider style (solid, dashed, dotted, double)
     #[serde(default = "default_divider_style")]
@@ -365,6 +369,7 @@ component_catalog! {
 /// Grid/Multi-column layout container
 /// Inspired by Pentaho Block/Row Layout
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Grid {
     /// Grid title
     #[serde(default)]
@@ -389,6 +394,7 @@ fn default_grid_gap() -> String {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct GridItem {
     /// Item content (can be nested components)
     pub content: serde_json::Value,
@@ -452,6 +458,7 @@ component_catalog! {
 
 /// Flow group with optional soft keep-together behavior
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct FlowGroup {
     /// Ordered child components or raw content blocks
     pub items: Vec<serde_json::Value>,
@@ -515,6 +522,7 @@ component_catalog! {
 /// Page break for multi-page reports
 /// Inspired by BIRT Page Setup
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct PageBreak;
 
 impl Default for PageBreak {
@@ -549,6 +557,7 @@ component_catalog! {
 
 /// Table of Contents component
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct TableOfContents {
     /// TOC heading title
     pub title: String,
@@ -624,6 +633,7 @@ component_catalog! {
 
 /// Section header with 1/3 title and 2/3 body text side-by-side
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct SectionHeaderSplit {
     pub title: String,
     pub body: String,
@@ -687,6 +697,7 @@ component_catalog! {
 /// Asymmetric two-column layout with flexible width ratio (e.g. 60/40, 70/30)
 /// For: Text + image, side-by-side content, mixed layouts
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Columns {
     /// Left column content (raw Typst or component references)
     pub left: String,

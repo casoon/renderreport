@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 
 /// Visual layout variant for a score card.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Default, PartialEq)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "kebab-case")]
 pub enum ScoreCardVariant {
     /// Standard bordered card with progress bar (default)
@@ -31,6 +32,7 @@ component_catalog! {
 
 /// Score card component for displaying metrics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ScoreCard {
     /// Card title/label
     pub title: String,
@@ -178,6 +180,7 @@ component_catalog! {
 
 /// Summary box for executive summaries
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct SummaryBox {
     /// Summary title
     pub title: String,
@@ -186,6 +189,7 @@ pub struct SummaryBox {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct SummaryItem {
     pub label: String,
     pub value: String,
@@ -246,6 +250,7 @@ component_catalog! {
 
 /// Single KPI stat with optional trend indicator
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Stat {
     pub label: String,
     pub value: String,
@@ -299,6 +304,7 @@ impl Component for Stat {
 
 /// Entry in a StatPair
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct StatPairEntry {
     pub label: String,
     pub value: String,
@@ -340,6 +346,7 @@ component_catalog! {
 
 /// Two-stat side-by-side layout with optional vertical divider
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct StatPair {
     pub left: StatPairEntry,
     pub right: StatPairEntry,
@@ -385,6 +392,7 @@ component_catalog! {
 
 /// Horizontal score band with color-coded segments and marker
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ScoreBand {
     pub value: u32,
     #[serde(default = "default_seventy")]
@@ -440,6 +448,7 @@ component_catalog! {
 
 /// Compact trend tile with direction arrow
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct TrendTile {
     pub label: String,
     pub delta: String,
@@ -511,6 +520,7 @@ component_catalog! {
 
 /// Compact metric card for KPI displays (flexible string values, unlike ScoreCard)
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct MetricCard {
     pub title: String,
     pub value: String,
@@ -570,6 +580,7 @@ component_catalog! {
 
 /// Card dashboard showing scores as a horizontal card strip
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct CardDashboard {
     #[serde(default)]
     pub title: Option<String>,
@@ -577,6 +588,7 @@ pub struct CardDashboard {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct DashboardCard {
     pub name: String,
     pub score: u32,
@@ -646,6 +658,7 @@ component_catalog! {
 
 /// Visual severity breakdown with cards and severity strip
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct SeverityOverview {
     #[serde(default)]
     pub title: Option<String>,
@@ -731,6 +744,7 @@ component_catalog! {
 
 /// Portfolio-level summary cards for batch reports
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct PortfolioSummary {
     pub total_sites: u32,
     pub average_score: u32,
@@ -797,6 +811,7 @@ component_catalog! {
 /// Progress bar / completion indicator
 /// Inspired by JasperReports Chart Components
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ProgressBar {
     /// Bar label
     pub label: String,
@@ -860,6 +875,7 @@ impl Component for ProgressBar {
 
 /// Item inside a MetricStrip
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct MetricStripItem {
     pub label: String,
     pub value: String,
@@ -909,6 +925,7 @@ component_catalog! {
 
 /// Horizontal row of equal KPI cells
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct MetricStrip {
     pub items: Vec<MetricStripItem>,
     #[serde(default)]
@@ -951,6 +968,7 @@ component_catalog! {
 /// Large metric display for marketing/impact stats
 /// For: Key metrics, conversion rates, impact statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct BigNumber {
     /// The number/value (e.g. "+23%", "10x", "500ms")
     pub value: String,

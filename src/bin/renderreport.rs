@@ -39,6 +39,24 @@ enum Commands {
         pack_paths: Vec<PathBuf>,
     },
 
+    /// Check a request without rendering it
+    Validate {
+        /// Path to JSON input file (reads from stdin if omitted)
+        input: Option<PathBuf>,
+
+        /// Directory to search for the pack named by the request's `pack_id`
+        /// (repeatable; searched before the default `./packs`)
+        #[arg(long = "pack-path", value_name = "DIR")]
+        pack_paths: Vec<PathBuf>,
+    },
+
+    /// Print the JSON Schema of a request, or of one component's data
+    Schema {
+        /// Component ID; without it the schema of the whole request
+        #[arg(long)]
+        component: Option<String>,
+    },
+
     /// List all registered component types
     ListComponents {
         /// Output as Markdown instead of plain text
@@ -135,8 +153,64 @@ fn list_components(markdown: bool, category_filter: Option<&str>) {
     }
 }
 
+fn read_input(input: Option<PathBuf>) -> anyhow::Result<String> {
+    match input {
+        Some(path) => std::fs::read_to_string(&path)
+            .with_context(|| format!("failed to read input file {}", path.display())),
+        None => {
+            let mut buf = String::new();
+            io::stdin()
+                .read_to_string(&mut buf)
+                .context("failed to read request JSON from stdin")?;
+            Ok(buf)
+        }
+    }
+}
+
 fn run(cli: Cli) -> anyhow::Result<()> {
     match cli.command {
+        Commands::Schema { component } => {
+            let schema = match component {
+                Some(id) => renderreport::schema::component_schema(&id).with_context(|| {
+                    format!("no schema for component `{id}` (see `list-components`)")
+                })?,
+                None => renderreport::schema::request_schema(),
+            };
+            println!("{}", serde_json::to_string_pretty(&schema)?);
+            return Ok(());
+        }
+        Commands::Validate { input, pack_paths } => {
+            let json = read_input(input)?;
+            let request: Option<RenderRequest> = serde_json::from_str(&json).ok();
+
+            // Components of the named pack are valid types; a pack that
+            // cannot be loaded is reported by `render`, here it only means
+            // its component types are unknown.
+            let mut config = EngineConfig::default();
+            config.pack_paths.splice(0..0, pack_paths);
+            let mut engine =
+                Engine::with_config(config).context("failed to initialize render engine")?;
+            let mut pack_components = Vec::new();
+            if let Some(pack_id) = request.as_ref().and_then(|r| r.pack_id.as_ref()) {
+                engine
+                    .load_pack(&pack_id.0)
+                    .with_context(|| format!("failed to load pack {pack_id}"))?;
+                if let Some(pack) = engine.get_pack(pack_id) {
+                    pack_components = pack.components.keys().cloned().collect();
+                }
+            }
+            let extra: Vec<&str> = pack_components.iter().map(String::as_str).collect();
+
+            let issues = renderreport::validate::validate_request(&json, &extra);
+            for issue in &issues {
+                eprintln!("{issue}");
+            }
+            if !issues.is_empty() {
+                anyhow::bail!("{} problem(s) found", issues.len());
+            }
+            eprintln!("Request is valid");
+            return Ok(());
+        }
         Commands::ListComponents { markdown, category } => {
             list_components(markdown, category.as_deref());
             return Ok(());
@@ -147,17 +221,7 @@ fn run(cli: Cli) -> anyhow::Result<()> {
             typ,
             pack_paths,
         } => {
-            let json = match input {
-                Some(path) => std::fs::read_to_string(&path)
-                    .with_context(|| format!("failed to read input file {}", path.display()))?,
-                None => {
-                    let mut buf = String::new();
-                    io::stdin()
-                        .read_to_string(&mut buf)
-                        .context("failed to read request JSON from stdin")?;
-                    buf
-                }
-            };
+            let json = read_input(input)?;
 
             let request: RenderRequest =
                 serde_json::from_str(&json).context("failed to parse request JSON")?;

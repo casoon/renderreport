@@ -16,6 +16,7 @@ component_catalog! {
 
 /// Audit table for tabular data
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct AuditTable {
     /// Table title
     #[serde(default)]
@@ -37,6 +38,7 @@ fn default_true() -> bool {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct TableColumn {
     /// Column header text
     pub header: String,
@@ -129,6 +131,7 @@ component_catalog! {
 
 /// Horizontal score comparison rows for modules
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ModuleComparison {
     #[serde(default)]
     pub title: Option<String>,
@@ -136,6 +139,7 @@ pub struct ModuleComparison {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ComparisonModule {
     pub name: String,
     pub score: u32,
@@ -208,6 +212,7 @@ component_catalog! {
 
 /// Ranking table for batch report website comparison
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct BenchmarkTable {
     #[serde(default)]
     pub title: Option<String>,
@@ -222,6 +227,7 @@ pub struct BenchmarkTable {
 /// keeps `renderreport` domain-agnostic: a new caller-side dimension never
 /// requires a new field/method/template branch here.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct BenchmarkColumn {
     pub label: String,
     #[serde(default)]
@@ -229,6 +235,7 @@ pub struct BenchmarkColumn {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct BenchmarkRow {
     pub rank: u32,
     pub domain: String,
@@ -320,6 +327,7 @@ component_catalog! {
 /// Key-Value pairs display
 /// Inspired by BIRT Parameter elements
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct KeyValueList {
     /// List title
     #[serde(default)]
@@ -336,6 +344,7 @@ fn default_kv_layout() -> String {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct KeyValuePair {
     pub key: String,
     pub value: String,
@@ -412,6 +421,7 @@ component_catalog! {
 
 /// Before/after code or text comparison block
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ComparisonBlock {
     pub wrong: String,
     pub right: String,
@@ -487,6 +497,7 @@ impl Component for ComparisonBlock {
 
 /// A single item in a ComparisonCluster
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ComparisonClusterItem {
     pub label: String,
     pub value: String,
@@ -532,6 +543,7 @@ component_catalog! {
 
 /// Grid of comparison items with optional title
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ComparisonCluster {
     pub items: Vec<ComparisonClusterItem>,
     #[serde(default)]

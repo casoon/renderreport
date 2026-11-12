@@ -102,6 +102,7 @@ pub trait Component: Send + Sync {
 
 /// Dynamic component wrapper for heterogeneous collections
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct DynamicComponent {
     /// Component type ID
     #[serde(rename = "type")]
@@ -140,6 +141,7 @@ impl Component for DynamicComponent {
 
 /// Severity levels for findings and issues
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "lowercase")]
 pub enum Severity {
     Critical,
@@ -171,6 +173,7 @@ impl Severity {
 
 /// Score status based on thresholds
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "lowercase")]
 pub enum ScoreStatus {
     Good,

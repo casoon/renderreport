@@ -62,6 +62,21 @@ pub fn typed<T: Component + DeserializeOwned>(data: &Value) -> Option<Value> {
         .map(|c| c.to_data())
 }
 
+/// The [`ValidateFn`](super::catalog::ValidateFn) for component struct `T`:
+/// the serde error with the path of the failing field.
+pub fn validate_typed<T: DeserializeOwned>(data: &Value) -> Result<(), String> {
+    serde_path_to_error::deserialize::<_, T>(data)
+        .map(|_| ())
+        .map_err(|e| {
+            let path = e.path().to_string();
+            if path == "." {
+                e.inner().to_string()
+            } else {
+                format!("{path}: {}", e.inner())
+            }
+        })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

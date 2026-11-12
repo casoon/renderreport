@@ -6,6 +6,12 @@ All notable changes to this project are documented in this file. The format foll
 
 ## [Unreleased]
 
+### Added
+
+- **CLI:** `renderreport validate` checks a request without rendering it and reports each problem with its path, e.g. `components[0].data: score-card: score: invalid type`; unknown component types are reported too.
+- **CLI:** `renderreport schema [--component <id>]` prints the JSON Schema of a request or of one component's data.
+- **Library:** `validate::validate_request`, the Wasm function `validate` and, with the new `schema` feature (part of `cli`), the `schema` module.
+
 ### Changed
 
 - **Docs:** the project site uses the current shared theme (0.12.3) and ends with a link to the

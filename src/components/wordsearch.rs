@@ -11,6 +11,7 @@ use std::collections::{HashMap, HashSet};
 
 /// Grid cell model passed to Typst
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct WordSearchCell {
     /// Character at this cell
     pub char: String,
@@ -120,6 +121,7 @@ component_catalog! {
 /// Missing fields take their values from [`WordSearch::default`], so JSON
 /// data needs only `words`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(default)]
 pub struct WordSearch {
     /// Optional title for the puzzle

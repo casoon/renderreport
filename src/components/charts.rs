@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 /// Chart types supported
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "lowercase")]
 pub enum ChartType {
     Bar,
@@ -30,6 +31,7 @@ component_catalog! {
 /// Basic chart component
 /// Inspired by JasperReports: Pie, Bar, Line, Area, Scatter charts
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Chart {
     /// Chart title
     pub title: String,
@@ -70,6 +72,7 @@ fn default_chart_height() -> String {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ChartSeries {
     pub name: String,
     pub data: Vec<ChartDataPoint>,
@@ -78,6 +81,7 @@ pub struct ChartSeries {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ChartDataPoint {
     pub label: String,
     pub value: f64,
@@ -158,6 +162,7 @@ component_catalog! {
 /// Sparkline - Small inline chart
 /// Inspired by Pentaho Sparkline elements
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Sparkline {
     /// Sparkline type (bar, line, pie)
     pub sparkline_type: String,
@@ -233,6 +238,7 @@ component_catalog! {
 /// Gauge/Meter display
 /// Inspired by JasperReports Meter/Thermometer charts
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Gauge {
     /// Gauge label
     pub label: String,
@@ -260,6 +266,7 @@ fn default_gauge_style() -> String {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct GaugeThreshold {
     pub value: f64,
     pub color: String,

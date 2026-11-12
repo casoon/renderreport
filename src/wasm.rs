@@ -35,6 +35,16 @@ pub fn render(request_json: &str) -> Result<Vec<u8>, JsValue> {
         .map_err(|e| JsValue::from_str(&format!("render failed: {e}")))
 }
 
+/// Check a [`RenderRequest`] (as JSON) without rendering it. Returns one
+/// `"path: problem"` line per problem; an empty array means the request is valid.
+#[wasm_bindgen]
+pub fn validate(request_json: &str) -> Vec<String> {
+    crate::validate::validate_request(request_json, &[])
+        .iter()
+        .map(ToString::to_string)
+        .collect()
+}
+
 /// Input parameters for [`render_wordsearch`].
 #[derive(Deserialize)]
 #[serde(rename_all = "snake_case")]

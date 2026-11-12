@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 
 /// A step in a conversion funnel
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct FunnelStep {
     pub label: String,
     pub value: String,
@@ -27,6 +28,7 @@ component_catalog! {
 
 /// Conversion funnel visualization
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Funnel {
     pub steps: Vec<FunnelStep>,
     #[serde(default)]
@@ -66,6 +68,7 @@ component_catalog! {
 /// Shows a desktop screenshot (3/4 width) and a mobile screenshot (1/4 width)
 /// side by side with Apple-style device frames.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct DevicePreview {
     /// Asset key for the desktop screenshot (registered via builder.asset())
     pub desktop_src: String,

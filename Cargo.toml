@@ -56,6 +56,12 @@ toml = "0.8"
 thiserror = "2.0"
 anyhow = "1.0"
 
+# Pinpoints the field that fails to deserialize (request validation)
+serde_path_to_error = "0.1"
+
+# JSON Schema for components and requests (optional)
+schemars = { version = "1.0", optional = true }
+
 # Barcode encoding (optional — pulls noticeable weight into Wasm builds where
 # barcode components aren't needed)
 barcoders = { version = "2.0", optional = true }
@@ -85,7 +91,8 @@ lopdf = "0.44"
 
 [features]
 default = ["barcodes"]
-cli = ["clap"]
+cli = ["clap", "schema"]
+schema = ["dep:schemars"]
 wasm = ["wasm-bindgen"]
 barcodes = ["dep:barcoders", "dep:qrcode", "dep:datamatrix"]
 # remote-packs = ["tokio"]

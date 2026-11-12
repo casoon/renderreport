@@ -1,6 +1,6 @@
 ---
 title: CLI
-description: The renderreport binary and its two commands.
+description: The renderreport binary and its commands.
 order: 2
 ---
 
@@ -43,3 +43,42 @@ Options:
 
 Prints id, category, layout hint and description of every built-in component, sorted by id.
 See [components](../../concepts/components/) for the output of the current version.
+
+## `renderreport validate`
+
+```text
+Usage: renderreport validate [OPTIONS] [INPUT]
+
+Arguments:
+  [INPUT]  Path to JSON input file (reads from stdin if omitted)
+
+Options:
+      --pack-path <DIR>  Directory to search for the pack named by the request's `pack_id`
+```
+
+Checks a [render request](../render-request/) without rendering it: the request's own fields,
+each component's `data` against the component, components nested in other components, and
+component types that neither the catalog nor the request's pack defines. Each problem is printed
+as `path: reason` on stderr, for example `components[0].data: score-card: score: invalid type:
+string "hi", expected u32`. Exit code 0 when the request is valid, 1 otherwise.
+
+`render` stays lenient and renders data that does not fit; `validate` is what reports it.
+
+## `renderreport schema`
+
+```text
+Usage: renderreport schema [OPTIONS]
+
+Options:
+      --component <COMPONENT>  Component ID; without it the schema of the whole request
+```
+
+Prints a JSON Schema (draft 2020-12) to stdout. Without `--component` it describes the whole
+request, with every `components` entry checked against the schema of its `type`; types outside
+the catalog (pack components) are accepted with any `data`. With `--component <id>` it describes
+the `data` of one component. Save the schema to a file and point an editor at it for completion
+and checking while writing a request:
+
+```sh
+renderreport schema > renderreport.schema.json
+```

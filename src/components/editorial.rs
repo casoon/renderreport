@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 
 /// Visual style variant for a callout admonition.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Default, PartialEq)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "lowercase")]
 pub enum CalloutVariant {
     #[default]
@@ -42,6 +43,7 @@ component_catalog! {
 
 /// Callout/admonition component
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Callout {
     /// Callout content
     pub content: String,
@@ -140,6 +142,7 @@ component_catalog! {
 
 /// Status pill badge — colored label for status display
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct StatusPill {
     pub label: String,
     #[serde(default = "default_neutral")]
@@ -210,6 +213,7 @@ component_catalog! {
 
 /// Wrapping cloud of status-pill badges (flows inline, auto-wraps)
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct TagCloud {
     pub items: Vec<TagCloudItem>,
     #[serde(default)]
@@ -223,6 +227,7 @@ fn default_tag_gap() -> String {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct TagCloudItem {
     pub label: String,
     #[serde(default = "default_neutral")]
@@ -283,6 +288,7 @@ component_catalog! {
 
 /// Inline info/fact box
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct FactBox {
     pub body: String,
     #[serde(default)]
@@ -358,6 +364,7 @@ component_catalog! {
 
 /// Quote / pull quote block
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct QuoteBlock {
     pub quote: String,
     #[serde(default)]
@@ -407,6 +414,7 @@ component_catalog! {
 /// List component that iterates over data records
 /// Inspired by JasperReports List Component
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct List {
     /// List title
     #[serde(default)]
@@ -433,6 +441,7 @@ fn default_columns() -> usize {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ListItem {
     /// Item content
     pub content: String,
@@ -525,6 +534,7 @@ component_catalog! {
 /// Ideal for structured information blocks where a label identifies a category
 /// and associated details are listed alongside it.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct SideLabel {
     /// Section heading shown in the left column
     pub heading: String,
@@ -595,6 +605,7 @@ component_catalog! {
 /// FAQ list component
 /// Question-answer pairs for FAQs, knowledge bases, product docs
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct FaqList {
     /// FAQ items
     pub items: Vec<FaqItem>,
@@ -604,6 +615,7 @@ pub struct FaqList {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct FaqItem {
     /// Question
     pub question: String,
@@ -661,6 +673,7 @@ component_catalog! {
 /// Large, visually prominent single quote (centered, full-width)
 /// For: Key statements, expert opinions, marketing headlines
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct PullQuote {
     /// The quote text
     pub quote: String,
@@ -705,6 +718,7 @@ component_catalog! {
 /// Term-definition pairs for reference, appendix, or terminology
 /// For: Glossaries, abbreviations, technical terms, standards
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct GlossaryList {
     /// Glossary items
     pub items: Vec<GlossaryItem>,
@@ -714,6 +728,7 @@ pub struct GlossaryList {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct GlossaryItem {
     /// Term/abbreviation
     pub term: String,

@@ -19,6 +19,9 @@ order: 1
 | `assets` | object | `{}` | Name → file path; files are added to the Typst file system |
 | `page_setup` | object | see below | Paper, orientation, margins, header and footer |
 
+Check a request with `renderreport validate` and get its JSON Schema with `renderreport schema`,
+see the [CLI](../cli/). The Wasm build exports `validate` as well.
+
 With a `title`, the report opens with a title page, unless a pack template renders its own. Without one, the PDF document title falls
 back to the first `cover-page` component's title, then the first `section`'s. PDF/UA-1 requires a
 document title, so a report with neither fails to render.

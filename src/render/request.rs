@@ -13,6 +13,7 @@ fn default_true() -> bool {
 
 /// Page layout configuration for a render request.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct PageSetup {
     /// Paper format: "a4" | "a3" | "letter" | "legal" (default: "a4")
     #[serde(default)]
@@ -50,6 +51,7 @@ impl Default for PageSetup {
 
 /// Request to render a report
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct RenderRequest {
     /// Template identifier
     pub template_id: String,

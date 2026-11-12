@@ -13,6 +13,7 @@ use std::collections::HashMap;
 
 /// A single token value
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(untagged)]
 pub enum TokenValue {
     /// Color value (hex, rgb, or named)
@@ -72,6 +73,17 @@ impl<'de> Deserialize<'de> for ThemeTokens {
             }
         }
         Ok(Self { tokens })
+    }
+}
+
+#[cfg(feature = "schema")]
+impl schemars::JsonSchema for ThemeTokens {
+    fn schema_name() -> std::borrow::Cow<'static, str> {
+        "ThemeTokens".into()
+    }
+
+    fn json_schema(generator: &mut schemars::SchemaGenerator) -> schemars::Schema {
+        <HashMap<String, TokenValue>>::json_schema(generator)
     }
 }
 

@@ -22,7 +22,10 @@ pub mod engine;
 pub mod pack;
 pub mod patterns;
 pub mod render;
+#[cfg(feature = "schema")]
+pub mod schema;
 pub mod theme;
+pub mod validate;
 pub mod vfs;
 
 #[cfg(feature = "wasm")]
