@@ -27,3 +27,20 @@ fn every_component_with_a_validator_has_a_schema() {
         );
     }
 }
+
+#[test]
+fn an_alias_is_a_known_component_type() {
+    let request = r#"{ "template_id": "default", "title": "R", "components": [
+        { "type": "table", "data": { "columns": [{ "header": "A" }], "rows": [["x"]] } },
+        { "type": "table", "data": { "columns": "wrong", "rows": [] } },
+        { "type": "cover-page", "data": { "title": "Report" } }
+    ] }"#;
+    let issues = validate_request(request, &[]);
+    assert_eq!(issues.len(), 1, "{issues:?}");
+    assert_eq!(issues[0].path, "components[1].data");
+    assert!(issues[0].message.starts_with("table:"), "{issues:?}");
+
+    // A pack that defines the name itself keeps it.
+    let issues = validate_request(request, &["table"]);
+    assert_eq!(issues.len(), 0, "{issues:?}");
+}

@@ -7,14 +7,15 @@ use serde::{Deserialize, Serialize};
 
 component_catalog! {
     id: "audit-table",
+    aliases: ["table"],
     data: AuditTable,
     template: include_str!("../../templates/components/audit_table.typ"),
-    description: "Tabular data for audit results with severity columns",
+    description: "Table with an optional title, column headers, striped rows and optional row numbers",
     category: ComponentCategory::DataComparison,
     layout_hint: LayoutHint::Breakable,
 }
 
-/// Audit table for tabular data
+/// General-purpose table; also available as `type: "table"` and [`Table`].
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct AuditTable {
@@ -32,6 +33,9 @@ pub struct AuditTable {
     #[serde(default = "default_true")]
     pub striped: bool,
 }
+
+/// The neutral name of [`AuditTable`], the `table` component.
+pub type Table = AuditTable;
 
 fn default_true() -> bool {
     true

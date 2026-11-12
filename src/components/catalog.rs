@@ -24,6 +24,9 @@
 pub struct ComponentDescriptor {
     /// Stable component type ID (e.g. `"finding"`, `"score-card"`).
     pub id: &'static str,
+    /// Other names the component answers to in a request's `type`. A request
+    /// using one is rewritten to `id` before it is rendered.
+    pub aliases: &'static [&'static str],
     /// Raw Typst template source embedded at compile time.
     pub template: &'static str,
     /// Human-readable description for docs/tooling.
@@ -146,9 +149,9 @@ impl ComponentCatalog {
         inventory::iter::<ComponentDescriptor>()
     }
 
-    /// Look up a descriptor by component ID.
+    /// Look up a descriptor by component ID or alias.
     pub fn get(id: &str) -> Option<&'static ComponentDescriptor> {
-        Self::all().find(|d| d.id == id)
+        Self::all().find(|d| d.id == id || d.aliases.contains(&id))
     }
 
     /// All registered component IDs.
@@ -159,9 +162,10 @@ impl ComponentCatalog {
 
 /// Register a component with the global [`crate::ComponentCatalog`].
 ///
-/// Place the call next to the component's struct. `fn_name` is only needed
-/// when the Typst function name differs from `id`; `data` names the struct
-/// that JSON data is normalized through.
+/// Place the call next to the component's struct. `aliases` lists further
+/// names for `type`; `fn_name` is only needed when the Typst function name
+/// differs from `id`; `data` names the struct that JSON data is normalized
+/// through.
 ///
 /// # Example
 ///
@@ -193,6 +197,7 @@ macro_rules! component_catalog {
     };
     (
         id: $id:literal,
+        $(aliases: [$($alias:literal),* $(,)?],)?
         $(fn_name: $fn_name:literal,)?
         $(data: $data:ty,)?
         template: $template:expr,
@@ -203,6 +208,7 @@ macro_rules! component_catalog {
         ::inventory::submit! {
             $crate::components::catalog::ComponentDescriptor {
                 id: $id,
+                aliases: &[$($($alias),*)?],
                 template: $template,
                 description: $desc,
                 category: $cat,

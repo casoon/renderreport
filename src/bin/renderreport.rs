@@ -166,9 +166,15 @@ fn list_components(markdown: bool, category_filter: Option<&str>) {
                 LayoutHint::AlwaysNewPage => "AlwaysNewPage",
                 LayoutHint::KeepWithNext => "KeepWithNext",
             };
+            let id = if d.aliases.is_empty() {
+                format!("`{}`", d.id)
+            } else {
+                let aliases: Vec<_> = d.aliases.iter().map(|a| format!("`{a}`")).collect();
+                format!("`{}` (alias {})", d.id, aliases.join(", "))
+            };
             println!(
-                "| `{}` | {} | {} | {} |",
-                d.id,
+                "| {} | {} | {} | {} |",
+                id,
                 d.category.label(),
                 hint,
                 d.description
@@ -182,12 +188,18 @@ fn list_components(markdown: bool, category_filter: Option<&str>) {
                 LayoutHint::AlwaysNewPage => "always-new-page",
                 LayoutHint::KeepWithNext => "keep-with-next",
             };
+            let alias = if d.aliases.is_empty() {
+                String::new()
+            } else {
+                format!(" (alias: {})", d.aliases.join(", "))
+            };
             println!(
-                "{:30} {:25} {:18} {}",
+                "{:30} {:25} {:18} {}{}",
                 d.id,
                 d.category.label(),
                 hint,
-                d.description
+                d.description,
+                alias
             );
         }
         println!("\n{} component(s)", descriptors.len());

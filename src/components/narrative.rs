@@ -1,5 +1,8 @@
 //! Narrative and storytelling components: findings, timelines and recommendations.
 
+// `DominantIssueSpotlight` is deprecated but stays registered.
+#![allow(deprecated)]
+
 use super::catalog::{ComponentCategory, LayoutHint};
 use super::{Component, Severity};
 use crate::component_catalog;
@@ -967,6 +970,7 @@ component_catalog! {
 
 /// Full-width spotlight for a single dominant issue
 /// For: Highlighting the biggest problem in an audit report
+#[deprecated(note = "use `SpotlightCard` (component `spotlight-card`)")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct DominantIssueSpotlight {

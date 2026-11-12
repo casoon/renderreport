@@ -95,7 +95,9 @@ fn check_component(value: &Value, path: &str, extra: &[&str], issues: &mut Vec<I
         return;
     };
 
-    match ComponentCatalog::get(id) {
+    // A name the request's pack defines wins over a built-in alias.
+    let descriptor = ComponentCatalog::get(id).filter(|d| d.id == id || !extra.contains(&id));
+    match descriptor {
         Some(descriptor) => {
             if let Some(validate) = descriptor.validate {
                 if let Err(message) = validate(data) {

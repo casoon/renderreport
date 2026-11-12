@@ -85,23 +85,32 @@ component_catalog! {
     id: "cover-page",
     data: CoverPage,
     template: include_str!("../../templates/components/cover_page.typ"),
-    description: "Full-page cover with title, logo, and metadata",
+    description: "Full-page cover with title, logo, and metadata; score block optional",
     category: ComponentCategory::Layout,
     // The cover is the first page and emits its own trailing page break, so it
     // must NOT request a leading break (that would produce a blank page 1).
     layout_hint: LayoutHint::KeepTogether,
 }
 
-/// Professional cover page with score preview
+/// Cover page with score preview, or without score block, see [`CoverPage::plain`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct CoverPage {
+    #[serde(default)]
     pub brand: String,
     pub title: String,
+    /// Subject line under the title (a domain, a client, a project). Optional.
+    #[serde(default)]
     pub domain: String,
+    #[serde(default)]
     pub subtitle: String,
+    #[serde(default)]
     pub date: String,
-    pub score: u32,
+    /// Headline score. Without it the cover has no score block (score,
+    /// findings count); see [`CoverPage::plain`].
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub score: Option<u32>,
+    #[serde(default)]
     pub grade: String,
     /// Optional brand logo asset path (e.g. a registered SVG). When set, it is
     /// rendered in the top-left brand slot instead of the plain `brand` text —
@@ -164,7 +173,7 @@ impl CoverPage {
             domain: domain.into(),
             subtitle: String::new(),
             date: String::new(),
-            score,
+            score: Some(score),
             grade: grade.into(),
             logo_src: String::new(),
             band_phrase: String::new(),
@@ -180,6 +189,15 @@ impl CoverPage {
             indicator_gauges: vec![],
             indicators_label: String::new(),
             computed_status,
+        }
+    }
+
+    /// A cover without score block: title, subtitle, date, brand or logo and
+    /// an optional `domain` line.
+    pub fn plain(title: &str) -> Self {
+        Self {
+            score: None,
+            ..Self::new(title, "", 0, "")
         }
     }
 

@@ -14,6 +14,7 @@ pub use super::layout::{
 pub use super::marketing::{BenefitStrip, PricingCard, UseCaseCard};
 pub use super::media::{LogoStrip, Watermark};
 pub use super::metrics::{BigNumber, MetricStrip, MetricStripItem, ProgressBar};
+#[allow(deprecated)]
 pub use super::narrative::{
     ChecklistPanel, ChecklistRow, DiagnosisPanel, DiagnosisRow, DominantIssueSpotlight, ImpactGrid,
     ImpactGridCard, PhaseBlock, RecommendationCard, SpotlightCard, SpotlightCardVariant,

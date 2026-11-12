@@ -46,6 +46,10 @@ pub fn request_schema() -> Value {
     let mut variants = Vec::new();
     for d in &descriptors {
         known.push(Value::String(d.id.to_string()));
+        known.extend(d.aliases.iter().map(|a| Value::String(a.to_string())));
+        let names: Vec<&str> = std::iter::once(d.id)
+            .chain(d.aliases.iter().copied())
+            .collect();
         let data = match d.schema {
             Some(schema) => schema(&mut ctx),
             None => json!({ "type": "object" }),
@@ -54,7 +58,7 @@ pub fn request_schema() -> Value {
             "type": "object",
             "title": d.id,
             "description": d.description,
-            "properties": { "type": { "const": d.id }, "data": data },
+            "properties": { "type": { "enum": names }, "data": data },
             "required": ["type", "data"],
         }));
     }
@@ -144,6 +148,24 @@ mod tests {
             .and_then(Value::as_array)
             .expect("components are a oneOf");
         assert_eq!(variants.len(), ComponentCatalog::all().count() + 3);
+    }
+
+    #[test]
+    fn request_schema_accepts_an_alias_as_type() {
+        let schema = request_schema();
+        let variants = schema
+            .pointer("/$defs/RenderRequest/properties/components/items/oneOf")
+            .and_then(Value::as_array)
+            .expect("components are a oneOf");
+        let table = variants
+            .iter()
+            .find(|v| v["title"] == "audit-table")
+            .expect("audit-table variant");
+        assert_eq!(
+            table["properties"]["type"]["enum"],
+            json!(["audit-table", "table"])
+        );
+        assert!(component_schema("table").is_some());
     }
 
     #[test]

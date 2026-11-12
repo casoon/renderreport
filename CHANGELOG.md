@@ -13,9 +13,13 @@ All notable changes to this project are documented in this file. The format foll
 - **CLI:** `renderreport validate` checks a request without rendering it and reports each problem with its path, e.g. `components[0].data: score-card: score: invalid type`; unknown component types are reported too.
 - **CLI:** `renderreport schema [--component <id>]` prints the JSON Schema of a request or of one component's data.
 - **Library:** `validate::validate_request`, the Wasm function `validate` and, with the new `schema` feature (part of `cli`), the `schema` module.
+- **Components:** aliases: a component can be registered with further names (`aliases` in `component_catalog!` and `ComponentDescriptor`). `ComponentCatalog::get`, `validate`, the schema and `list-components` know them; a request's `type` is rewritten to the component id before rendering, so templates stay unchanged, and a name defined by the request's pack wins over an alias. First alias: `table` for `audit-table`, in Rust `Table` for `AuditTable`.
+- **CoverPage:** a cover without score block: `CoverPage::plain(title)`, or in a request `cover-page` data without `score`; `brand`, `domain`, `subtitle`, `date` and `grade` are optional there. Existing covers render as before.
 
 ### Changed
 
+- **CoverPage:** the field `score` is an `Option<u32>` (`CoverPage::new` still takes a plain score).
+- **Components:** the description of `audit-table` is general (it is a table, not only for audits); the id stays. The docs list the audit-specific components as a group, and `DominantIssueSpotlight` is deprecated in favour of `SpotlightCard`. `DiagnosisPanel` and `WrongRightBlock` stay without deprecation for now.
 - **Library:** `RenderOutput::Html`, an unused stub, is removed; `RenderOutput` keeps its single `Pdf` variant.
 - **Docs:** the project site uses the current shared theme (0.12.3) and ends with a link to the
   quickstart.

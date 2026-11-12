@@ -15,7 +15,7 @@ A component is a Rust struct with a builder, a Typst function and an id. In a re
 | Layout | 9 | `section`, `cover-page`, `grid-component`, `table-of-contents`, `page-break` |
 | Text & Editorial | 15 | `textblock`, `callout`, `quote-block`, `label` |
 | Metrics & KPIs | 16 | `score-card`, `gauge`, `big-number`, `progress-bar` |
-| Data & Comparison | 9 | `audit-table`, `crosstab`, `pivot-table`, `chart` |
+| Data & Comparison | 9 | `audit-table` (also `table`), `crosstab`, `pivot-table`, `chart` |
 | Narrative & Storytelling | 16 | `finding`, `problem-solution`, `timeline`, `process-flow` |
 | Infographics | 3 | `funnel`, `word-search` |
 | Marketing & Sales | 8 | `product-hero`, `feature-grid`, `pricing-card`, `cta-box` |
@@ -53,6 +53,30 @@ renderreport list-components --category metrics
 renderreport list-components --markdown
 ```
 
+## Aliases
+
+A component can answer to more than one name. `table` is an alias of `audit-table`: both are
+the same component, in a request (`"type": "table"`) and in Rust (`Table` is `AuditTable`). The
+request is rewritten to the id before it is rendered, so templates and packs only see
+`audit-table`; `validate`, `schema` and `list-components` know the alias. A component of the same
+name defined by the request's pack takes precedence over the alias.
+
+## Audit-specific components
+
+Most components fit any report. These were made for website audits and keep their audit
+vocabulary (scores, severities, modules, devices); they work for other data too, but are the
+place to look first when a report is about an audit:
+
+| Component | Purpose |
+| --- | --- |
+| `benchmark-table` | Scored rows compared against a benchmark |
+| `module-comparison` | Score rows per audit module |
+| `severity-overview` | Counts per severity level |
+| `device-preview` | Desktop and mobile screenshots side by side |
+| `cover-page` | With `score`, the cover shows the headline score, the findings count and module gauges; without `score` it is a plain cover (title, subtitle, date, brand or logo, optional `domain` line) |
+
+Default texts of these components are German unless the request sets the label fields.
+
 The [component catalog](../../../showcase/component-catalog/) renders every component with sample
 data. The table below is the output of `renderreport list-components --markdown` for 0.7.0.
 
@@ -60,7 +84,7 @@ data. The table below is the output of `renderreport list-components --markdown`
 
 | ID | Category | Layout Hint | Description |
 |---|---|---|---|
-| `audit-table` | Data & Comparison | Breakable | Tabular data for audit results with severity columns |
+| `audit-table` (alias `table`) | Data & Comparison | Breakable | Table with an optional title, column headers, striped rows and optional row numbers |
 | `barcode` | Media & Assets | KeepTogether | 1D/2D barcode (EAN-13, QR, DataMatrix, etc.) |
 | `before-after` | Narrative & Storytelling | KeepTogether | Before/after comparison with labeled panels |
 | `benchmark-table` | Data & Comparison | Breakable | Benchmark comparison table with scored rows |

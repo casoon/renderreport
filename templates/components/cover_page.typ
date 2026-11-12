@@ -1,7 +1,9 @@
 // Cover Page Component
 // Professional report cover with score preview + module gauge strip.
+// Without `score` the score card (score and findings) is left out.
 
 #let cover-page(data) = {
+  let has-score = data.at("score", default: none) != none
   let status-color = if data.computed_status == "good" {
     color-ok
   } else if data.computed_status == "warning" {
@@ -41,8 +43,10 @@
 
   // ── Title block ───────────────────────────────────────────────
   text(size: 34pt, weight: "bold", fill: color-text, tracking: -0.5pt)[#data.title]
-  v(spacing-3)
-  text(size: 16pt, weight: "semibold", fill: color-primary)[#data.domain]
+  if has-score or data.domain != "" {
+    v(spacing-3)
+    text(size: 16pt, weight: "semibold", fill: color-primary)[#data.domain]
+  }
   if data.subtitle != "" {
     v(spacing-3)
     text(size: font-size-base, fill: color-text-muted)[#data.subtitle]
@@ -55,57 +59,59 @@
   let score-label = if data.at("score_label", default: "") != "" { data.score_label } else { "GESAMTSCORE" }
   let findings-label = if data.at("findings_label", default: "") != "" { data.findings_label } else { "BEFUNDE" }
   let modules-label = if data.at("modules_label", default: "") != "" { data.modules_label } else { "MODULE IM ÜBERBLICK" }
-  block(
-    width: 100%,
-    fill: color-surface-soft,
-    stroke: (paint: color-border, thickness: component-card-border-width),
-    radius: 10pt,
-    inset: spacing-5,
-  )[
-    #grid(
-      columns: (1.7fr, 1fr),
-      column-gutter: spacing-5,
-      // Score + condition
-      [
-        #text(size: font-size-xs, weight: "bold", fill: color-text-muted, tracking: 1pt)[#score-label]
-        #v(spacing-2)
-        #grid(
-          columns: (auto, 1fr),
-          column-gutter: spacing-3,
-          align: (bottom, bottom),
-          text(size: 56pt, weight: "bold", fill: status-color)[#data.score],
-          [
-            #v(spacing-1)
-            #text(size: font-size-lg, weight: "bold", fill: color-text)[#condition]
-          ],
-        )
-        #v(spacing-3)
-        #theme-progress-bar(data.score, bar-color: status-color)
-      ],
-      // Findings
-      [
-        #text(size: font-size-xs, weight: "bold", fill: color-text-muted, tracking: 1pt)[#findings-label]
-        #v(spacing-2)
-        #text(size: 32pt, weight: "bold", fill: color-text)[#data.total_issues]
-        #v(spacing-3)
-        #if data.critical_issues > 0 [
-          #box(
-            fill: color-bad-soft,
-            radius: 999pt,
-            inset: (x: 8pt, y: 4pt),
-            text(size: font-size-xs, weight: "bold", fill: color-bad)[#data.critical_issues #{if data.at("label_critical", default: "") != "" { data.label_critical } else { "kritisch" }}]
+  if has-score {
+    block(
+      width: 100%,
+      fill: color-surface-soft,
+      stroke: (paint: color-border, thickness: component-card-border-width),
+      radius: 10pt,
+      inset: spacing-5,
+    )[
+      #grid(
+        columns: (1.7fr, 1fr),
+        column-gutter: spacing-5,
+        // Score + condition
+        [
+          #text(size: font-size-xs, weight: "bold", fill: color-text-muted, tracking: 1pt)[#score-label]
+          #v(spacing-2)
+          #grid(
+            columns: (auto, 1fr),
+            column-gutter: spacing-3,
+            align: (bottom, bottom),
+            text(size: 56pt, weight: "bold", fill: status-color)[#data.score],
+            [
+              #v(spacing-1)
+              #text(size: font-size-lg, weight: "bold", fill: color-text)[#condition]
+            ],
           )
-        ] else [
-          #box(
-            fill: color-ok-soft,
-            radius: 999pt,
-            inset: (x: 8pt, y: 4pt),
-            text(size: font-size-xs, weight: "bold", fill: color-ok)[#{if data.at("label_no_critical", default: "") != "" { data.label_no_critical } else { "0 kritisch" }}]
-          )
-        ]
-      ],
-    )
-  ]
+          #v(spacing-3)
+          #theme-progress-bar(data.score, bar-color: status-color)
+        ],
+        // Findings
+        [
+          #text(size: font-size-xs, weight: "bold", fill: color-text-muted, tracking: 1pt)[#findings-label]
+          #v(spacing-2)
+          #text(size: 32pt, weight: "bold", fill: color-text)[#data.total_issues]
+          #v(spacing-3)
+          #if data.critical_issues > 0 [
+            #box(
+              fill: color-bad-soft,
+              radius: 999pt,
+              inset: (x: 8pt, y: 4pt),
+              text(size: font-size-xs, weight: "bold", fill: color-bad)[#data.critical_issues #{if data.at("label_critical", default: "") != "" { data.label_critical } else { "kritisch" }}]
+            )
+          ] else [
+            #box(
+              fill: color-ok-soft,
+              radius: 999pt,
+              inset: (x: 8pt, y: 4pt),
+              text(size: font-size-xs, weight: "bold", fill: color-ok)[#{if data.at("label_no_critical", default: "") != "" { data.label_no_critical } else { "0 kritisch" }}]
+            )
+          ]
+        ],
+      )
+    ]
+  }
 
   // ── Module gauge strip ────────────────────────────────────────
   if data.module_gauges.len() > 0 {

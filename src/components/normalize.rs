@@ -14,28 +14,43 @@ use serde_json::Value;
 use super::{Component, ComponentCatalog};
 
 /// Normalizes every component in `components`, including components nested
-/// in other components' data (grid items, flow groups, columns).
+/// in other components' data (grid items, flow groups, columns). A `type` that
+/// is an alias of a built-in component is rewritten to its ID, so templates
+/// only ever see the ID; names in `own` (components the request's pack
+/// defines) are left alone.
 ///
 /// Data that does not deserialize into the component's struct — a missing
 /// required field, a wrong type, or data that is already the output of
 /// `to_data` — is left as it is, so the render behaves as before.
-pub fn normalize_components(components: &mut [Value]) {
+pub fn normalize_components(components: &mut [Value], own: &[&str]) {
     for component in components {
-        normalize_value(component);
+        normalize_value(component, own);
     }
 }
 
 /// Walks the JSON tree depth-first, so nested components are normalized
 /// before the component that contains them.
-fn normalize_value(value: &mut Value) {
+fn normalize_value(value: &mut Value, own: &[&str]) {
     match value {
-        Value::Array(items) => items.iter_mut().for_each(normalize_value),
+        Value::Array(items) => items.iter_mut().for_each(|item| normalize_value(item, own)),
         Value::Object(map) => {
-            map.values_mut().for_each(normalize_value);
+            map.values_mut().for_each(|item| normalize_value(item, own));
             let Some(Value::String(id)) = map.get("type") else {
                 return;
             };
-            let id = id.clone();
+            let mut id = id.clone();
+            if !map.get("data").is_some_and(Value::is_object) {
+                return;
+            }
+            if let Some(canonical) = ComponentCatalog::get(&id).map(|d| d.id) {
+                if canonical != id {
+                    if own.contains(&id.as_str()) {
+                        return;
+                    }
+                    id = canonical.to_string();
+                    map.insert("type".into(), Value::String(id.clone()));
+                }
+            }
             if let Some(Value::Object(data)) = map.get_mut("data") {
                 if let Some(Value::Object(computed)) =
                     normalize_data(&id, &Value::Object(data.clone()))
@@ -84,7 +99,7 @@ mod tests {
 
     fn normalized(component: Value) -> Value {
         let mut components = vec![component];
-        normalize_components(&mut components);
+        normalize_components(&mut components, &[]);
         components.remove(0)
     }
 
@@ -113,6 +128,34 @@ mod tests {
             grid["data"]["items"][0]["content"]["data"]["computed_status"],
             "good"
         );
+    }
+
+    #[test]
+    fn rewrites_an_alias_to_the_component_id() {
+        let table = normalized(json!({
+            "type": "table", "data": { "columns": [{ "header": "A" }], "rows": [["x"]] }
+        }));
+        assert_eq!(table["type"], "audit-table");
+        assert_eq!(table["data"]["striped"], true);
+
+        let nested = normalized(json!({
+            "type": "grid-component",
+            "data": { "columns": 1, "items": [{ "content": {
+                "type": "table", "data": { "columns": [], "rows": [] }
+            } }] }
+        }));
+        assert_eq!(nested["data"]["items"][0]["content"]["type"], "audit-table");
+
+        // Only `{type, data}` objects are components.
+        let other = json!({ "type": "table", "label": "x" });
+        assert_eq!(normalized(other.clone()), other);
+    }
+
+    #[test]
+    fn leaves_an_alias_alone_that_the_pack_defines() {
+        let mut components = vec![json!({ "type": "table", "data": { "x": 1 } })];
+        normalize_components(&mut components, &["table"]);
+        assert_eq!(components[0]["type"], "table");
     }
 
     #[test]

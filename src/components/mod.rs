@@ -9,7 +9,7 @@
 //!
 //! - `ScoreCard` - Display a metric with score visualization
 //! - `Finding` - An audit finding with severity
-//! - `AuditTable` - Tabular data for audit results
+//! - `AuditTable` (alias `Table`) - General-purpose table
 //! - `Section` - Document section with heading
 //! - `Image` - Image with optional caption
 //! - `Callout` - Highlighted information box
@@ -38,7 +38,7 @@ mod narrative;
 pub use catalog::{ComponentCatalog, ComponentCategory, ComponentDescriptor, LayoutHint};
 pub use data::{
     AuditTable, BenchmarkColumn, BenchmarkRow, BenchmarkTable, ComparisonModule, ModuleComparison,
-    TableColumn,
+    Table, TableColumn,
 };
 pub use editorial::{
     Callout, CalloutVariant, FactBox, QuoteBlock, StatusPill, TagCloud, TagCloudItem,
@@ -64,6 +64,7 @@ pub use registry::{ComponentId, ComponentRegistry};
 pub use wordsearch::{WordSearch, WordSearchBuilder};
 
 // Re-export new primitive and composite types
+#[allow(deprecated)]
 pub use advanced::{
     BenefitStrip, BigNumber, ChecklistPanel, ChecklistRow, Columns, ComparisonBlock,
     ComparisonCluster, ComparisonClusterItem, DevicePreview, DiagnosisPanel, DiagnosisRow,
