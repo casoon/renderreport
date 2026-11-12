@@ -1,0 +1,25 @@
+{
+  "client": { "name": "Acme Shop" },
+  "period": "March 2026",
+  "author": "Web Team",
+  "scores": [
+    { "name": "Performance", "value": 78.4, "note": "Lighthouse, mobile" },
+    { "name": "Accessibility", "value": 91, "note": "axe, 42 pages" },
+    { "name": "SEO", "value": 63.6, "note": "Crawl of 1,280 URLs" }
+  ],
+  "findings": [
+    {
+      "title": "Category pages load hero images without size hints",
+      "severity": "high",
+      "description": "Images on category pages have no width and height, so the layout shifts while they load.",
+      "recommendation": "Set width and height on every hero image."
+    },
+    {
+      "title": "212 URLs return a redirect chain",
+      "severity": "medium",
+      "description": "Old product URLs redirect twice before reaching the current page.",
+      "recommendation": "Point each old URL directly at its final target."
+    }
+  ],
+  "note": "Two findings are open; the next review is in April."
+}

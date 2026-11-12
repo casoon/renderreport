@@ -1,5 +1,6 @@
 //! Rendering functionality
 
+pub mod bind;
 mod request;
 pub mod typst_compile;
 

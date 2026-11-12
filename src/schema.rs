@@ -33,7 +33,8 @@ pub fn component_schema(id: &str) -> Option<Value> {
 
 /// Schema of a whole render request. Every `components` entry is checked
 /// against the schema of its `type`; types outside the catalog (pack
-/// components) are accepted with any `data`.
+/// components) are accepted with any `data`. `for`/`if` entries of a
+/// template (see [`crate::render::bind`]) are allowed next to them.
 pub fn request_schema() -> Value {
     let mut ctx = SchemaContext::new();
     let request = ctx.generator.subschema_for::<RenderRequest>().to_value();
@@ -68,6 +69,31 @@ pub fn request_schema() -> Value {
         "required": ["type", "data"],
     }));
 
+    // Template directives, see `render::bind`: they are resolved before the
+    // request is read, so they stand next to the components.
+    variants.push(json!({
+        "type": "object",
+        "title": "for",
+        "description": "Repeats `component` for each element of a list in the data.",
+        "properties": {
+            "for": { "type": "string", "pattern": "^\\S+ in \\S+$" },
+            "component": {},
+        },
+        "required": ["for", "component"],
+        "additionalProperties": false,
+    }));
+    variants.push(json!({
+        "type": "object",
+        "title": "if",
+        "description": "Keeps `component` only if the data path exists and is not empty.",
+        "properties": {
+            "if": { "type": "string" },
+            "component": {},
+        },
+        "required": ["if", "component"],
+        "additionalProperties": false,
+    }));
+
     let mut root = with_definitions(json!({ "allOf": [request] }), &mut ctx);
     if let Some(properties) = root
         .pointer_mut("/$defs/RenderRequest/properties")
@@ -76,7 +102,7 @@ pub fn request_schema() -> Value {
         properties.insert(
             "components".into(),
             json!({
-                "description": "Report components, each `{type, data}`.",
+                "description": "Report components, each `{type, data}`, or a `for`/`if` entry of a template.",
                 "type": "array",
                 "items": { "oneOf": variants },
             }),
@@ -117,7 +143,7 @@ mod tests {
             .pointer("/$defs/RenderRequest/properties/components/items/oneOf")
             .and_then(Value::as_array)
             .expect("components are a oneOf");
-        assert_eq!(variants.len(), ComponentCatalog::all().count() + 1);
+        assert_eq!(variants.len(), ComponentCatalog::all().count() + 3);
     }
 
     #[test]

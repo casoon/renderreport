@@ -20,6 +20,8 @@ Options:
       --typ              Write the generated Typst source instead of compiling it to PDF
       --pack-path <DIR>  Directory to search for the pack named by the request's `pack_id`
                          (repeatable; searched before the default `./packs`)
+      --data <FILE>      JSON (or .csv) data bound into the request's `{{ placeholders }}`,
+                         `for` and `if`
 ```
 
 Reads a [render request](../render-request/) and writes the PDF, or with `--typ` the Typst source
@@ -30,6 +32,9 @@ or a failed render.
 The CLI engine uses the default configuration: packs from `./packs` and
 `~/.renderreport/packs` (after any `--pack-path`), system fonts plus the bundled Fira Sans. A
 request with `pack_id` loads that pack before rendering.
+
+With `--data` the request is a template: placeholders, `for` and `if` are resolved against the
+data file before rendering, see [templates and data](../../guides/templates-and-data/).
 
 ## `renderreport list-components`
 
@@ -54,6 +59,8 @@ Arguments:
 
 Options:
       --pack-path <DIR>  Directory to search for the pack named by the request's `pack_id`
+      --data <FILE>      JSON (or .csv) data bound into the request's `{{ placeholders }}`,
+                         `for` and `if`
 ```
 
 Checks a [render request](../render-request/) without rendering it: the request's own fields,
@@ -62,7 +69,9 @@ component types that neither the catalog nor the request's pack defines. Each pr
 as `path: reason` on stderr, for example `components[0].data: score-card: score: invalid type:
 string "hi", expected u32`. Exit code 0 when the request is valid, 1 otherwise.
 
-`render` stays lenient and renders data that does not fit; `validate` is what reports it.
+`render` stays lenient and renders data that does not fit; `validate` is what reports it. With
+`--data` the template is bound first and the resolved request is checked, so reported paths
+refer to the resolved request.
 
 ## `renderreport schema`
 

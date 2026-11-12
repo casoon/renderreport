@@ -37,6 +37,11 @@ enum Commands {
         /// (repeatable; searched before the default `./packs`)
         #[arg(long = "pack-path", value_name = "DIR")]
         pack_paths: Vec<PathBuf>,
+
+        /// JSON (or .csv) data bound into the request's `{{ placeholders }}`,
+        /// `for` and `if`
+        #[arg(long, value_name = "FILE")]
+        data: Option<PathBuf>,
     },
 
     /// Check a request without rendering it
@@ -48,6 +53,11 @@ enum Commands {
         /// (repeatable; searched before the default `./packs`)
         #[arg(long = "pack-path", value_name = "DIR")]
         pack_paths: Vec<PathBuf>,
+
+        /// JSON (or .csv) data bound into the request's `{{ placeholders }}`,
+        /// `for` and `if`
+        #[arg(long, value_name = "FILE")]
+        data: Option<PathBuf>,
     },
 
     /// Print the JSON Schema of a request, or of one component's data
@@ -167,6 +177,27 @@ fn read_input(input: Option<PathBuf>) -> anyhow::Result<String> {
     }
 }
 
+/// With `--data`, the request template with the data bound into it.
+fn apply_data(json: String, data: Option<PathBuf>) -> anyhow::Result<String> {
+    let Some(path) = data else {
+        return Ok(json);
+    };
+    let text = std::fs::read_to_string(&path)
+        .with_context(|| format!("failed to read data file {}", path.display()))?;
+    let data: serde_json::Value = if path.extension().is_some_and(|e| e == "csv") {
+        let rows = renderreport::render::bind::parse_csv(&text)
+            .map_err(|e| anyhow::anyhow!("invalid CSV in {}: {e}", path.display()))?;
+        serde_json::json!({ "rows": rows })
+    } else {
+        serde_json::from_str(&text)
+            .with_context(|| format!("failed to parse data file {}", path.display()))?
+    };
+    let template = serde_json::from_str(&json).context("failed to parse request JSON")?;
+    let bound = renderreport::render::bind::bind(&template, &data)
+        .context("failed to bind data to the request")?;
+    Ok(bound.to_string())
+}
+
 fn run(cli: Cli) -> anyhow::Result<()> {
     match cli.command {
         Commands::Schema { component } => {
@@ -179,8 +210,12 @@ fn run(cli: Cli) -> anyhow::Result<()> {
             println!("{}", serde_json::to_string_pretty(&schema)?);
             return Ok(());
         }
-        Commands::Validate { input, pack_paths } => {
-            let json = read_input(input)?;
+        Commands::Validate {
+            input,
+            pack_paths,
+            data,
+        } => {
+            let json = apply_data(read_input(input)?, data)?;
             let request: Option<RenderRequest> = serde_json::from_str(&json).ok();
 
             // Components of the named pack are valid types; a pack that
@@ -220,8 +255,9 @@ fn run(cli: Cli) -> anyhow::Result<()> {
             output,
             typ,
             pack_paths,
+            data,
         } => {
-            let json = read_input(input)?;
+            let json = apply_data(read_input(input)?, data)?;
 
             let request: RenderRequest =
                 serde_json::from_str(&json).context("failed to parse request JSON")?;

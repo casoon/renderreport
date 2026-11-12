@@ -32,6 +32,16 @@ initSync({ module: wasmModule });
 const pdf = render(JSON.stringify(request)); // Uint8Array
 ```
 
+## `render_with_data`
+
+Takes a request template and a data object, both as JSON strings, binds the data into the
+template (see [templates and data](../templates-and-data/)) and returns the PDF bytes. Binding
+errors are thrown as `binding data failed: <template path>: <reason>`.
+
+```js
+const pdf = render_with_data(JSON.stringify(template), JSON.stringify(data));
+```
+
 ## `render_wordsearch`
 
 Builds a complete word search document from a small request: an explanation page, the puzzle

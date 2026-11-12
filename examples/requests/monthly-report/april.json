@@ -1,0 +1,11 @@
+{
+  "client": { "name": "Acme Shop" },
+  "period": "April 2026",
+  "author": "Web Team",
+  "scores": [
+    { "name": "Performance", "value": 85.2, "note": "Lighthouse, mobile" },
+    { "name": "Accessibility", "value": 94, "note": "axe, 42 pages" },
+    { "name": "SEO", "value": 81, "note": "Crawl of 1,310 URLs" }
+  ],
+  "findings": []
+}
