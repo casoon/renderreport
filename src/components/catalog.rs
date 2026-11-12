@@ -24,6 +24,9 @@
 pub struct ComponentDescriptor {
     /// Stable component type ID (e.g. `"finding"`, `"score-card"`).
     pub id: &'static str,
+    /// Other names the component answers to in a request's `type`. A request
+    /// using one is rewritten to `id` before it is rendered.
+    pub aliases: &'static [&'static str],
     /// Raw Typst template source embedded at compile time.
     pub template: &'static str,
     /// Human-readable description for docs/tooling.
@@ -38,6 +41,38 @@ pub struct ComponentDescriptor {
     /// its builder derives (see `normalize_components`). `None` for
     /// components without a Rust struct.
     pub normalize: Option<NormalizeFn>,
+    /// Checks JSON data against the component's struct. `None` for components
+    /// without a Rust struct.
+    pub validate: Option<ValidateFn>,
+    /// JSON Schema of the component's data (feature `schema`). `None` for
+    /// components without a Rust struct, or when the feature is off.
+    pub schema: Option<SchemaFn>,
+}
+
+/// Checks that component data fits its struct; the error names the failing
+/// field path and the reason.
+pub type ValidateFn = fn(&serde_json::Value) -> Result<(), String>;
+
+/// Produces the JSON Schema of a component's data. Type definitions shared
+/// between components are collected in the context.
+pub type SchemaFn = fn(&mut SchemaContext) -> serde_json::Value;
+
+/// Collects the type definitions shared by the schemas it produces. Without
+/// feature `schema` it is empty and no component has a schema.
+pub struct SchemaContext {
+    #[cfg(feature = "schema")]
+    pub(crate) generator: schemars::SchemaGenerator,
+}
+
+impl SchemaContext {
+    /// A context with no definitions yet.
+    #[cfg(feature = "schema")]
+    pub(crate) fn new() -> Self {
+        let settings = schemars::generate::SchemaSettings::draft2020_12();
+        Self {
+            generator: schemars::SchemaGenerator::new(settings),
+        }
+    }
 }
 
 /// Deserializes component data into its struct and returns `to_data()`, or
@@ -46,6 +81,11 @@ pub type NormalizeFn = fn(&serde_json::Value) -> Option<serde_json::Value>;
 
 #[doc(hidden)]
 pub use super::normalize::typed as __normalize;
+#[doc(hidden)]
+pub use super::normalize::validate_typed as __validate;
+#[doc(hidden)]
+#[cfg(feature = "schema")]
+pub use crate::schema::schema_of as __schema;
 
 inventory::collect!(ComponentDescriptor);
 
@@ -109,9 +149,9 @@ impl ComponentCatalog {
         inventory::iter::<ComponentDescriptor>()
     }
 
-    /// Look up a descriptor by component ID.
+    /// Look up a descriptor by component ID or alias.
     pub fn get(id: &str) -> Option<&'static ComponentDescriptor> {
-        Self::all().find(|d| d.id == id)
+        Self::all().find(|d| d.id == id || d.aliases.contains(&id))
     }
 
     /// All registered component IDs.
@@ -122,9 +162,10 @@ impl ComponentCatalog {
 
 /// Register a component with the global [`crate::ComponentCatalog`].
 ///
-/// Place the call next to the component's struct. `fn_name` is only needed
-/// when the Typst function name differs from `id`; `data` names the struct
-/// that JSON data is normalized through.
+/// Place the call next to the component's struct. `aliases` lists further
+/// names for `type`; `fn_name` is only needed when the Typst function name
+/// differs from `id`; `data` names the struct that JSON data is normalized
+/// through.
 ///
 /// # Example
 ///
@@ -142,6 +183,13 @@ impl ComponentCatalog {
 macro_rules! component_catalog {
     (@fn_name $id:literal) => { $id };
     (@fn_name $id:literal, $fn_name:literal) => { $fn_name };
+    (@validate) => { None };
+    (@validate $data:ty) => {
+        Some($crate::components::catalog::__validate::<$data>
+            as $crate::components::catalog::ValidateFn)
+    };
+    (@schema) => { None };
+    (@schema $data:ty) => { $crate::__schema_fn!($data) };
     (@normalize) => { None };
     (@normalize $data:ty) => {
         Some($crate::components::catalog::__normalize::<$data>
@@ -149,6 +197,7 @@ macro_rules! component_catalog {
     };
     (
         id: $id:literal,
+        $(aliases: [$($alias:literal),* $(,)?],)?
         $(fn_name: $fn_name:literal,)?
         $(data: $data:ty,)?
         template: $template:expr,
@@ -159,13 +208,38 @@ macro_rules! component_catalog {
         ::inventory::submit! {
             $crate::components::catalog::ComponentDescriptor {
                 id: $id,
+                aliases: &[$($($alias),*)?],
                 template: $template,
                 description: $desc,
                 category: $cat,
                 layout_hint: $hint,
                 fn_name: $crate::component_catalog!(@fn_name $id $(, $fn_name)?),
                 normalize: $crate::component_catalog!(@normalize $($data)?),
+                validate: $crate::component_catalog!(@validate $($data)?),
+                schema: $crate::component_catalog!(@schema $($data)?),
             }
         }
+    };
+}
+
+/// `Some(schema function)` for a data type when feature `schema` is on.
+#[cfg(feature = "schema")]
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __schema_fn {
+    ($data:ty) => {
+        Some(
+            $crate::components::catalog::__schema::<$data> as $crate::components::catalog::SchemaFn,
+        )
+    };
+}
+
+/// Without feature `schema` no component has a schema.
+#[cfg(not(feature = "schema"))]
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __schema_fn {
+    ($data:ty) => {
+        None
     };
 }

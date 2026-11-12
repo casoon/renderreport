@@ -1,0 +1,90 @@
+{
+  "template_id": "default",
+  "title": "Traffic report",
+  "subtitle": "{{ site }} · {{ period }} · example data",
+  "metadata": { "author": "{{ author }}", "lang": "en" },
+  "components": [
+    {
+      "type": "callout",
+      "data": {
+        "variant": "info",
+        "title": "Example data",
+        "content": "All figures in this report are invented. The report is a template: the same file renders with a different data file each month."
+      }
+    },
+    { "type": "section", "data": { "title": "Traffic", "level": 1 } },
+    {
+      "type": "metric-strip",
+      "data": {
+        "items": [
+          { "label": "Pageviews", "value": "{{ pageviews }}" },
+          { "label": "Visitors", "value": "{{ visitors }}" },
+          { "label": "Pages per visit", "value": "{{ pages_per_visit }}" },
+          { "label": "Bounce rate", "value": "{{ bounce_rate }}", "unit": "%" }
+        ]
+      }
+    },
+    {
+      "type": "chart",
+      "data": {
+        "title": "Pageviews per week",
+        "chart_type": "bar",
+        "series": [{ "name": "Pageviews", "data": "{{ weekly }}" }]
+      }
+    },
+    { "type": "section", "data": { "title": "Content and sources", "level": 1 } },
+    {
+      "type": "audit-table",
+      "data": {
+        "title": "Top pages",
+        "columns": [
+          { "header": "Path" },
+          { "header": "Pageviews", "align": "right" },
+          { "header": "Visitors", "align": "right" }
+        ],
+        "rows": "{{ top_pages }}"
+      }
+    },
+    {
+      "type": "audit-table",
+      "data": {
+        "title": "Sources",
+        "columns": [
+          { "header": "Source" },
+          { "header": "Visitors", "align": "right" },
+          { "header": "Share", "align": "right" }
+        ],
+        "rows": "{{ sources }}"
+      }
+    },
+    { "type": "section", "data": { "title": "Campaigns", "level": 1 } },
+    {
+      "type": "grid-component",
+      "data": {
+        "columns": 3,
+        "items": [
+          {
+            "for": "c in campaigns",
+            "component": {
+              "content": {
+                "type": "metric-card",
+                "data": {
+                  "title": "{{ c.name }}",
+                  "value": "{{ c.visitors }}",
+                  "unit": "visitors"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "if": "note",
+      "component": {
+        "type": "callout",
+        "data": { "variant": "tip", "title": "Note", "content": "{{ note }}" }
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "template_id": "default",
+  "title": "{{ client.name }} Monthly Report",
+  "subtitle": "{{ period }}",
+  "metadata": {
+    "author": "{{ author }}"
+  },
+  "components": [
+    {
+      "type": "section",
+      "data": { "title": "Scores", "level": 1 }
+    },
+    {
+      "type": "grid-component",
+      "data": {
+        "columns": 3,
+        "items": [
+          {
+            "for": "s in scores",
+            "component": {
+              "content": {
+                "type": "score-card",
+                "data": {
+                  "title": "{{ s.name }}",
+                  "score": "{{ s.value | round }}",
+                  "description": "{{ s.note }}"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "if": "findings",
+      "component": {
+        "type": "section",
+        "data": { "title": "Findings for {{ client.name | upper }}", "level": 1 }
+      }
+    },
+    {
+      "for": "f in findings",
+      "component": {
+        "type": "finding",
+        "data": {
+          "title": "{{ f.title }}",
+          "severity": "{{ f.severity }}",
+          "description": "{{ f.description }}",
+          "recommendation": "{{ f.recommendation }}"
+        }
+      }
+    },
+    {
+      "if": "note",
+      "component": {
+        "type": "callout",
+        "data": {
+          "variant": "info",
+          "title": "Note",
+          "content": "{{ note }}"
+        }
+      }
+    }
+  ]
+}

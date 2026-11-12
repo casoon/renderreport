@@ -17,6 +17,7 @@ component_catalog! {
 
 /// Simple text label
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Label {
     /// Label text
     pub text: String,
@@ -86,6 +87,7 @@ component_catalog! {
 
 /// Multi-line text block
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct TextBlock {
     /// Text content
     pub content: String,
@@ -150,6 +152,7 @@ component_catalog! {
 
 /// Number field with formatting
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct NumberField {
     /// Number value
     pub value: f64,
@@ -234,6 +237,7 @@ component_catalog! {
 
 /// Date field with formatting
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct DateField {
     /// ISO 8601 date string
     pub date: String,
@@ -298,6 +302,7 @@ component_catalog! {
 
 /// Eyebrow label — small uppercase category marker
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Eyebrow {
     pub text: String,
     #[serde(default)]
@@ -350,6 +355,7 @@ component_catalog! {
 
 /// Resource field for localized strings
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ResourceField {
     /// Resource key
     pub key: String,

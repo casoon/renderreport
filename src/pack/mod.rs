@@ -17,6 +17,7 @@ use std::path::PathBuf;
 
 /// Unique identifier for a pack
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct PackId(pub String);
 
 impl PackId {

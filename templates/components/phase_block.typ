@@ -12,7 +12,7 @@
 
   // Header stays with at least the start of the items list.
   // Note: inside content blocks (`[...]`) every function call must be `#`-prefixed,
-  // otherwise it is rendered as literal text. See issue auditmysite#239.
+  // otherwise it is rendered as literal text.
   block(width: 100%, breakable: false, below: 0pt)[
     #block(
       width: 100%,

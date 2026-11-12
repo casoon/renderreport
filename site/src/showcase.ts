@@ -5,7 +5,7 @@ import type { ShowcaseExample } from '@casoon/pages-theme/showcase';
 
 // Everything shown here comes from examples/: each Rust example or JSON request sits in the
 // repository next to the PDF renderreport made from it. examples/regenerate.sh rebuilds them.
-const sources = import.meta.glob<string>(['../../examples/*.rs', '../../examples/requests/*.json'], {
+const sources = import.meta.glob<string>(['../../examples/*.rs', '../../examples/requests/*.json', '../../examples/showcase/*.json', '../../examples/showcase/*/template.json'], {
   query: '?raw',
   import: 'default',
   eager: true,
@@ -28,6 +28,9 @@ const pdfs: Record<string, string> = {
   'dark-report': 'examples/output/dark_report.pdf',
   'word-search': 'examples/output/wordsearch_puzzle.pdf',
   'component-catalog': 'examples/output/component_catalog.pdf',
+  'agentmeter-usage': 'examples/showcase/agentmeter-usage.pdf',
+  'judge-analysis': 'examples/showcase/judge-analysis.pdf',
+  'analytics-monthly': 'examples/showcase/analytics-monthly/october.pdf',
 };
 
 export const pdfNames = Object.keys(pdfs);
@@ -102,7 +105,36 @@ const entries = [
     tags: ['Rust', 'all components'],
     description: 'Every built-in component with sample data, grouped by category.',
   },
+  {
+    slug: 'agentmeter-usage',
+    title: 'Coding-agent usage report',
+    file: 'examples/showcase/agentmeter-usage.json',
+    lang: 'json',
+    tags: ['CLI', 'JSON', 'metrics', 'chart', 'findings'],
+    description:
+      'A usage report in the layout of agentmeter\'s JSON output: key figures, a chart per day, projects by input and findings with a next step. Not an audit. The numbers are invented example data.',
+  },
+  {
+    slug: 'judge-analysis',
+    title: 'Rust workspace analysis',
+    file: 'examples/showcase/judge-analysis.json',
+    lang: 'json',
+    tags: ['CLI', 'JSON', 'tables', 'chart', 'findings'],
+    description:
+      'The sample output of judge run on its own source tree, as a report for developers: findings by rule, complexity per file, the most complex functions and findings to review.',
+  },
+  {
+    slug: 'analytics-monthly',
+    title: 'Monthly traffic report from a template',
+    file: 'examples/showcase/analytics-monthly/template.json',
+    lang: 'json',
+    tags: ['CLI', 'template', '--data', 'for / if'],
+    description:
+      'A template with placeholders, for and if, rendered with october.json: renderreport render template.json --data october.json. september.json sits next to it and fills the same template. The figures are invented example data.',
+  },
 ];
+
+const playgroundSlugs = ['health-check', 'health-check-themed', 'agentmeter-usage', 'judge-analysis'];
 
 export const examples: ShowcaseExample[] = entries.map(({ slug, title, file, lang, tags, description }) => ({
   slug,
@@ -111,5 +143,13 @@ export const examples: ShowcaseExample[] = entries.map(({ slug, title, file, lan
   file,
   tags,
   input: { code: source(file), lang },
-  output: { html: pdfViewer(slug, `${slug}.pdf, rendered by renderreport`), kind: 'panel' as const },
+  output: {
+    // The playground ships these requests as examples (same file, same slug).
+    html:
+      pdfViewer(slug, `${slug}.pdf, rendered by renderreport`) +
+      (playgroundSlugs.includes(slug)
+        ? `\n<p style="margin:8px 0 0;font-size:14px"><a href="${url(`playground/?example=${slug}`)}">Open in the playground</a></p>`
+        : ''),
+    kind: 'panel' as const,
+  },
 }));

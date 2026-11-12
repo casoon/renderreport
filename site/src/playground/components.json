@@ -1,0 +1,407 @@
+[
+ {
+  "id": "audit-table",
+  "category": "Data & Comparison",
+  "description": "Table with an optional title, column headers, striped rows and optional row numbers"
+ },
+ {
+  "id": "barcode",
+  "category": "Media & Assets",
+  "description": "1D/2D barcode (EAN-13, QR, DataMatrix, etc.)"
+ },
+ {
+  "id": "before-after",
+  "category": "Narrative & Storytelling",
+  "description": "Before/after comparison with labeled panels"
+ },
+ {
+  "id": "benchmark-table",
+  "category": "Data & Comparison",
+  "description": "Benchmark comparison table with scored rows"
+ },
+ {
+  "id": "benefit-strip",
+  "category": "Marketing & Sales",
+  "description": "Horizontal strip of benefit items with icons"
+ },
+ {
+  "id": "big-number",
+  "category": "Metrics & KPIs",
+  "description": "Oversized numeric display for key statistics"
+ },
+ {
+  "id": "callout",
+  "category": "Text & Editorial",
+  "description": "Highlighted information box with icon and variant styling"
+ },
+ {
+  "id": "card-dashboard",
+  "category": "Metrics & KPIs",
+  "description": "Multi-card dashboard layout with configurable columns"
+ },
+ {
+  "id": "chart",
+  "category": "Data & Comparison",
+  "description": "Bar, line, or area chart rendered from data arrays"
+ },
+ {
+  "id": "chartlet",
+  "category": "Data & Comparison",
+  "description": "Chart drawn from a chartlet specification (SVG with text alternative)"
+ },
+ {
+  "id": "checklist-panel",
+  "category": "Narrative & Storytelling",
+  "description": "Checklist panel with pass/fail/warning rows"
+ },
+ {
+  "id": "columns",
+  "category": "Layout",
+  "description": "Asymmetric two-column layout with flexible width ratio"
+ },
+ {
+  "id": "comparison-block",
+  "category": "Data & Comparison",
+  "description": "Side-by-side comparison with labels and scores"
+ },
+ {
+  "id": "comparison-cluster",
+  "category": "Data & Comparison",
+  "description": "Clustered comparison of multiple items across criteria"
+ },
+ {
+  "id": "cover-page",
+  "category": "Layout",
+  "description": "Full-page cover with title, logo, and metadata; score block optional"
+ },
+ {
+  "id": "crosstab",
+  "category": "Data & Comparison",
+  "description": "Cross-tabulation table with row/column summaries"
+ },
+ {
+  "id": "cta-box",
+  "category": "Marketing & Sales",
+  "description": "Call-to-action box with headline, body, and button label"
+ },
+ {
+  "id": "date-field",
+  "category": "Text & Editorial",
+  "description": "Formatted date field with label"
+ },
+ {
+  "id": "device-preview",
+  "category": "Infographics",
+  "description": "Device frame (desktop/mobile) with screenshot"
+ },
+ {
+  "id": "diagnosis-panel",
+  "category": "Narrative & Storytelling",
+  "description": "Diagnosis panel with findings grouped by severity"
+ },
+ {
+  "id": "divider",
+  "category": "Layout",
+  "description": "Horizontal rule separator with optional label"
+ },
+ {
+  "id": "dominant-issue-spotlight",
+  "category": "Narrative & Storytelling",
+  "description": "Full-width spotlight for the most critical finding"
+ },
+ {
+  "id": "eyebrow",
+  "category": "Text & Editorial",
+  "description": "Small eyebrow label above a heading"
+ },
+ {
+  "id": "fact-box",
+  "category": "Text & Editorial",
+  "description": "Fact box with a prominent statistic and supporting text"
+ },
+ {
+  "id": "faq-list",
+  "category": "Text & Editorial",
+  "description": "Expandable FAQ list with question/answer pairs"
+ },
+ {
+  "id": "feature-grid",
+  "category": "Marketing & Sales",
+  "description": "Grid of feature items with icon, title, and description"
+ },
+ {
+  "id": "finding",
+  "category": "Narrative & Storytelling",
+  "description": "Audit finding with severity indicator and recommendation block"
+ },
+ {
+  "id": "flow-group",
+  "category": "Layout",
+  "description": "Soft keep-together wrapper for heading + first content block"
+ },
+ {
+  "id": "funnel",
+  "category": "Infographics",
+  "description": "Conversion funnel visualization with stage counts"
+ },
+ {
+  "id": "gauge",
+  "category": "Metrics & KPIs",
+  "description": "Radial gauge visualization for a single metric"
+ },
+ {
+  "id": "glossary-list",
+  "category": "Text & Editorial",
+  "description": "Definition list for glossary terms"
+ },
+ {
+  "id": "grid-component",
+  "category": "Layout",
+  "description": "Multi-column grid layout dispatching to any component type"
+ },
+ {
+  "id": "hero-summary",
+  "category": "Marketing & Sales",
+  "description": "Full-width hero summary with title, subtitle, and key metrics"
+ },
+ {
+  "id": "image",
+  "category": "Media & Assets",
+  "description": "Image with optional caption and alignment"
+ },
+ {
+  "id": "impact-grid",
+  "category": "Narrative & Storytelling",
+  "description": "Grid of impact cards with title, score, and description"
+ },
+ {
+  "id": "key-value-list",
+  "category": "Data & Comparison",
+  "description": "Two-column key/value list for structured data"
+ },
+ {
+  "id": "label",
+  "category": "Text & Editorial",
+  "description": "Styled text label with optional icon"
+ },
+ {
+  "id": "list",
+  "category": "Text & Editorial",
+  "description": "Bullet or numbered list with optional icons"
+ },
+ {
+  "id": "logo-strip",
+  "category": "Media & Assets",
+  "description": "Horizontal strip of client/partner logos"
+ },
+ {
+  "id": "metric-card",
+  "category": "Metrics & KPIs",
+  "description": "Compact metric card with value, unit, and trend indicator"
+ },
+ {
+  "id": "metric-strip",
+  "category": "Metrics & KPIs",
+  "description": "Horizontal strip of compact metric items"
+ },
+ {
+  "id": "module-comparison",
+  "category": "Data & Comparison",
+  "description": "Side-by-side module comparison with feature matrix"
+ },
+ {
+  "id": "number-field",
+  "category": "Metrics & KPIs",
+  "description": "Formatted numeric field with unit and label"
+ },
+ {
+  "id": "page-break",
+  "category": "Layout",
+  "description": "Explicit page break"
+ },
+ {
+  "id": "phase-block",
+  "category": "Narrative & Storytelling",
+  "description": "Project phase block with status, owner, and date range"
+ },
+ {
+  "id": "pivot-table",
+  "category": "Data & Comparison",
+  "description": "Pivot table with aggregated multi-dimensional data"
+ },
+ {
+  "id": "portfolio-summary",
+  "category": "Metrics & KPIs",
+  "description": "Portfolio summary with aggregate scores across items"
+ },
+ {
+  "id": "pricing-card",
+  "category": "Marketing & Sales",
+  "description": "Pricing tier card with features and CTA"
+ },
+ {
+  "id": "problem-solution",
+  "category": "Narrative & Storytelling",
+  "description": "Two-column problem/solution comparison block"
+ },
+ {
+  "id": "process-flow",
+  "category": "Narrative & Storytelling",
+  "description": "Horizontal or vertical process flow with numbered steps"
+ },
+ {
+  "id": "product-hero",
+  "category": "Marketing & Sales",
+  "description": "Product hero block with image, headline, and description"
+ },
+ {
+  "id": "progress-bar",
+  "category": "Metrics & KPIs",
+  "description": "Horizontal progress bar with percentage label"
+ },
+ {
+  "id": "pull-quote",
+  "category": "Text & Editorial",
+  "description": "Large pull quote with decorative quotation marks"
+ },
+ {
+  "id": "quote-block",
+  "category": "Text & Editorial",
+  "description": "Styled block quote with attribution"
+ },
+ {
+  "id": "recommendation-card",
+  "category": "Narrative & Storytelling",
+  "description": "Recommendation card with impact, effort, and priority badges"
+ },
+ {
+  "id": "resource-field",
+  "category": "Text & Editorial",
+  "description": "Labeled resource reference with URL"
+ },
+ {
+  "id": "roadmap-block",
+  "category": "Narrative & Storytelling",
+  "description": "Project roadmap block with phases and milestones"
+ },
+ {
+  "id": "score-band",
+  "category": "Metrics & KPIs",
+  "description": "Score band visualization with threshold markers"
+ },
+ {
+  "id": "score-card",
+  "category": "Metrics & KPIs",
+  "description": "Score card with gauge-style visualization and status indicator"
+ },
+ {
+  "id": "section",
+  "category": "Layout",
+  "description": "Document section heading with optional subtitle"
+ },
+ {
+  "id": "section-header-split",
+  "category": "Layout",
+  "description": "Section header with title on left and metadata on right"
+ },
+ {
+  "id": "severity-overview",
+  "category": "Metrics & KPIs",
+  "description": "Severity distribution overview with count badges"
+ },
+ {
+  "id": "side-label",
+  "category": "Text & Editorial",
+  "description": "Vertical side label aligned alongside content"
+ },
+ {
+  "id": "sparkline",
+  "category": "Metrics & KPIs",
+  "description": "Compact inline sparkline trend chart"
+ },
+ {
+  "id": "spotlight-card",
+  "category": "Narrative & Storytelling",
+  "description": "Spotlight card with colored severity stripe and body"
+ },
+ {
+  "id": "stat",
+  "category": "Metrics & KPIs",
+  "description": "Single statistic display with value and label"
+ },
+ {
+  "id": "stat-pair",
+  "category": "Metrics & KPIs",
+  "description": "Side-by-side pair of stat displays"
+ },
+ {
+  "id": "status-pill",
+  "category": "Text & Editorial",
+  "description": "Inline status badge with color coding"
+ },
+ {
+  "id": "step-card-row",
+  "category": "Narrative & Storytelling",
+  "description": "Horizontal row of numbered step cards"
+ },
+ {
+  "id": "summary-box",
+  "category": "Metrics & KPIs",
+  "description": "Executive summary widget with key metrics"
+ },
+ {
+  "id": "table-of-contents",
+  "category": "Layout",
+  "description": "Auto-generated table of contents from section headings"
+ },
+ {
+  "id": "tag-cloud",
+  "category": "Text & Editorial",
+  "description": "Tag cloud with weighted font sizes"
+ },
+ {
+  "id": "testimonial",
+  "category": "Marketing & Sales",
+  "description": "Customer testimonial quote with attribution"
+ },
+ {
+  "id": "textblock",
+  "category": "Text & Editorial",
+  "description": "Rich text block with heading, body, and optional list"
+ },
+ {
+  "id": "timeline",
+  "category": "Narrative & Storytelling",
+  "description": "Project timeline with milestones and status indicators"
+ },
+ {
+  "id": "trend-tile",
+  "category": "Metrics & KPIs",
+  "description": "Trend tile with value, delta, and sparkline"
+ },
+ {
+  "id": "use-case-card",
+  "category": "Marketing & Sales",
+  "description": "Use case card with scenario title, user, and outcome"
+ },
+ {
+  "id": "watermark",
+  "category": "Media & Assets",
+  "description": "Page-level watermark overlay"
+ },
+ {
+  "id": "why-it-matters",
+  "category": "Narrative & Storytelling",
+  "description": "Highlighted explanation block for key insights"
+ },
+ {
+  "id": "word-search",
+  "category": "Infographics",
+  "description": "Parameter-driven word search puzzle generator with word list and solution highlighting"
+ },
+ {
+  "id": "wrong-right-block",
+  "category": "Narrative & Storytelling",
+  "description": "Wrong vs. right comparison with annotated examples"
+ }
+]

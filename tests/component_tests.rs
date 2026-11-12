@@ -157,6 +157,92 @@ fn test_component_serialization() {
     assert_eq!(obj.get("score").and_then(|v| v.as_u64()), Some(85));
 }
 
+// ─── table alias and cover page without score ───────────────────────────────
+
+mod alias_and_cover {
+    use renderreport::components::*;
+    use renderreport::Engine;
+    use serde_json::json;
+
+    /// The generated call of the cover-page component (not its template).
+    fn cover_call(typ: &str) -> &str {
+        typ.lines()
+            .find(|l| l.starts_with("#cover-page(("))
+            .expect("cover-page call in the generated source")
+    }
+
+    fn typ_of(component: serde_json::Value) -> String {
+        let engine = Engine::new().unwrap();
+        let request = engine
+            .report("default")
+            .add_raw_component(component)
+            .build();
+        engine.render_typ(&request).unwrap()
+    }
+
+    #[test]
+    fn table_is_an_alias_of_audit_table() {
+        let _: Table = AuditTable::new(vec![TableColumn::new("A")]);
+        assert_eq!(ComponentCatalog::get("table").unwrap().id, "audit-table");
+        assert_eq!(
+            ComponentCatalog::get("audit-table").unwrap().id,
+            "audit-table"
+        );
+
+        let columns = json!([{ "header": "A" }]);
+        let alias =
+            typ_of(json!({ "type": "table", "data": { "columns": columns, "rows": [["x"]] } }));
+        let id = typ_of(
+            json!({ "type": "audit-table", "data": { "columns": columns, "rows": [["x"]] } }),
+        );
+        assert_eq!(alias, id);
+    }
+
+    #[test]
+    fn cover_without_score_has_no_score_in_its_data() {
+        let typ = typ_of(json!({ "type": "cover-page", "data": { "title": "Report" } }));
+        let call = cover_call(&typ);
+        assert!(call.contains("Report"), "{call}");
+        assert!(!call.contains("score:"), "{call}");
+        assert!(!call.contains("grade: \"A"), "{call}");
+    }
+
+    #[test]
+    fn plain_cover_serializes_without_score() {
+        let data = CoverPage::plain("Report").with_date("2026-01-01").to_data();
+        assert!(data.get("score").is_none());
+        assert_eq!(data["title"], "Report");
+    }
+
+    #[test]
+    fn cover_with_score_keeps_its_data() {
+        let data = CoverPage::new("T", "example.com", 88, "B+").to_data();
+        assert_eq!(data["score"], 88);
+        assert_eq!(data["domain"], "example.com");
+        assert_eq!(data["grade"], "B+");
+
+        let typ = typ_of(json!({ "type": "cover-page", "data": {
+            "title": "T", "domain": "example.com", "score": 88, "grade": "B+",
+            "brand": "", "subtitle": "", "date": ""
+        } }));
+        assert!(cover_call(&typ).contains("score: 88"));
+    }
+
+    #[test]
+    fn covers_with_and_without_score_render_to_pdf() {
+        let engine = Engine::new().unwrap();
+        for cover in [
+            CoverPage::plain("Quarterly Report")
+                .with_subtitle("Q3")
+                .with_date("2026-10-01"),
+            CoverPage::new("Audit", "example.com", 88, "B+"),
+        ] {
+            let request = engine.report("default").add_component(cover).build();
+            assert!(!engine.render_pdf(&request).unwrap().is_empty());
+        }
+    }
+}
+
 fn benchmark_rows() -> Vec<BenchmarkRow> {
     vec![
         BenchmarkRow::new(1, "a.example", 93, 96, 1).with_column("SEO", 91),

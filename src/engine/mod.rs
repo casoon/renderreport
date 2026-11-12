@@ -133,11 +133,32 @@ impl Engine {
 
     /// Render a report
     pub fn render(&self, request: &RenderRequest) -> Result<RenderOutput> {
-        let request = &normalized(request);
+        let request = &self.normalized(request);
         let theme = self.resolve_theme(request)?;
         let typst_source = self.generate_typst_source(request, &theme)?;
         let pdf_bytes = self.compile_typst(&typst_source, request)?;
         Ok(RenderOutput::Pdf(pdf_bytes))
+    }
+
+    /// Render a report to one image per page (PNG or SVG), in page order.
+    #[cfg(any(feature = "png", feature = "svg"))]
+    pub fn render_pages(
+        &self,
+        request: &RenderRequest,
+        format: crate::render::PageFormat,
+    ) -> Result<Vec<Vec<u8>>> {
+        use crate::render::typst_compile;
+
+        let request = &self.normalized(request);
+        let theme = self.resolve_theme(request)?;
+        let source = self.generate_typst_source(request, &theme)?;
+        typst_compile::compile_pages_with_files(
+            &source,
+            &self.font_cache,
+            request,
+            self.pack_assets(request)?,
+            format,
+        )
     }
 
     /// Render a report to its intermediate Typst source.
@@ -147,9 +168,23 @@ impl Engine {
     /// (e.g. `typstyle`), and downstream tooling that wants to inspect or
     /// post-process the source before compilation.
     pub fn render_typ(&self, request: &RenderRequest) -> Result<String> {
-        let request = &normalized(request);
+        let request = &self.normalized(request);
         let theme = self.resolve_theme(request)?;
         self.generate_typst_source(request, &theme)
+    }
+
+    /// The request with every built-in component's data completed the way its
+    /// Rust builder would have written it, see [`normalize_components`].
+    fn normalized(&self, request: &RenderRequest) -> RenderRequest {
+        let own: Vec<&str> = request
+            .pack_id
+            .as_ref()
+            .and_then(|id| self.packs.get(id))
+            .map(|pack| pack.components.keys().map(String::as_str).collect())
+            .unwrap_or_default();
+        let mut request = request.clone();
+        normalize_components(&mut request.components, &own);
+        request
     }
 
     /// The pack the request names, or `None` without `pack_id`. A pack that
@@ -603,22 +638,25 @@ impl Engine {
     fn compile_typst(&self, source: &str, request: &RenderRequest) -> Result<Vec<u8>> {
         use crate::render::typst_compile;
 
-        // Pack assets are reachable from Typst under their path in `assets/`.
-        let pack_assets = self
+        typst_compile::compile_with_files(
+            source,
+            &self.font_cache,
+            request,
+            self.pack_assets(request)?,
+        )
+    }
+
+    /// Pack assets are reachable from Typst under their path in `assets/`.
+    fn pack_assets<'a>(
+        &'a self,
+        request: &RenderRequest,
+    ) -> Result<impl Iterator<Item = (&'a str, &'a [u8])>> {
+        Ok(self
             .request_pack(request)?
             .into_iter()
             .flat_map(|pack| &pack.assets)
-            .map(|(name, bytes)| (name.as_str(), bytes.as_slice()));
-        typst_compile::compile_with_files(source, &self.font_cache, request, pack_assets)
+            .map(|(name, bytes)| (name.as_str(), bytes.as_slice())))
     }
-}
-
-/// The request with every built-in component's data completed the way its
-/// Rust builder would have written it, see [`normalize_components`].
-fn normalized(request: &RenderRequest) -> RenderRequest {
-    let mut request = request.clone();
-    normalize_components(&mut request.components);
-    request
 }
 
 /// Convert a JSON value to a Typst literal expression.

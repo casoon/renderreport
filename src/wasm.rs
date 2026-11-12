@@ -35,6 +35,54 @@ pub fn render(request_json: &str) -> Result<Vec<u8>, JsValue> {
         .map_err(|e| JsValue::from_str(&format!("render failed: {e}")))
 }
 
+/// Render one page (0-based `page_index`) of a [`RenderRequest`] (as JSON) to
+/// PNG bytes at `ppi` pixels per inch. Only with the `png` feature.
+#[cfg(feature = "png")]
+#[wasm_bindgen]
+pub fn render_page_png(
+    request_json: &str,
+    page_index: usize,
+    ppi: u32,
+) -> Result<Vec<u8>, JsValue> {
+    let request: RenderRequest = serde_json::from_str(request_json)
+        .map_err(|e| JsValue::from_str(&format!("invalid RenderRequest JSON: {e}")))?;
+
+    let mut pages = wasm_engine()?
+        .render_pages(&request, crate::render::PageFormat::Png { ppi })
+        .map_err(|e| JsValue::from_str(&format!("render failed: {e}")))?;
+    if page_index >= pages.len() {
+        return Err(JsValue::from_str(&format!(
+            "page {page_index} does not exist, the document has {} page(s)",
+            pages.len()
+        )));
+    }
+    Ok(pages.swap_remove(page_index))
+}
+
+/// Render a request template (as JSON) with `data_json` bound into it, see
+/// [`crate::render::bind`].
+#[wasm_bindgen]
+pub fn render_with_data(request_json: &str, data_json: &str) -> Result<Vec<u8>, JsValue> {
+    let bound = crate::render::bind::bind_str(request_json, data_json)
+        .map_err(|e| JsValue::from_str(&format!("binding data failed: {e}")))?;
+    let request: RenderRequest = serde_json::from_value(bound)
+        .map_err(|e| JsValue::from_str(&format!("invalid RenderRequest JSON: {e}")))?;
+
+    wasm_engine()?
+        .render_pdf(&request)
+        .map_err(|e| JsValue::from_str(&format!("render failed: {e}")))
+}
+
+/// Check a [`RenderRequest`] (as JSON) without rendering it. Returns one
+/// `"path: problem"` line per problem; an empty array means the request is valid.
+#[wasm_bindgen]
+pub fn validate(request_json: &str) -> Vec<String> {
+    crate::validate::validate_request(request_json, &[])
+        .iter()
+        .map(ToString::to_string)
+        .collect()
+}
+
 /// Input parameters for [`render_wordsearch`].
 #[derive(Deserialize)]
 #[serde(rename_all = "snake_case")]

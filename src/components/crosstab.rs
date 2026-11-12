@@ -19,6 +19,7 @@ component_catalog! {
 /// Crosstab/Pivot Table component
 /// Allows data aggregation in a tabular format with row/column grouping
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Crosstab {
     /// Crosstab title
     #[serde(default)]
@@ -115,6 +116,7 @@ component_catalog! {
 
 /// Simple pivot result for pre-aggregated data
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct PivotTable {
     /// Table title
     #[serde(default)]

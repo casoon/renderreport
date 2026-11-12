@@ -1,0 +1,117 @@
+{
+  "template_id": "default",
+  "title": "Coding-agent usage report",
+  "subtitle": "Last 7 days · Claude Code · example data",
+  "metadata": { "date": "2026-10-31", "author": "agentmeter", "lang": "en" },
+  "components": [
+    {
+      "type": "callout",
+      "data": {
+        "variant": "info",
+        "title": "Example data",
+        "content": "Invented figures in the layout of agentmeter --json. Assembled by hand."
+      }
+    },
+    { "type": "section", "data": { "title": "Summary", "level": 1 } },
+    {
+      "type": "metric-strip",
+      "data": {
+        "items": [
+          { "label": "Requests", "value": "12,480" },
+          { "label": "Sessions", "value": "58" },
+          { "label": "Input", "value": "3.1", "unit": "G tokens" },
+          { "label": "Cache read", "value": "97", "unit": "%" }
+        ]
+      }
+    },
+    {
+      "type": "key-value-list",
+      "data": {
+        "items": [
+          { "key": "Observed", "value": "2026-08-02 to 2026-10-31, 41,260 requests in all" },
+          { "key": "Output", "value": "9.4 M tokens, 11 compactions (auto 11, manual 0)" },
+          { "key": "Data quality", "value": "every line readable, 5 of 5 rules measurable" }
+        ]
+      }
+    },
+    {
+      "type": "chart",
+      "data": {
+        "title": "Input per day (M tokens)",
+        "chart_type": "bar",
+        "series": [
+          {
+            "name": "Input",
+            "data": [
+              { "label": "Oct 25", "value": 180 },
+              { "label": "Oct 26", "value": 60 },
+              { "label": "Oct 27", "value": 540 },
+              { "label": "Oct 28", "value": 610 },
+              { "label": "Oct 29", "value": 720 },
+              { "label": "Oct 30", "value": 690 },
+              { "label": "Oct 31", "value": 300 }
+            ]
+          }
+        ]
+      }
+    },
+    { "type": "section", "data": { "title": "Projects by input", "level": 1 } },
+    {
+      "type": "audit-table",
+      "data": {
+        "columns": [
+          { "header": "Project" },
+          { "header": "Sessions", "align": "right" },
+          { "header": "Requests", "align": "right" },
+          { "header": "Input share", "align": "right" },
+          { "header": "Cache read", "align": "right" }
+        ],
+        "rows": [
+          ["parser-lib", "17", "3,920", "31 %", "98 %"],
+          ["web-frontend", "14", "3,105", "24 %", "97 %"],
+          ["infra-scripts", "9", "2,210", "18 %", "95 %"],
+          ["docs-site", "11", "1,845", "15 %", "97 %"],
+          ["other (3)", "7", "1,400", "12 %", "96 %"]
+        ]
+      }
+    },
+    { "type": "section", "data": { "title": "Findings", "subtitle": "3 to look at, 1 fine, 1 nothing found", "level": 1 } },
+    {
+      "type": "finding",
+      "data": {
+        "title": "baseline-load: the median session start is 62k tokens",
+        "severity": "medium",
+        "description": "Today's configuration is 27k of the median start (44 %). Another 24k is in every start, 11k varies per session. Project web-frontend adds 6k through project instructions or MCP servers.",
+        "recommendation": "Check which skills and MCP servers are loaded at start but not called in the period."
+      }
+    },
+    {
+      "type": "finding",
+      "data": {
+        "title": "cache-rebuild: 96 rebuilds after pauses over 1 h",
+        "severity": "medium",
+        "description": "96 of 171 unexpected rebuilds (18.7 M tokens) follow pauses longer than one hour, which no cache lifetime covers. The remaining 75 are in sub-agent files that wrote their caches with the 5-minute lifetime.",
+        "recommendation": "Look at whether a longer cache lifetime reaches sub-agents. The logs do not show it."
+      }
+    },
+    {
+      "type": "finding",
+      "data": {
+        "title": "long-session: 4 sessions span more than 24 hours",
+        "severity": "low",
+        "description": "The longest session ran 53 hours with 4 compactions. Long sessions are not waste by themselves; they carry a large context into every request.",
+        "recommendation": "Check whether the long sessions were one task or a window left open."
+      }
+    },
+    {
+      "type": "list",
+      "data": {
+        "title": "Rules without a finding",
+        "items": [
+          { "content": "big-context: nothing found (2 % of input from contexts over 200k, threshold 10 %)" },
+          { "content": "fine: cache read share is 97 %, no day below 90 %" }
+        ]
+      }
+    }
+  ]
+}

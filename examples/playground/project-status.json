@@ -1,0 +1,63 @@
+{
+  "template_id": "default",
+  "title": "Project Status",
+  "subtitle": "Customer portal relaunch — week 42",
+  "metadata": { "date": "2026-10-16", "author": "PMO", "lang": "en" },
+  "components": [
+    { "type": "section", "data": { "title": "Overview", "level": 1 } },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Status",
+        "items": [
+          { "label": "Schedule", "value": "On track", "status": "good" },
+          { "label": "Budget", "value": "94 % used", "status": "warning" },
+          { "label": "Scope", "value": "2 open change requests", "status": "warning" }
+        ]
+      }
+    },
+    { "type": "progress-bar", "data": { "label": "Overall progress", "value": 68 } },
+    { "type": "section", "data": { "title": "Milestones", "level": 1 } },
+    {
+      "type": "timeline",
+      "data": {
+        "items": [
+          { "date": "2026-07-01", "title": "Kick-off", "status": "done" },
+          { "date": "2026-09-15", "title": "Design freeze", "status": "done" },
+          { "date": "2026-11-10", "title": "Beta release", "description": "Internal test with 40 users", "status": "in-progress" },
+          { "date": "2027-01-20", "title": "Go-live", "status": "planned" }
+        ]
+      }
+    },
+    { "type": "section", "data": { "title": "Risks", "level": 1 } },
+    {
+      "type": "finding",
+      "data": {
+        "title": "Identity provider migration is late",
+        "severity": "high",
+        "description": "The vendor moved the sandbox availability by three weeks.",
+        "recommendation": "Mock the login in the beta and switch to the real provider in the first sprint after beta."
+      }
+    },
+    {
+      "type": "finding",
+      "data": {
+        "title": "Test data is incomplete",
+        "severity": "low",
+        "description": "Only two of five customer segments have anonymised test data."
+      }
+    },
+    {
+      "type": "list",
+      "data": {
+        "title": "Next steps",
+        "numbered": true,
+        "items": [
+          { "content": "Decide on both change requests by 23 October" },
+          { "content": "Book the load test slot" },
+          { "content": "Prepare the beta invitation" }
+        ]
+      }
+    }
+  ]
+}

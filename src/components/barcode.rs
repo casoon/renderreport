@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 /// Barcode format types
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum BarcodeFormat {
     /// Code 128 (variable length, alphanumeric)
@@ -45,6 +46,7 @@ component_catalog! {
 
 /// Barcode component
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Barcode {
     /// Data to encode
     pub data: String,

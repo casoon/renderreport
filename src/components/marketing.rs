@@ -16,6 +16,7 @@ component_catalog! {
 
 /// Hero summary for the first content page after TOC
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct HeroSummary {
     pub score: u32,
     pub grade: String,
@@ -42,6 +43,7 @@ fn default_hero_warn() -> u32 {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct HeroMetric {
     pub title: String,
     pub value: String,
@@ -125,6 +127,7 @@ impl Component for HeroSummary {
 
 /// Marketing feature/benefit grid
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct FeatureGridItem {
     pub title: String,
     #[serde(default)]
@@ -145,6 +148,7 @@ component_catalog! {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct FeatureGrid {
     pub items: Vec<FeatureGridItem>,
     #[serde(default)]
@@ -193,6 +197,7 @@ component_catalog! {
 
 /// Call to action block
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct CTABox {
     pub headline: String,
     #[serde(default)]
@@ -253,6 +258,7 @@ component_catalog! {
 
 /// Customer quote / testimonial
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Testimonial {
     pub quote: String,
     pub author: String,
@@ -303,6 +309,7 @@ component_catalog! {
 
 /// Product/Project hero page — for introducing a product or project
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ProductHero {
     pub title: String,
     pub subtitle: String,
@@ -371,6 +378,7 @@ component_catalog! {
 /// Horizontal benefit strip (3–5 points)
 /// For: Product features, value proposition, marketing intro
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct BenefitStrip {
     /// Benefit titles
     pub titles: Vec<String>,
@@ -449,6 +457,7 @@ component_catalog! {
 /// Pricing / Plan card
 /// For: Service packages, pricing tiers, audit levels, feature bundles
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct PricingCard {
     /// Plan name
     pub name: String,
@@ -532,6 +541,7 @@ component_catalog! {
 /// Single use case: context + problem + solution
 /// For: Product documentation, case studies, application examples
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct UseCaseCard {
     /// Use case title
     pub title: String,

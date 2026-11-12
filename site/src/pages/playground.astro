@@ -1,0 +1,523 @@
+---
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { Demo } from '@casoon/pages-theme/components';
+import Base from '@casoon/pages-theme/layouts/Base.astro';
+import { url } from '@casoon/pages-theme/url';
+import components from '../playground/components.json';
+import fragments from '../playground/fragments.json';
+
+// The Wasm engine is built by site/scripts/build-wasm.sh into public/playground/ (not committed).
+// Without it the page still loads, checks the JSON syntax and says so.
+const engineBuilt = existsSync(resolve(process.cwd(), 'public/playground/renderreport_bg.wasm'));
+
+const raw = import.meta.glob<string>(
+  [
+    '../../../examples/playground/*.json',
+    '../../../examples/requests/health-check.json',
+    '../../../examples/requests/health-check-themed.json',
+    '../../../examples/showcase/*.json',
+  ],
+  { query: '?raw', import: 'default', eager: true },
+);
+const file = (name: string, dir = 'playground') => {
+  const found = raw[`../../../examples/${dir}/${name}.json`];
+  if (found === undefined) throw new Error(`Missing example: ${dir}/${name}.json`);
+  return found;
+};
+
+const examples = [
+  { id: 'kpi-report', label: 'KPI report', json: file('kpi-report') },
+  { id: 'project-status', label: 'Project status', json: file('project-status') },
+  { id: 'offer-excerpt', label: 'Offer / brochure excerpt', json: file('offer-excerpt') },
+  { id: 'health-check', label: 'Audit: website health check', json: file('health-check', 'requests') },
+  { id: 'health-check-themed', label: 'Audit with brand theme', json: file('health-check-themed', 'requests') },
+  { id: 'agentmeter-usage', label: 'Coding-agent usage', json: file('agentmeter-usage', 'showcase') },
+  { id: 'judge-analysis', label: 'Rust workspace analysis', json: file('judge-analysis', 'showcase') },
+];
+
+const snippetIds = new Set(fragments.map((f) => f.id));
+const others = components.filter((c) => !snippetIds.has(c.id));
+const data = {
+  examples: examples.map(({ id, json }) => ({ id, json })),
+  fragments: fragments.map(({ id, ...component }) => ({ id, component })),
+};
+// "<" is escaped so no example can close the script element.
+const dataJson = JSON.stringify(data).replace(/</g, '\\u003c');
+---
+
+<Base
+  title="Playground"
+  description="Edit a renderreport request as JSON and see the PDF pages in your browser, rendered by the Wasm build of the engine."
+>
+  <div class="wrap">
+    <h1>Playground</h1>
+    <p class="intro">
+      Edit the request, see the report. The engine runs in your browser as WebAssembly;
+      nothing is sent anywhere. Request format: <a href={url('docs/reference/render-request/')}>render request</a>,
+      components: <a href={url('docs/concepts/components/')}>components guide</a>.
+    </p>
+
+    <Demo title="renderreport in the browser" label="Playground">
+      <div id="pg" data-pkg={url('playground/')} data-engine={engineBuilt ? '1' : '0'}>
+        <script is:inline type="application/json" id="pg-data" set:html={dataJson} />
+        <noscript><p>The playground needs JavaScript.</p></noscript>
+
+        <div class="cols">
+          <section class="pane" aria-labelledby="pg-edit-h">
+            <h2 id="pg-edit-h">Request</h2>
+            <div class="row">
+              <label for="pg-example">Example</label>
+              <select id="pg-example">
+                {examples.map((e) => <option value={e.id}>{e.label}</option>)}
+              </select>
+            </div>
+
+            <details class="palette" open>
+              <summary>Components ({components.length})</summary>
+              <p class="hint" id="pg-palette-hint">
+                A button adds a checked sample to the end of <code>components</code>.
+              </p>
+              <ul class="chips" aria-describedby="pg-palette-hint">
+                {
+                  fragments.map((f) => (
+                    <li>
+                      <button type="button" class="chip" data-fragment={f.id}>
+                        <span class="visually-hidden">Add </span>
+                        {f.id}
+                      </button>
+                    </li>
+                  ))
+                }
+              </ul>
+              <details class="more">
+                <summary>More component ids ({others.length}, no sample yet)</summary>
+                <p class="ids">
+                  {others.map((c, i) => <><code title={c.description}>{c.id}</code>{i < others.length - 1 ? ' ' : ''}</>)}
+                </p>
+              </details>
+            </details>
+
+            <label for="pg-editor" class="editor-label">Request JSON</label>
+            <textarea
+              id="pg-editor"
+              spellcheck="false"
+              autocomplete="off"
+              autocapitalize="off"
+              aria-describedby="pg-problems"
+              rows="22"></textarea>
+            <div id="pg-problems" class="problems" aria-live="polite" aria-atomic="true"></div>
+
+            <div class="row actions">
+              <button type="button" id="pg-render" class="primary">Render</button>
+              <span class="hint" id="pg-size">
+                First render loads the engine once (~11&nbsp;MB, compressed; cached afterwards).
+              </span>
+            </div>
+          </section>
+
+          <section class="pane" aria-labelledby="pg-view-h">
+            <h2 id="pg-view-h">Preview</h2>
+            <div class="row toolbar" id="pg-toolbar" hidden>
+              <button type="button" id="pg-prev" aria-label="Previous page">&lsaquo;</button>
+              <label for="pg-page">Page</label>
+              <select id="pg-page"></select>
+              <span id="pg-count"></span>
+              <button type="button" id="pg-next" aria-label="Next page">&rsaquo;</button>
+              <button type="button" id="pg-pdf">Download PDF</button>
+            </div>
+            <div id="pg-status" class="status" role="status" aria-live="polite">
+              {
+                engineBuilt
+                  ? 'Press Render to see the report.'
+                  : 'The playground engine is built during deployment and is not part of this build. JSON syntax is still checked.'
+              }
+            </div>
+            <div class="sheet" id="pg-sheet" hidden>
+              <img id="pg-img" alt="" />
+            </div>
+          </section>
+        </div>
+
+        <script is:inline>
+          // Playground logic. Lives inside the Demo stage on purpose: the site check allows scripts only there.
+          (function () {
+            var root = document.getElementById('pg');
+            var data = JSON.parse(document.getElementById('pg-data').textContent);
+            var pkg = root.getAttribute('data-pkg');
+            var engineBuilt = root.getAttribute('data-engine') === '1';
+            var $ = function (id) { return document.getElementById(id); };
+            var editor = $('pg-editor'), problems = $('pg-problems'), status = $('pg-status');
+            var renderBtn = $('pg-render'), exampleSel = $('pg-example');
+            var pageSel = $('pg-page'), toolbar = $('pg-toolbar'), sheet = $('pg-sheet'), img = $('pg-img');
+            var api = null, loading = null, rendered = '', pages = 0, timer = 0, busy = false, imgUrl = '';
+            var PPI = 110;
+
+            if (!engineBuilt) { renderBtn.disabled = true; $('pg-size').hidden = true; }
+
+            function say(text) { status.textContent = text; }
+            function nextPaint() { return new Promise(function (r) { setTimeout(r, 30); }); }
+
+            function showProblems(list) {
+              problems.textContent = '';
+              editor.setAttribute('aria-invalid', list.length ? 'true' : 'false');
+              if (!list.length) { problems.className = 'problems ok'; problems.textContent = 'No problems found.'; return; }
+              problems.className = 'problems bad';
+              var ul = document.createElement('ul');
+              list.forEach(function (line) { var li = document.createElement('li'); li.textContent = line; ul.appendChild(li); });
+              problems.appendChild(ul);
+            }
+
+            // Returns the list of problems; syntax errors need no engine, the rest uses the Wasm validate().
+            function check() {
+              try { JSON.parse(editor.value); } catch (e) { return ['JSON syntax: ' + e.message]; }
+              return api ? Array.from(api.validate(editor.value)) : null;
+            }
+            function live() {
+              clearTimeout(timer);
+              timer = setTimeout(function () {
+                var list = check();
+                if (list === null) { problems.className = 'problems'; problems.textContent = 'JSON syntax is valid. Full checks start once the engine is loaded.'; editor.setAttribute('aria-invalid', 'false'); }
+                else showProblems(list);
+              }, 300);
+            }
+
+            function loadExample(id) {
+              var ex = data.examples.filter(function (e) { return e.id === id; })[0];
+              if (!ex) return;
+              exampleSel.value = id;
+              editor.value = ex.json.replace(/\s+$/, '') + '\n';
+              live();
+            }
+
+            function loadEngine() {
+              if (api) return Promise.resolve();
+              if (loading) return loading;
+              say('Loading the engine (~11 MB, loaded once) …');
+              loading = import(pkg + 'renderreport.js').then(function (mod) {
+                return mod.default({ module_or_path: pkg + 'renderreport_bg.wasm' }).then(function () { api = mod; });
+              }).catch(function (e) {
+                loading = null;
+                throw new Error('The engine could not be loaded (' + (e && e.message ? e.message : e) + ').');
+              });
+              return loading;
+            }
+
+            function showPage(i) {
+              say('Rendering page ' + (i + 1) + ' …');
+              return nextPaint().then(function () {
+                var png = api.render_page_png(rendered, i, PPI);
+                if (imgUrl) URL.revokeObjectURL(imgUrl);
+                imgUrl = URL.createObjectURL(new Blob([png], { type: 'image/png' }));
+                img.src = imgUrl;
+                img.alt = 'Page ' + (i + 1) + ' of ' + pages + ' of the rendered report';
+                pageSel.value = String(i);
+                $('pg-prev').disabled = i === 0;
+                $('pg-next').disabled = i === pages - 1;
+                sheet.hidden = false;
+                say('Page ' + (i + 1) + ' of ' + pages + ' rendered.');
+              });
+            }
+
+            function pageCount(json) {
+              // render_page_png reports the page count when the index does not exist; compiling is cheap, rasterising is not.
+              try { api.render_page_png(json, 100000, PPI); } catch (e) {
+                var m = /has (\d+) page/.exec(String(e));
+                if (m) return Number(m[1]);
+                throw e;
+              }
+              throw new Error('Could not determine the page count.');
+            }
+
+            function render() {
+              if (busy) return;
+              var syntax = check();
+              if (syntax && syntax.length && syntax[0].indexOf('JSON syntax') === 0) { showProblems(syntax); say('Fix the JSON syntax first.'); editor.focus(); return; }
+              busy = true; renderBtn.disabled = true;
+              loadEngine().then(function () {
+                var list = check();
+                showProblems(list);
+                if (list.length) { say('The request has ' + list.length + ' problem' + (list.length > 1 ? 's' : '') + '. Fix them to render.'); return; }
+                say('Rendering …');
+                return nextPaint().then(function () {
+                  rendered = editor.value;
+                  pages = pageCount(rendered);
+                  pageSel.textContent = '';
+                  for (var p = 0; p < pages; p++) { var o = document.createElement('option'); o.value = String(p); o.textContent = String(p + 1); pageSel.appendChild(o); }
+                  $('pg-count').textContent = 'of ' + pages;
+                  toolbar.hidden = false;
+                  return showPage(0);
+                });
+              }).catch(function (e) {
+                sheet.hidden = true; toolbar.hidden = true;
+                say(String(e && e.message ? e.message : e));
+              }).then(function () { busy = false; renderBtn.disabled = false; });
+            }
+
+            function insert(id) {
+              var f = data.fragments.filter(function (x) { return x.id === id; })[0];
+              var doc;
+              try { doc = JSON.parse(editor.value); } catch (e) { say('Fix the JSON syntax before adding a component.'); showProblems(['JSON syntax: ' + e.message]); editor.focus(); return; }
+              if (!doc || typeof doc !== 'object' || Array.isArray(doc)) { say('The request must be a JSON object.'); return; }
+              if (!Array.isArray(doc.components)) doc.components = [];
+              doc.components.push(JSON.parse(JSON.stringify(f.component)));
+              editor.value = JSON.stringify(doc, null, 2) + '\n';
+              editor.scrollTop = editor.scrollHeight;
+              say('Added "' + id + '" to the end of components.');
+              live();
+            }
+
+            exampleSel.addEventListener('change', function () { loadExample(exampleSel.value); });
+            editor.addEventListener('input', live);
+            renderBtn.addEventListener('click', render);
+            pageSel.addEventListener('change', function () { showPage(Number(pageSel.value)).catch(function (e) { say(String(e)); }); });
+            $('pg-prev').addEventListener('click', function () { var i = Number(pageSel.value); if (i > 0) showPage(i - 1); });
+            $('pg-next').addEventListener('click', function () { var i = Number(pageSel.value); if (i < pages - 1) showPage(i + 1); });
+            $('pg-pdf').addEventListener('click', function () {
+              if (!api) return;
+              try {
+                var pdf = api.render(rendered);
+                var a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
+                a.download = 'report.pdf';
+                a.click();
+                setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+                say('PDF created (' + Math.ceil(pdf.length / 1024) + ' KiB).');
+              } catch (e) { say(String(e)); }
+            });
+            root.addEventListener('click', function (ev) {
+              var b = ev.target.closest && ev.target.closest('[data-fragment]');
+              if (b) insert(b.getAttribute('data-fragment'));
+            });
+
+            var wanted = new URLSearchParams(location.search).get('example');
+            loadExample(data.examples.some(function (e) { return e.id === wanted; }) ? wanted : data.examples[0].id);
+          })();
+        </script>
+      </div>
+      <p slot="note" class="note">
+        The engine is the same as in the <a href={url('docs/guides/wasm/')}>Wasm build</a>. It uses the bundled
+        Fira Sans and renders on the main thread, so large reports can make the page wait for a moment.
+      </p>
+    </Demo>
+  </div>
+</Base>
+
+<style>
+  .wrap {
+    max-width: calc(var(--max) + 220px);
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+  }
+  h1 {
+    margin: 0 0 12px;
+    color: var(--heading);
+    font-size: clamp(32px, 5vw, 48px);
+    line-height: 1.1;
+  }
+  .intro {
+    max-width: 70ch;
+    margin: 0 0 28px;
+    color: var(--muted);
+  }
+  .intro a,
+  .note a {
+    text-decoration: underline;
+  }
+  .cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+  @media (min-width: 960px) {
+    .cols {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+  .pane {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+  }
+  .pane h2 {
+    margin: 0;
+    color: var(--heading);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+  label,
+  summary {
+    color: var(--heading);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  summary {
+    cursor: pointer;
+  }
+  select,
+  button {
+    min-height: 40px;
+    padding: 6px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--heading);
+    font: inherit;
+    font-size: 14px;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+  button.primary {
+    padding-inline: 22px;
+    border-color: var(--ink);
+    background: var(--ink);
+    color: #fff;
+    font-weight: 500;
+  }
+  :global([data-theme='dark']) button.primary {
+    background: var(--accent-fill);
+    border-color: var(--accent-fill);
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) button.primary {
+      background: var(--accent-fill);
+      border-color: var(--accent-fill);
+    }
+  }
+  select:focus-visible,
+  button:focus-visible,
+  textarea:focus-visible,
+  summary:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+  textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 320px;
+    padding: 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--code-bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.5;
+    tab-size: 2;
+    resize: vertical;
+  }
+  textarea[aria-invalid='true'] {
+    border-color: var(--brand);
+    border-width: 2px;
+  }
+  .hint {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .palette {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .chip {
+    min-height: 32px;
+    padding: 2px 10px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+  }
+  .more {
+    margin-top: 10px;
+  }
+  .ids {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 2;
+  }
+  .editor-label {
+    margin-top: 4px;
+  }
+  .problems {
+    min-height: 1.5em;
+    margin: 0;
+    font-size: 13.5px;
+  }
+  .problems ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+  .problems.bad {
+    padding: 8px 12px;
+    border-left: 4px solid var(--brand);
+    background: var(--brand-soft);
+    color: var(--heading);
+  }
+  .problems.ok {
+    color: var(--muted);
+  }
+  .status {
+    padding: 8px 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .toolbar button {
+    min-width: 40px;
+  }
+  .row[hidden],
+  .hint[hidden] {
+    display: none;
+  }
+  .sheet {
+    overflow: auto;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-sunken);
+  }
+  .sheet img {
+    display: block;
+    width: 100%;
+    max-width: 640px;
+    height: auto;
+    margin: 0 auto;
+    background: #fff;
+    box-shadow: var(--shadow);
+  }
+  .note {
+    margin: 0;
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

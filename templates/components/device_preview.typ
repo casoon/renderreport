@@ -51,8 +51,8 @@
       // top of the source in frame; the top slice (here: the page header)
       // silently goes missing regardless of `h`. There is no in-template
       // fix for this — the caller MUST pre-crop the source asset to near
-      // this box's aspect ratio before handing it to this component (see
-      // `register_page_screenshot_assets` in auditmysite), so this box
+      // this box's aspect ratio before handing it to this component (for
+      // example when registering the screenshot as an asset), so this box
       // only ever needs to clip a small, harmless margin.
       box(stroke: 0.5pt + rgb("#d1d5db"), radius: 14pt, clip: true, width: 100%, height: h)[
         #place(top, image(data.mobile_src, width: 100%, alt: data.mobile_alt))

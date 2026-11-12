@@ -14,6 +14,14 @@ for request in examples/requests/*.json; do
   cargo run --release --quiet --features cli --bin renderreport -- render "$request" -o "${request%.json}.pdf"
 done
 
+# The showcase reports (examples/showcase/): requests next to their PDFs, the monthly template with its data.
+for request in examples/showcase/*.json; do
+  cargo run --release --quiet --features cli --bin renderreport -- render "$request" -o "${request%.json}.pdf"
+done
+cargo run --release --quiet --features cli --bin renderreport -- render \
+  examples/showcase/analytics-monthly/template.json --data examples/showcase/analytics-monthly/october.json \
+  -o examples/showcase/analytics-monthly/october.pdf
+
 # The site hero shows page 2 of the health check (needs pdftoppm from poppler).
 pdftoppm -png -r 110 -singlefile -f 2 -l 2 examples/requests/health-check.pdf \
   site/src/assets/health-check-page2

@@ -15,6 +15,11 @@
     }
   })
 
+  // Per-column text alignment ("left" is the default)
+  let col-aligns = data.columns.map(col => {
+    if col.align == "right" { right } else if col.align == "center" { center } else { left }
+  })
+
   block(width: 100%)[
     #if data.title != none [
       #component-title(text(weight: "semibold", size: font-size-lg)[#data.title])
@@ -28,7 +33,7 @@
     #table(
       columns: col-widths,
       inset: (x: spacing-3, y: 8pt),
-      align: left + horizon,
+      align: (x, y) => col-aligns.at(x) + horizon,
       // Horizontal rules only — a strong header underline and light hairlines
       // between rows. No vertical lines, no outer box.
       stroke: (x, y) => (

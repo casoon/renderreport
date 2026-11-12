@@ -18,6 +18,16 @@ wasm-bindgen target/wasm32-unknown-unknown/release/renderreport.wasm --out-dir p
 `--no-default-features` leaves out `barcodes`, which a Worker rarely needs. Add it back with
 `--features wasm,barcodes` if your reports use the `barcode` component.
 
+To page images in the browser, add the `png` feature (`--features wasm,png`) for `render_page_png`. The
+module is large because Typst and the bundled fonts are inside it: about 28 MiB raw and 11 MiB
+gzip-compressed, so load it lazily and let the server compress it.
+
+## Playground
+
+The [playground](../../../playground/) on this site runs that build: edit a request, check it with `validate`
+and see the pages rendered by `render_page_png`. `site/scripts/build-wasm.sh` builds the module for it
+(the deploy workflow runs the script); the module loads only when you press Render.
+
 ## `render`
 
 Takes a [render request](../../reference/render-request/) as a JSON string and returns the PDF
@@ -30,6 +40,16 @@ import wasmModule from './pkg/renderreport_bg.wasm'; // bundler-provided WebAsse
 initSync({ module: wasmModule });
 
 const pdf = render(JSON.stringify(request)); // Uint8Array
+```
+
+## `render_with_data`
+
+Takes a request template and a data object, both as JSON strings, binds the data into the
+template (see [templates and data](../templates-and-data/)) and returns the PDF bytes. Binding
+errors are thrown as `binding data failed: <template path>: <reason>`.
+
+```js
+const pdf = render_with_data(JSON.stringify(template), JSON.stringify(data));
 ```
 
 ## `render_wordsearch`

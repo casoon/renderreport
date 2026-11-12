@@ -3,12 +3,12 @@ name = "renderreport"
 version = "0.7.3"
 edition = "2021"
 authors = ["Casoon <info@casoon.de>"]
-description = "Data-driven report generation with Typst as embedded render engine — no CLI dependency"
+description = "Multi-page PDF reports from components and data, rendered by Typst as an embedded engine — no typst binary needed"
 homepage = "https://renderreport.casoon.de"
 repository = "https://github.com/casoon/renderreport"
 documentation = "https://docs.rs/renderreport"
 license = "MIT"
-keywords = ["report", "pdf", "typst", "audit", "generator"]
+keywords = ["report", "pdf", "typst", "reporting", "json"]
 categories = ["text-processing", "rendering", "template-engine"]
 readme = "README.md"
 rust-version = "1.92"
@@ -46,6 +46,14 @@ clap = { version = "4.0", features = ["derive"], optional = true }
 # Typst as embedded library
 typst = "0.15"
 typst-pdf = "0.15"
+typst-layout = "0.15"
+
+# PNG / SVG page output (optional)
+typst-render = { version = "0.15", optional = true }
+typst-svg = { version = "0.15", optional = true }
+
+# Charts from specifications (optional)
+chartlet = { version = "0.23", optional = true }
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
@@ -55,6 +63,12 @@ toml = "0.8"
 # Error handling
 thiserror = "2.0"
 anyhow = "1.0"
+
+# Pinpoints the field that fails to deserialize (request validation)
+serde_path_to_error = "0.1"
+
+# JSON Schema for components and requests (optional)
+schemars = { version = "1.0", optional = true }
 
 # Barcode encoding (optional — pulls noticeable weight into Wasm builds where
 # barcode components aren't needed)
@@ -85,9 +99,13 @@ lopdf = "0.44"
 
 [features]
 default = ["barcodes"]
-cli = ["clap"]
+cli = ["clap", "schema", "png", "svg"]
+schema = ["dep:schemars"]
+png = ["dep:typst-render"]
+svg = ["dep:typst-svg"]
 wasm = ["wasm-bindgen"]
 barcodes = ["dep:barcoders", "dep:qrcode", "dep:datamatrix"]
+chartlet = ["dep:chartlet"]
 # remote-packs = ["tokio"]
 
 [[example]]

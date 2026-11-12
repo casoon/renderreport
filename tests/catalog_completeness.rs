@@ -20,6 +20,11 @@ fn all_registered_components_appear_in_catalog() {
     let missing: Vec<String> = registered
         .iter()
         .filter(|id| {
+            // Behind the optional feature `chartlet`, so the example cannot use it by default;
+            // tests/chartlet.rs covers it.
+            if id.to_string() == "chartlet" {
+                return false;
+            }
             let comment_pattern = format!("@id: {id}");
             let json_pattern = format!("\"type\": \"{id}\"");
             !catalog_src.contains(&comment_pattern) && !catalog_src.contains(&json_pattern)

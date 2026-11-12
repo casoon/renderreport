@@ -108,3 +108,75 @@ fn cover_renders_the_indicator_strip_below_the_module_gauges() {
     );
     assert!(first.contains("UX Indicator") && first.contains("Journey Indicator"));
 }
+
+#[test]
+fn a_long_table_flows_over_pages_without_losing_or_clipping_rows() {
+    let engine = Engine::new().expect("Engine::new failed");
+    let mut table = AuditTable::new(vec![
+        TableColumn::new("Project"),
+        TableColumn::new("Requests").with_align("right"),
+    ]);
+    for row in 0..60 {
+        table = table.add_row(vec![format!("project{row:02}x"), format!("{}", row * 7)]);
+    }
+    let request = engine
+        .report("default")
+        .metadata("lang", "en")
+        .add_component(Section::new("Projects").with_level(1))
+        .add_component(table)
+        .build();
+    let pdf = engine.render_pdf(&request).expect("render_pdf failed");
+    let pages = page_texts(&pdf);
+    assert!(pages.len() > 1, "60 rows must span several pages");
+    for row in 0..60 {
+        let name = format!("project{row:02}x");
+        let found = pages.iter().filter(|t| t.contains(&name)).count();
+        assert_eq!(found, 1, "{name} must appear exactly once");
+    }
+    // The header repeats on every page the table spans.
+    let with_rows = pages.iter().filter(|t| t.contains("project")).count();
+    let with_header = pages.iter().filter(|t| t.contains("Requests")).count();
+    assert_eq!(with_header, with_rows);
+}
+
+#[test]
+fn column_align_reaches_the_table_cells() {
+    let engine = Engine::new().expect("Engine::new failed");
+    let table = |align: Option<&str>| {
+        let mut count = TableColumn::new("Count");
+        if let Some(align) = align {
+            count = count.with_align(align);
+        }
+        let request = engine
+            .report("default")
+            .metadata("lang", "en")
+            .add_component(
+                AuditTable::new(vec![TableColumn::new("Name"), count])
+                    .add_row(vec!["alpha", "1"])
+                    .add_row(vec!["beta", "12345"]),
+            )
+            .build();
+        engine.render_typ(&request).expect("render_typ failed")
+    };
+    let plain = table(None);
+    let right = table(Some("right"));
+    assert!(right.contains("align: \"right\""), "align reaches the data");
+    assert!(plain.contains("align: (x, y) => col-aligns.at(x) + horizon"));
+    // The data dictionary is the only difference between the two sources.
+    assert_ne!(plain, right);
+}
+
+#[test]
+fn section_subtitle_is_rendered_under_the_heading() {
+    let engine = Engine::new().expect("Engine::new failed");
+    let mut section = Section::new("Alpha Section").with_level(1);
+    section.subtitle = Some("Sub Line Zqx".into());
+    let request = engine
+        .report("default")
+        .title("Doc")
+        .add_component(section)
+        .add_component(Callout::info("Body."))
+        .build();
+    let pdf = engine.render_pdf(&request).expect("render_pdf failed");
+    assert!(page_texts(&pdf).iter().any(|t| t.contains("Sub Line Zqx")));
+}

@@ -1,9 +1,9 @@
 # @casoon/renderreport
 
-Data-driven report generation with Typst as embedded render engine.
+Multi-page PDF reports from components and data, rendered by Typst as an embedded engine.
 
-Build PDF reports without learning Typst: describe the report as JSON components, and the
-`renderreport` CLI renders it to PDF. This package installs that CLI.
+Describe the report as JSON components and the `renderreport` CLI renders it to PDF, without
+writing Typst. This package installs that CLI.
 
 **Docs and examples:** [casoon.github.io/renderreport](https://casoon.github.io/renderreport/)
 

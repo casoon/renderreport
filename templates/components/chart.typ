@@ -57,7 +57,10 @@
         v(4pt)
       }
 
-      let chart_height = 140pt
+      // `height` is the plot area of the columns. The default ("200pt") keeps
+      // the long-standing 140pt so existing reports render unchanged.
+      let height = data.at("height", default: "200pt")
+      let chart_height = if height == "200pt" { 140pt } else { eval(height) }
       let value_size = if grouped { 6.5pt } else { 8pt }
       let bar(si, i) = {
         let p = series.at(si).data.at(i, default: none)

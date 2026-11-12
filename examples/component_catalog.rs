@@ -9,6 +9,8 @@
 //! Stable download URL (latest release):
 //! https://github.com/casoon/renderreport/releases/latest/download/component-catalog.pdf
 
+#![allow(deprecated)] // DominantIssueSpotlight stays in the catalog until it is removed
+
 use renderreport::components::advanced::*;
 use renderreport::components::barcode::Barcode;
 use renderreport::components::charts::{Chart, Gauge, Sparkline};

@@ -15,7 +15,7 @@ A component is a Rust struct with a builder, a Typst function and an id. In a re
 | Layout | 9 | `section`, `cover-page`, `grid-component`, `table-of-contents`, `page-break` |
 | Text & Editorial | 15 | `textblock`, `callout`, `quote-block`, `label` |
 | Metrics & KPIs | 16 | `score-card`, `gauge`, `big-number`, `progress-bar` |
-| Data & Comparison | 9 | `audit-table`, `crosstab`, `pivot-table`, `chart` |
+| Data & Comparison | 9 | `audit-table` (also `table`), `crosstab`, `pivot-table`, `chart` |
 | Narrative & Storytelling | 16 | `finding`, `problem-solution`, `timeline`, `process-flow` |
 | Infographics | 3 | `funnel`, `word-search` |
 | Marketing & Sales | 8 | `product-hero`, `feature-grid`, `pricing-card`, `cta-box` |
@@ -53,14 +53,66 @@ renderreport list-components --category metrics
 renderreport list-components --markdown
 ```
 
+## Aliases
+
+A component can answer to more than one name. `table` is an alias of `audit-table`: both are
+the same component, in a request (`"type": "table"`) and in Rust (`Table` is `AuditTable`). The
+request is rewritten to the id before it is rendered, so templates and packs only see
+`audit-table`; `validate`, `schema` and `list-components` know the alias. A component of the same
+name defined by the request's pack takes precedence over the alias.
+
+## Audit-specific components
+
+Most components fit any report. These were made for website audits and keep their audit
+vocabulary (scores, severities, modules, devices); they work for other data too, but are the
+place to look first when a report is about an audit:
+
+| Component | Purpose |
+| --- | --- |
+| `benchmark-table` | Scored rows compared against a benchmark |
+| `module-comparison` | Score rows per audit module |
+| `severity-overview` | Counts per severity level |
+| `device-preview` | Desktop and mobile screenshots side by side |
+| `cover-page` | With `score`, the cover shows the headline score, the findings count and module gauges; without `score` it is a plain cover (title, subtitle, date, brand or logo, optional `domain` line) |
+
+Default texts of these components are German unless the request sets the label fields.
+
 The [component catalog](../../../showcase/component-catalog/) renders every component with sample
 data. The table below is the output of `renderreport list-components --markdown` for 0.7.0.
+
+## Optional components
+
+### `chartlet`
+
+Needs the Cargo feature `chartlet` (`cargo build --features cli,chartlet`); it is not part of the
+default build or the Wasm build. The component draws a chart from a
+[chartlet](https://github.com/casoon/chartlet) specification when the request is rendered and
+places it as an image.
+
+```json
+{ "type": "chartlet", "data": {
+  "spec": { "schemaVersion": 1, "type": "bar", "title": "Failed checks by page",
+            "categories": ["Home", "Search", "Checkout"],
+            "series": [{ "name": "Failed", "values": [4, 9, 12] }] },
+  "caption": "Failed checks by page" } }
+```
+
+| Field | Purpose |
+| --- | --- |
+| `spec` | The chartlet specification as a JSON object. `validate` reports an invalid one with chartlet's message |
+| `alt` | Alternative text for PDF/UA. Without it the description chartlet generates from the data is used |
+| `caption` | Caption below the chart |
+| `width` | Width, `100%` by default |
+
+The chart is chartlet's print variant (literal colors) and uses chartlet's own theme, set in the
+specification; renderreport's theme tokens are not mapped onto it. The `chart` component stays
+for sparklines and gauges.
 
 ## All components
 
 | ID | Category | Layout Hint | Description |
 |---|---|---|---|
-| `audit-table` | Data & Comparison | Breakable | Tabular data for audit results with severity columns |
+| `audit-table` (alias `table`) | Data & Comparison | Breakable | Table with an optional title, column headers, striped rows and optional row numbers |
 | `barcode` | Media & Assets | KeepTogether | 1D/2D barcode (EAN-13, QR, DataMatrix, etc.) |
 | `before-after` | Narrative & Storytelling | KeepTogether | Before/after comparison with labeled panels |
 | `benchmark-table` | Data & Comparison | Breakable | Benchmark comparison table with scored rows |
@@ -118,7 +170,7 @@ data. The table below is the output of `renderreport list-components --markdown`
 | `roadmap-block` | Narrative & Storytelling | Breakable | Project roadmap block with phases and milestones |
 | `score-band` | Metrics & KPIs | KeepTogether | Score band visualization with threshold markers |
 | `score-card` | Metrics & KPIs | KeepTogether | Score card with gauge-style visualization and status indicator |
-| `section` | Layout | KeepWithNext | Document section heading with optional subtitle |
+| `section` | Layout | KeepWithNext | Document section heading with optional subtitle; `content` is not rendered, put the components after the section |
 | `section-header-split` | Layout | KeepWithNext | Section header with title on left and metadata on right |
 | `severity-overview` | Metrics & KPIs | KeepTogether | Severity distribution overview with count badges |
 | `side-label` | Text & Editorial | KeepTogether | Vertical side label aligned alongside content |

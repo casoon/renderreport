@@ -9,7 +9,7 @@
 //!
 //! - `ScoreCard` - Display a metric with score visualization
 //! - `Finding` - An audit finding with severity
-//! - `AuditTable` - Tabular data for audit results
+//! - `AuditTable` (alias `Table`) - General-purpose table
 //! - `Section` - Document section with heading
 //! - `Image` - Image with optional caption
 //! - `Callout` - Highlighted information box
@@ -19,6 +19,8 @@ pub mod advanced;
 #[cfg(feature = "barcodes")]
 pub mod barcode;
 pub mod catalog;
+#[cfg(feature = "chartlet")]
+pub mod chartlet;
 pub mod charts;
 pub mod crosstab;
 mod normalize;
@@ -38,7 +40,7 @@ mod narrative;
 pub use catalog::{ComponentCatalog, ComponentCategory, ComponentDescriptor, LayoutHint};
 pub use data::{
     AuditTable, BenchmarkColumn, BenchmarkRow, BenchmarkTable, ComparisonModule, ModuleComparison,
-    TableColumn,
+    Table, TableColumn,
 };
 pub use editorial::{
     Callout, CalloutVariant, FactBox, QuoteBlock, StatusPill, TagCloud, TagCloudItem,
@@ -64,6 +66,7 @@ pub use registry::{ComponentId, ComponentRegistry};
 pub use wordsearch::{WordSearch, WordSearchBuilder};
 
 // Re-export new primitive and composite types
+#[allow(deprecated)]
 pub use advanced::{
     BenefitStrip, BigNumber, ChecklistPanel, ChecklistRow, Columns, ComparisonBlock,
     ComparisonCluster, ComparisonClusterItem, DevicePreview, DiagnosisPanel, DiagnosisRow,
@@ -102,6 +105,7 @@ pub trait Component: Send + Sync {
 
 /// Dynamic component wrapper for heterogeneous collections
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct DynamicComponent {
     /// Component type ID
     #[serde(rename = "type")]
@@ -140,6 +144,7 @@ impl Component for DynamicComponent {
 
 /// Severity levels for findings and issues
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "lowercase")]
 pub enum Severity {
     Critical,
@@ -171,6 +176,7 @@ impl Severity {
 
 /// Score status based on thresholds
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "lowercase")]
 pub enum ScoreStatus {
     Good,

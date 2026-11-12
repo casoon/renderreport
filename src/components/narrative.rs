@@ -1,5 +1,8 @@
 //! Narrative and storytelling components: findings, timelines and recommendations.
 
+// `DominantIssueSpotlight` is deprecated but stays registered.
+#![allow(deprecated)]
+
 use super::catalog::{ComponentCategory, LayoutHint};
 use super::{Component, Severity};
 use crate::component_catalog;
@@ -16,6 +19,7 @@ component_catalog! {
 
 /// Finding component for audit issues
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Finding {
     /// Finding title
     pub title: String,
@@ -95,11 +99,13 @@ component_catalog! {
 
 /// Roadmap block with categorized columns
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct RoadmapBlock {
     pub columns: Vec<RoadmapColumn>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct RoadmapColumn {
     pub title: String,
     #[serde(default)]
@@ -108,6 +114,7 @@ pub struct RoadmapColumn {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ActionItem {
     pub action: String,
     pub role: String,
@@ -135,6 +142,7 @@ impl Component for RoadmapBlock {
 
 /// A step in a process flow
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ProcessStep {
     pub label: String,
     #[serde(default)]
@@ -154,6 +162,7 @@ component_catalog! {
 
 /// Linear process visualization
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ProcessFlow {
     pub steps: Vec<ProcessStep>,
     #[serde(default)]
@@ -193,6 +202,7 @@ impl Component for ProcessFlow {
 
 /// A timeline milestone item
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct TimelineItem {
     pub date: String,
     pub title: String,
@@ -213,6 +223,7 @@ component_catalog! {
 
 /// Project phases / milestone timeline
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Timeline {
     pub items: Vec<TimelineItem>,
     #[serde(default)]
@@ -250,6 +261,7 @@ component_catalog! {
 
 /// Two-part problem/solution block
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ProblemSolution {
     pub problem: String,
     pub solution: String,
@@ -320,6 +332,7 @@ component_catalog! {
 
 /// Before/after comparison block
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct BeforeAfter {
     pub before: String,
     pub after: String,
@@ -382,6 +395,7 @@ component_catalog! {
 
 /// Context / relevance block for storytelling
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct WhyItMatters {
     pub body: String,
     #[serde(default)]
@@ -440,6 +454,7 @@ component_catalog! {
 
 /// A phase block for roadmap/plan displays
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct PhaseBlock {
     pub phase_number: u8,
     pub phase_label: String,
@@ -492,6 +507,7 @@ impl Component for PhaseBlock {
 
 /// A single row in a ChecklistPanel
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ChecklistRow {
     pub label: String,
     pub diagnosis: String,
@@ -525,6 +541,7 @@ component_catalog! {
 
 /// Card showing label–diagnosis pairs
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ChecklistPanel {
     #[serde(default)]
     pub title: Option<String>,
@@ -555,6 +572,7 @@ impl Component for ChecklistPanel {
 
 /// A single card inside an ImpactGrid
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ImpactGridCard {
     pub label: String,
     pub headline: String,
@@ -602,6 +620,7 @@ component_catalog! {
 
 /// Three-column impact card layout (user / risk / conversion)
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct ImpactGrid {
     pub user: ImpactGridCard,
     pub risk: ImpactGridCard,
@@ -639,6 +658,7 @@ impl Component for ImpactGrid {
 
 /// Visual variant for a spotlight card.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Default, PartialEq)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "lowercase")]
 pub enum SpotlightCardVariant {
     Critical,
@@ -670,6 +690,7 @@ component_catalog! {
 
 /// General-purpose spotlight card with left severity stripe
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct SpotlightCard {
     pub title: String,
     pub body: String,
@@ -753,6 +774,7 @@ component_catalog! {
 /// Lighter than Finding: recommendation + impact + effort + priority
 /// For: Audit recommendations, best practices, improvements
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct RecommendationCard {
     /// Recommendation title
     pub title: String,
@@ -818,6 +840,7 @@ component_catalog! {
 /// Numbered steps displayed horizontally (2-4 steps)
 /// For: "How it works", process overview, methodology
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct StepCardRow {
     /// Step titles
     pub titles: Vec<String>,
@@ -872,6 +895,7 @@ impl Component for StepCardRow {
 
 /// A single row in a DiagnosisPanel
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct DiagnosisRow {
     pub label: String,
     pub diagnosis: String,
@@ -906,6 +930,7 @@ component_catalog! {
 /// Card with label–diagnosis rows and optional status indicators
 /// For: Technical overview, module diagnosis, quick health checks
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct DiagnosisPanel {
     #[serde(default)]
     pub title: Option<String>,
@@ -945,7 +970,9 @@ component_catalog! {
 
 /// Full-width spotlight for a single dominant issue
 /// For: Highlighting the biggest problem in an audit report
+#[deprecated(note = "use `SpotlightCard` (component `spotlight-card`)")]
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct DominantIssueSpotlight {
     pub title: String,
     pub severity: String,
@@ -1040,6 +1067,7 @@ component_catalog! {
 /// Before/after comparison block (wrong vs. right)
 /// For: Code examples, best practice comparisons, fix demonstrations
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct WrongRightBlock {
     pub wrong: String,
     pub right: String,

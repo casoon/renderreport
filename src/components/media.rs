@@ -18,6 +18,7 @@ component_catalog! {
 
 /// Image component
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Image {
     /// Image source (path or URL)
     pub src: String,
@@ -84,6 +85,7 @@ component_catalog! {
 /// Watermark for background content
 /// Inspired by Pentaho Watermark Band
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Watermark {
     /// Watermark text
     pub text: String,
@@ -161,6 +163,7 @@ component_catalog! {
 /// Display logos of customers, partners, or certifications
 /// For: Trust building, social proof, partner logos, client lists
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct LogoStrip {
     /// Logo labels/names
     pub labels: Vec<String>,

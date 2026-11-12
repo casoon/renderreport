@@ -4,10 +4,10 @@ description: What renderreport does, where it stops, and how this documentation 
 order: 0
 ---
 
-renderreport turns structured data into PDF reports. You describe a report as a list of
-components (score cards, findings, tables, timelines, pricing cards and more), pick a theme, and
-the engine writes the Typst source and compiles it to PDF in-process. You never write Typst
-yourself, and no `typst` binary is involved.
+renderreport turns structured data into multi-page PDF reports. You describe a report as a list of
+components (key figures, findings, tables, charts, running text and more), pick a theme, and the
+engine writes the Typst source and compiles it to PDF in-process. You never write Typst yourself,
+and no `typst` binary is involved.
 
 ## What it covers
 
@@ -17,8 +17,23 @@ yourself, and no `typst` binary is involved.
   from the default theme, a template pack and the request.
 - Template packs: your own Typst templates, components and themes, loaded from disk.
 - Accessible output: every PDF is validated against PDF/UA-1 while it is written.
+- Requests that can be checked (`validate`, `schema`), used as templates filled from a JSON or CSV
+  data file, or built from Markdown, CSV, Lighthouse, SARIF and JUnit files with `from`.
+- PDF for the whole report, PNG or SVG for single pages.
 - Four ways in: the Rust library, the `renderreport` CLI, the npm package (which installs the CLI)
   and a Wasm build for JavaScript hosts such as Cloudflare Workers.
+
+## What it is for
+
+Reports of several pages that are assembled from components, such as a usage report, a code
+analysis, a monthly traffic report or a status report. A single page (certificate, school report,
+flyer) works too, because it uses the same components and page format; nothing more is built for
+it. The marketing and brochure components stay in the catalog, they are not the main use.
+
+Business documents with a fixed layout, such as invoices, quotes and letters, are a different job.
+[typst-business-templates](https://github.com/casoon/typst-business-templates) keeps their layout
+in Typst templates. [lightweight-pdf](https://github.com/casoon/lightweight-pdf) writes PDFs
+without Typst for cases where binary size and startup time matter.
 
 ## Where it stops
 

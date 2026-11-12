@@ -16,13 +16,18 @@ component_catalog! {
 
 /// Section component for document structure
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Section {
     /// Section title
     pub title: String,
     /// Heading level (1-6)
     #[serde(default = "default_level")]
     pub level: u8,
-    /// Section content (nested components)
+    /// Muted line under the heading. Optional.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub subtitle: Option<String>,
+    /// Not rendered: a section is only the heading, put its components after
+    /// it in `components`. `validate` reports a non-empty value.
     #[serde(default)]
     pub content: Vec<serde_json::Value>,
 }
@@ -36,6 +41,7 @@ impl Section {
         Self {
             title: title.into(),
             level: 1,
+            subtitle: None,
             content: Vec::new(),
         }
     }
@@ -65,6 +71,7 @@ impl Component for Section {
 
 /// One module's score for the cover gauge strip.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct CoverModuleGauge {
     pub name: String,
     pub score: u32,
@@ -83,22 +90,32 @@ component_catalog! {
     id: "cover-page",
     data: CoverPage,
     template: include_str!("../../templates/components/cover_page.typ"),
-    description: "Full-page cover with title, logo, and metadata",
+    description: "Full-page cover with title, logo, and metadata; score block optional",
     category: ComponentCategory::Layout,
     // The cover is the first page and emits its own trailing page break, so it
     // must NOT request a leading break (that would produce a blank page 1).
     layout_hint: LayoutHint::KeepTogether,
 }
 
-/// Professional cover page with score preview
+/// Cover page with score preview, or without score block, see [`CoverPage::plain`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct CoverPage {
+    #[serde(default)]
     pub brand: String,
     pub title: String,
+    /// Subject line under the title (a domain, a client, a project). Optional.
+    #[serde(default)]
     pub domain: String,
+    #[serde(default)]
     pub subtitle: String,
+    #[serde(default)]
     pub date: String,
-    pub score: u32,
+    /// Headline score. Without it the cover has no score block (score,
+    /// findings count); see [`CoverPage::plain`].
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub score: Option<u32>,
+    #[serde(default)]
     pub grade: String,
     /// Optional brand logo asset path (e.g. a registered SVG). When set, it is
     /// rendered in the top-left brand slot instead of the plain `brand` text —
@@ -161,7 +178,7 @@ impl CoverPage {
             domain: domain.into(),
             subtitle: String::new(),
             date: String::new(),
-            score,
+            score: Some(score),
             grade: grade.into(),
             logo_src: String::new(),
             band_phrase: String::new(),
@@ -177,6 +194,15 @@ impl CoverPage {
             indicator_gauges: vec![],
             indicators_label: String::new(),
             computed_status,
+        }
+    }
+
+    /// A cover without score block: title, subtitle, date, brand or logo and
+    /// an optional `domain` line.
+    pub fn plain(title: &str) -> Self {
+        Self {
+            score: None,
+            ..Self::new(title, "", 0, "")
         }
     }
 
@@ -270,6 +296,7 @@ component_catalog! {
 /// Horizontal separator/divider
 /// Inspired by BIRT Band Elements
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Divider {
     /// Divider style (solid, dashed, dotted, double)
     #[serde(default = "default_divider_style")]
@@ -365,6 +392,7 @@ component_catalog! {
 /// Grid/Multi-column layout container
 /// Inspired by Pentaho Block/Row Layout
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Grid {
     /// Grid title
     #[serde(default)]
@@ -389,6 +417,7 @@ fn default_grid_gap() -> String {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct GridItem {
     /// Item content (can be nested components)
     pub content: serde_json::Value,
@@ -452,6 +481,7 @@ component_catalog! {
 
 /// Flow group with optional soft keep-together behavior
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct FlowGroup {
     /// Ordered child components or raw content blocks
     pub items: Vec<serde_json::Value>,
@@ -515,6 +545,7 @@ component_catalog! {
 /// Page break for multi-page reports
 /// Inspired by BIRT Page Setup
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct PageBreak;
 
 impl Default for PageBreak {
@@ -549,6 +580,7 @@ component_catalog! {
 
 /// Table of Contents component
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct TableOfContents {
     /// TOC heading title
     pub title: String,
@@ -624,6 +656,7 @@ component_catalog! {
 
 /// Section header with 1/3 title and 2/3 body text side-by-side
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct SectionHeaderSplit {
     pub title: String,
     pub body: String,
@@ -687,6 +720,7 @@ component_catalog! {
 /// Asymmetric two-column layout with flexible width ratio (e.g. 60/40, 70/30)
 /// For: Text + image, side-by-side content, mixed layouts
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Columns {
     /// Left column content (raw Typst or component references)
     pub left: String,

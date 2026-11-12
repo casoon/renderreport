@@ -15,6 +15,7 @@ use std::collections::HashMap;
 
 /// A complete theme definition
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct Theme {
     /// Theme identifier
     pub id: String,

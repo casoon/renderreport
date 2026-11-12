@@ -13,6 +13,7 @@ fn default_true() -> bool {
 
 /// Page layout configuration for a render request.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct PageSetup {
     /// Paper format: "a4" | "a3" | "letter" | "legal" (default: "a4")
     #[serde(default)]
@@ -50,6 +51,7 @@ impl Default for PageSetup {
 
 /// Request to render a report
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct RenderRequest {
     /// Template identifier
     pub template_id: String,
@@ -101,9 +103,6 @@ impl RenderRequest {
 pub enum RenderOutput {
     /// PDF bytes
     Pdf(Vec<u8>),
-    /// Future: HTML output
-    #[allow(dead_code)]
-    Html(String),
 }
 
 impl RenderOutput {
@@ -111,7 +110,6 @@ impl RenderOutput {
     pub fn into_bytes(self) -> Vec<u8> {
         match self {
             RenderOutput::Pdf(bytes) => bytes,
-            RenderOutput::Html(html) => html.into_bytes(),
         }
     }
 
@@ -119,4 +117,16 @@ impl RenderOutput {
     pub fn is_pdf(&self) -> bool {
         matches!(self, RenderOutput::Pdf(_))
     }
+}
+
+/// Image format for [`Engine::render_pages`](crate::Engine::render_pages).
+#[cfg(any(feature = "png", feature = "svg"))]
+#[derive(Debug, Clone, Copy)]
+pub enum PageFormat {
+    /// PNG at `ppi` pixels per inch (72 = one pixel per point)
+    #[cfg(feature = "png")]
+    Png { ppi: u32 },
+    /// SVG
+    #[cfg(feature = "svg")]
+    Svg,
 }
