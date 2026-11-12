@@ -54,12 +54,23 @@ pub fn request_schema() -> Value {
             Some(schema) => schema(&mut ctx),
             None => json!({ "type": "object" }),
         };
+        // A component without fields also takes `{}` and no `data` at all,
+        // as `validate` does.
+        let takes_no_data = d.validate.is_some_and(|v| v(&Value::Null).is_ok());
+        let (data, required) = if takes_no_data {
+            (
+                json!({ "anyOf": [data, { "type": "object", "maxProperties": 0 }] }),
+                json!(["type"]),
+            )
+        } else {
+            (data, json!(["type", "data"]))
+        };
         variants.push(json!({
             "type": "object",
             "title": d.id,
             "description": d.description,
             "properties": { "type": { "enum": names }, "data": data },
-            "required": ["type", "data"],
+            "required": required,
         }));
     }
     variants.push(json!({

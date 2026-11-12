@@ -87,16 +87,29 @@ fn check_component(value: &Value, path: &str, extra: &[&str], issues: &mut Vec<I
         });
         return;
     };
-    let Some(data) = map.get("data") else {
-        issues.push(Issue {
-            path: path.into(),
-            message: format!("component `{id}` has no `data`"),
-        });
-        return;
-    };
-
     // A name the request's pack defines wins over a built-in alias.
     let descriptor = ComponentCatalog::get(id).filter(|d| d.id == id || !extra.contains(&id));
+
+    // A component without fields (`page-break`) takes `null`, `{}` or no
+    // `data` at all; render ignores the data of such a component anyway.
+    let takes_no_data = descriptor
+        .and_then(|d| d.validate)
+        .is_some_and(|validate| validate(&Value::Null).is_ok());
+    let data = match map.get("data") {
+        Some(data) if takes_no_data && data.as_object().is_some_and(|o| o.is_empty()) => {
+            &Value::Null
+        }
+        Some(data) => data,
+        None if takes_no_data => &Value::Null,
+        None => {
+            issues.push(Issue {
+                path: path.into(),
+                message: format!("component `{id}` has no `data`"),
+            });
+            return;
+        }
+    };
+
     match descriptor {
         Some(descriptor) => {
             if let Some(validate) = descriptor.validate {
@@ -119,7 +132,7 @@ fn check_component(value: &Value, path: &str, extra: &[&str], issues: &mut Vec<I
         && data
             .get("content")
             .and_then(Value::as_array)
-            .is_some_and(|content| !content.is_empty())
+            .is_some_and(|c| !c.is_empty())
     {
         issues.push(Issue {
             path: format!("{path}.data.content"),
