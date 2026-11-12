@@ -1,9 +1,10 @@
 use std::io::{self, Read};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process;
 
 use anyhow::Context;
 use clap::{Parser, Subcommand, ValueEnum};
+use renderreport::adapt;
 use renderreport::engine::EngineConfig;
 use renderreport::{ComponentCatalog, Engine, LayoutHint, PageFormat, RenderRequest};
 
@@ -89,6 +90,46 @@ enum Commands {
         /// `for` and `if`
         #[arg(long, value_name = "FILE")]
         data: Option<PathBuf>,
+    },
+
+    /// Render a report from a Markdown, CSV, Lighthouse, SARIF or JUnit file
+    From {
+        /// Format of the input file
+        #[arg(value_name = "FORMAT")]
+        source: adapt::Format,
+
+        /// Path to the input file
+        input: PathBuf,
+
+        /// Output path [default: report.pdf, or stdout with --emit-request]; for
+        /// several PNG/SVG pages it must contain `{n}`, e.g. page-{n}.png
+        #[arg(short, long)]
+        output: Option<PathBuf>,
+
+        /// Report title [default: chosen by the format]
+        #[arg(long)]
+        title: Option<String>,
+
+        /// Language of the labels the report adds [default: en]
+        #[arg(long, value_enum)]
+        lang: Option<adapt::Lang>,
+
+        /// Write the generated request JSON instead of rendering it
+        #[arg(long, conflicts_with_all = ["output_format", "pages"])]
+        emit_request: bool,
+
+        /// Output format [default: from the extension of --output, else pdf]
+        #[arg(long = "format", value_enum)]
+        output_format: Option<OutputFormat>,
+
+        /// Pages to write with --format png or svg, e.g. `1`, `1-3`, `2,4`
+        /// [default: all]
+        #[arg(long, value_name = "SPEC")]
+        pages: Option<String>,
+
+        /// Resolution of PNG pages in pixels per inch
+        #[arg(long, default_value_t = 144, value_parser = clap::value_parser!(u32).range(1..=2400))]
+        ppi: u32,
     },
 
     /// Print the JSON Schema of a request, or of one component's data
@@ -306,6 +347,64 @@ fn write_pages(
     Ok(())
 }
 
+/// `--format`, else the extension of `--output`, else PDF.
+fn resolve_format(format: Option<OutputFormat>, output: Option<&Path>) -> OutputFormat {
+    format
+        .or_else(|| {
+            let ext = output?.extension()?.to_str()?.to_ascii_lowercase();
+            OutputFormat::value_variants()
+                .iter()
+                .copied()
+                .find(|f| f.extension() == ext)
+        })
+        .unwrap_or(OutputFormat::Pdf)
+}
+
+/// Renders the request and writes the PDF, Typst source or page images.
+fn render_request(
+    request: &RenderRequest,
+    output: Option<PathBuf>,
+    typ: bool,
+    format: OutputFormat,
+    pages: Option<Vec<usize>>,
+    ppi: u32,
+    pack_paths: Vec<PathBuf>,
+) -> anyhow::Result<()> {
+    let mut config = EngineConfig::default();
+    config.pack_paths.splice(0..0, pack_paths);
+    let mut engine = Engine::with_config(config).context("failed to initialize render engine")?;
+    if let Some(pack_id) = &request.pack_id {
+        engine
+            .load_pack(&pack_id.0)
+            .with_context(|| format!("failed to load pack {pack_id}"))?;
+    }
+    if format != OutputFormat::Pdf && !typ {
+        let page_format = match format {
+            OutputFormat::Png => PageFormat::Png { ppi },
+            _ => PageFormat::Svg,
+        };
+        let rendered = engine
+            .render_pages(request, page_format)
+            .with_context(|| format!("failed to render {} pages", format.extension()))?;
+        return write_pages(rendered, pages, output, format);
+    }
+    let (bytes, default_output) = if typ {
+        let source = engine
+            .render_typ(request)
+            .context("failed to generate Typst source")?;
+        (source.into_bytes(), "report.typ")
+    } else {
+        let pdf = engine.render_pdf(request).context("failed to render PDF")?;
+        (pdf, "report.pdf")
+    };
+
+    let output = output.unwrap_or_else(|| PathBuf::from(default_output));
+    std::fs::write(&output, &bytes)
+        .with_context(|| format!("failed to write output file {}", output.display()))?;
+    eprintln!("Written {} bytes to {}", bytes.len(), output.display());
+    Ok(())
+}
+
 fn run(cli: Cli) -> anyhow::Result<()> {
     match cli.command {
         Commands::Schema { component } => {
@@ -354,6 +453,44 @@ fn run(cli: Cli) -> anyhow::Result<()> {
             eprintln!("Request is valid");
             return Ok(());
         }
+        Commands::From {
+            source,
+            input,
+            output,
+            title,
+            lang,
+            emit_request,
+            output_format,
+            pages,
+            ppi,
+        } => {
+            let format = resolve_format(output_format, output.as_deref());
+            if pages.is_some() && format == OutputFormat::Pdf {
+                anyhow::bail!("--pages needs --format png or svg");
+            }
+            let pages = pages.as_deref().map(parse_pages).transpose()?;
+            let request = adapt::from_file(source, &input, &adapt::Options { title, lang })
+                .map_err(anyhow::Error::msg)?;
+            let issues = renderreport::validate::validate_value(&request, &[]);
+            if let Some(issue) = issues.first() {
+                anyhow::bail!("the generated request is invalid: {issue}");
+            }
+            if emit_request {
+                let json = serde_json::to_string_pretty(&request)?;
+                match output {
+                    Some(path) => {
+                        std::fs::write(&path, json + "\n").with_context(|| {
+                            format!("failed to write output file {}", path.display())
+                        })?;
+                        eprintln!("Written request to {}", path.display());
+                    }
+                    None => println!("{json}"),
+                }
+                return Ok(());
+            }
+            let request: RenderRequest = serde_json::from_value(request)?;
+            render_request(&request, output, false, format, pages, ppi, Vec::new())?;
+        }
         Commands::ListComponents { markdown, category } => {
             list_components(markdown, category.as_deref());
             return Ok(());
@@ -368,15 +505,7 @@ fn run(cli: Cli) -> anyhow::Result<()> {
             pack_paths,
             data,
         } => {
-            let format = format
-                .or_else(|| {
-                    let ext = output.as_ref()?.extension()?.to_str()?.to_ascii_lowercase();
-                    OutputFormat::value_variants()
-                        .iter()
-                        .copied()
-                        .find(|f| f.extension() == ext)
-                })
-                .unwrap_or(OutputFormat::Pdf);
+            let format = resolve_format(format, output.as_deref());
             if pages.is_some() && format == OutputFormat::Pdf && !typ {
                 anyhow::bail!("--pages needs --format png or svg");
             }
@@ -386,41 +515,7 @@ fn run(cli: Cli) -> anyhow::Result<()> {
             let request: RenderRequest =
                 serde_json::from_str(&json).context("failed to parse request JSON")?;
 
-            let mut config = EngineConfig::default();
-            config.pack_paths.splice(0..0, pack_paths);
-            let mut engine =
-                Engine::with_config(config).context("failed to initialize render engine")?;
-            if let Some(pack_id) = &request.pack_id {
-                engine
-                    .load_pack(&pack_id.0)
-                    .with_context(|| format!("failed to load pack {pack_id}"))?;
-            }
-            if format != OutputFormat::Pdf && !typ {
-                let page_format = match format {
-                    OutputFormat::Png => PageFormat::Png { ppi },
-                    _ => PageFormat::Svg,
-                };
-                let rendered = engine
-                    .render_pages(&request, page_format)
-                    .with_context(|| format!("failed to render {} pages", format.extension()))?;
-                return write_pages(rendered, pages, output, format);
-            }
-            let (bytes, default_output) = if typ {
-                let source = engine
-                    .render_typ(&request)
-                    .context("failed to generate Typst source")?;
-                (source.into_bytes(), "report.typ")
-            } else {
-                let pdf = engine
-                    .render_pdf(&request)
-                    .context("failed to render PDF")?;
-                (pdf, "report.pdf")
-            };
-
-            let output = output.unwrap_or_else(|| PathBuf::from(default_output));
-            std::fs::write(&output, &bytes)
-                .with_context(|| format!("failed to write output file {}", output.display()))?;
-            eprintln!("Written {} bytes to {}", bytes.len(), output.display());
+            render_request(&request, output, typ, format, pages, ppi, pack_paths)?;
         }
     }
 

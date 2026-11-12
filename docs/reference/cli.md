@@ -51,6 +51,35 @@ request with `pack_id` loads that pack before rendering.
 With `--data` the request is a template: placeholders, `for` and `if` are resolved against the
 data file before rendering, see [templates and data](../../guides/templates-and-data/).
 
+## `renderreport from`
+
+```text
+Usage: renderreport from [OPTIONS] <FORMAT> <INPUT>
+
+Arguments:
+  <FORMAT>  Format of the input file [possible values: markdown, csv, lighthouse, sarif, junit]
+  <INPUT>   Path to the input file
+
+Options:
+  -o, --output <OUTPUT>         Output path [default: report.pdf, or stdout with --emit-request];
+                                for several PNG/SVG pages it must contain `{n}`, e.g. page-{n}.png
+      --title <TITLE>           Report title [default: chosen by the format]
+      --lang <LANG>             Language of the labels the report adds [default: en]
+                                [possible values: en, de]
+      --emit-request            Write the generated request JSON instead of rendering it
+      --format <OUTPUT_FORMAT>  Output format [default: from the extension of --output, else pdf]
+                                [possible values: pdf, png, svg]
+      --pages <SPEC>            Pages to write with --format png or svg, e.g. `1`, `1-3`, `2,4`
+                                [default: all]
+      --ppi <PPI>               Resolution of PNG pages in pixels per inch [default: 144]
+```
+
+Builds a report from a Markdown, CSV, Lighthouse JSON, SARIF or JUnit XML file and renders it
+like `render`; see [reports from files](../../guides/from-files/) for what each format produces.
+With `--emit-request` the generated [render request](../render-request/) is written as JSON
+(to stdout without `-o`) instead of being rendered. An input the format does not accept is an
+error naming the format and what is missing, exit code 1.
+
 ## `renderreport list-components`
 
 ```text

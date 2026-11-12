@@ -1,0 +1,46 @@
+{
+  "lighthouseVersion": "12.2.1",
+  "requestedUrl": "https://example.com/",
+  "finalDisplayedUrl": "https://example.com/",
+  "fetchTime": "2026-10-20T09:15:00.000Z",
+  "categories": {
+    "performance": {
+      "id": "performance", "title": "Performance", "score": 0.72,
+      "auditRefs": [
+        { "id": "first-contentful-paint", "weight": 10, "group": "metrics" },
+        { "id": "largest-contentful-paint", "weight": 25, "group": "metrics" },
+        { "id": "total-blocking-time", "weight": 30, "group": "metrics" },
+        { "id": "cumulative-layout-shift", "weight": 25, "group": "metrics" },
+        { "id": "speed-index", "weight": 10, "group": "metrics" },
+        { "id": "unused-javascript", "weight": 0, "group": "load-opportunities" }
+      ]
+    },
+    "accessibility": {
+      "id": "accessibility", "title": "Accessibility", "score": 0.91,
+      "auditRefs": [
+        { "id": "color-contrast", "weight": 7, "group": "a11y-color-contrast" },
+        { "id": "image-alt", "weight": 10, "group": "a11y-names-labels" }
+      ]
+    },
+    "best-practices": {
+      "id": "best-practices", "title": "Best Practices", "score": 1,
+      "auditRefs": [ { "id": "is-on-https", "weight": 5 } ]
+    },
+    "seo": {
+      "id": "seo", "title": "SEO", "score": 0.85,
+      "auditRefs": [ { "id": "meta-description", "weight": 1 } ]
+    }
+  },
+  "audits": {
+    "first-contentful-paint": { "id": "first-contentful-paint", "title": "First Contentful Paint", "description": "First Contentful Paint marks the time at which the first text or image is painted. [Learn more about the metric](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/).", "score": 0.93, "scoreDisplayMode": "numeric", "numericValue": 1450, "displayValue": "1.5 s" },
+    "largest-contentful-paint": { "id": "largest-contentful-paint", "title": "Largest Contentful Paint", "description": "Largest Contentful Paint marks the time at which the largest text or image is painted. [Learn more](https://web.dev/lcp/).", "score": 0.41, "scoreDisplayMode": "numeric", "numericValue": 4120, "displayValue": "4.1 s" },
+    "total-blocking-time": { "id": "total-blocking-time", "title": "Total Blocking Time", "description": "Sum of all time periods between FCP and Time to Interactive.", "score": 0.66, "scoreDisplayMode": "numeric", "numericValue": 310, "displayValue": "310 ms" },
+    "cumulative-layout-shift": { "id": "cumulative-layout-shift", "title": "Cumulative Layout Shift", "description": "Cumulative Layout Shift measures the movement of visible elements within the viewport.", "score": 0.98, "scoreDisplayMode": "numeric", "numericValue": 0.04, "displayValue": "0.04" },
+    "speed-index": { "id": "speed-index", "title": "Speed Index", "description": "Speed Index shows how quickly the contents of a page are visibly populated.", "score": 0.88, "scoreDisplayMode": "numeric", "numericValue": 3300, "displayValue": "3.3 s" },
+    "unused-javascript": { "id": "unused-javascript", "title": "Reduce unused JavaScript", "description": "Reduce unused JavaScript and defer loading scripts until they are required.", "score": 0.3, "scoreDisplayMode": "metricSavings", "displayValue": "Potential savings of 180 KiB" },
+    "color-contrast": { "id": "color-contrast", "title": "Background and foreground colors do not have a sufficient contrast ratio.", "description": "Low-contrast text is difficult or impossible for many users to read. [Learn how to provide sufficient color contrast](https://dequeuniversity.com/rules/axe/4.9/color-contrast).", "score": 0, "scoreDisplayMode": "binary" },
+    "image-alt": { "id": "image-alt", "title": "Image elements have `[alt]` attributes", "description": "Informative elements should aim for short, descriptive alternative text.", "score": 1, "scoreDisplayMode": "binary" },
+    "is-on-https": { "id": "is-on-https", "title": "Uses HTTPS", "description": "All sites should be protected with HTTPS.", "score": 1, "scoreDisplayMode": "binary" },
+    "meta-description": { "id": "meta-description", "title": "Document does not have a meta description", "description": "Meta descriptions may be included in search results to concisely summarize page content.", "score": 0, "scoreDisplayMode": "binary" }
+  }
+}

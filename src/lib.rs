@@ -17,6 +17,8 @@
 //! std::fs::write("report.pdf", pdf)?;
 //! ```
 
+#[cfg(feature = "cli")]
+pub mod adapt;
 pub mod components;
 pub mod engine;
 pub mod pack;

@@ -321,6 +321,17 @@ fn evaluate(expr: &str, path: &str, scope: &Scope) -> Result<Value, BindError> {
 /// number becomes a number (`42`, `3.5`), every other cell stays a string, so
 /// `007` and `1.50` are kept as written. Blank lines are skipped.
 pub fn parse_csv(text: &str) -> Result<Value, String> {
+    let (header, records) = parse_csv_table(text)?;
+    let rows = records
+        .into_iter()
+        .map(|record| Value::Object(header.iter().cloned().zip(record).collect()))
+        .collect();
+    Ok(Value::Array(rows))
+}
+
+/// Like [`parse_csv`], but keeps the column order: the header line and the
+/// rows as arrays of cells in the same order.
+pub fn parse_csv_table(text: &str) -> Result<(Vec<String>, Vec<Vec<Value>>), String> {
     let text = text.strip_prefix('\u{feff}').unwrap_or(text);
     let mut records: Vec<Vec<String>> = Vec::new();
     let mut record: Vec<String> = Vec::new();
@@ -364,14 +375,9 @@ pub fn parse_csv(text: &str) -> Result<Value, String> {
                 header.len()
             ));
         }
-        let row = header
-            .iter()
-            .zip(record)
-            .map(|(name, cell)| (name.clone(), csv_cell(cell)))
-            .collect();
-        rows.push(Value::Object(row));
+        rows.push(record.into_iter().map(csv_cell).collect());
     }
-    Ok(Value::Array(rows))
+    Ok((header, rows))
 }
 
 fn csv_cell(cell: String) -> Value {
