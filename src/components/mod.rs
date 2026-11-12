@@ -19,6 +19,8 @@ pub mod advanced;
 #[cfg(feature = "barcodes")]
 pub mod barcode;
 pub mod catalog;
+#[cfg(feature = "chartlet")]
+pub mod chartlet;
 pub mod charts;
 pub mod crosstab;
 mod normalize;

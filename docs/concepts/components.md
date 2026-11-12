@@ -80,6 +80,34 @@ Default texts of these components are German unless the request sets the label f
 The [component catalog](../../../showcase/component-catalog/) renders every component with sample
 data. The table below is the output of `renderreport list-components --markdown` for 0.7.0.
 
+## Optional components
+
+### `chartlet`
+
+Needs the Cargo feature `chartlet` (`cargo build --features cli,chartlet`); it is not part of the
+default build or the Wasm build. The component draws a chart from a
+[chartlet](https://github.com/casoon/chartlet) specification when the request is rendered and
+places it as an image.
+
+```json
+{ "type": "chartlet", "data": {
+  "spec": { "schemaVersion": 1, "type": "bar", "title": "Failed checks by page",
+            "categories": ["Home", "Search", "Checkout"],
+            "series": [{ "name": "Failed", "values": [4, 9, 12] }] },
+  "caption": "Failed checks by page" } }
+```
+
+| Field | Purpose |
+| --- | --- |
+| `spec` | The chartlet specification as a JSON object. `validate` reports an invalid one with chartlet's message |
+| `alt` | Alternative text for PDF/UA. Without it the description chartlet generates from the data is used |
+| `caption` | Caption below the chart |
+| `width` | Width, `100%` by default |
+
+The chart is chartlet's print variant (literal colors) and uses chartlet's own theme, set in the
+specification; renderreport's theme tokens are not mapped onto it. The `chart` component stays
+for sparklines and gauges.
+
 ## All components
 
 | ID | Category | Layout Hint | Description |
