@@ -242,3 +242,74 @@ mod alias_and_cover {
         }
     }
 }
+
+fn benchmark_rows() -> Vec<BenchmarkRow> {
+    vec![
+        BenchmarkRow::new(1, "a.example", 93, 96, 1).with_column("SEO", 91),
+        BenchmarkRow::new(2, "b.example", 41, 50, 0),
+    ]
+}
+
+fn render_benchmark_pdf(table: BenchmarkTable) -> Vec<u8> {
+    let engine = renderreport::Engine::new().unwrap();
+    let request = engine
+        .report("default")
+        .title("Benchmark")
+        .add_component(table)
+        .build();
+    engine.render_pdf(&request).unwrap()
+}
+
+#[test]
+fn test_benchmark_table_default_headers_unchanged() {
+    let table = BenchmarkTable::new(benchmark_rows());
+    let data = table.to_data();
+    let mut keys: Vec<&str> = data
+        .as_object()
+        .unwrap()
+        .keys()
+        .map(String::as_str)
+        .collect();
+    keys.sort_unstable();
+    assert_eq!(keys, ["rows", "title"]);
+
+    let explicit_german =
+        BenchmarkTable::new(benchmark_rows()).with_labels("Nr", "Domain", "Score", "A11y", "Krit.");
+    assert_eq!(
+        render_benchmark_pdf(table),
+        render_benchmark_pdf(explicit_german)
+    );
+}
+
+#[test]
+fn test_benchmark_table_supplied_headers_rendered() {
+    let engine = renderreport::Engine::new().unwrap();
+    let request = engine
+        .report("default")
+        .title("Benchmark")
+        .add_component(BenchmarkTable::new(benchmark_rows()).with_labels(
+            "Rank",
+            "Website",
+            "Overall",
+            "Accessibility",
+            "Critical",
+        ))
+        .build();
+    let typ = engine.render_typ(&request).unwrap();
+    for (key, label) in [
+        ("label_rank", "Rank"),
+        ("label_domain", "Website"),
+        ("label_score", "Overall"),
+        ("label_accessibility", "Accessibility"),
+        ("label_critical_issues", "Critical"),
+    ] {
+        assert!(
+            typ.contains(&format!("{key}: \"{label}\"")),
+            "{key} missing from Typst source"
+        );
+    }
+    assert_ne!(
+        engine.render_pdf(&request).unwrap(),
+        render_benchmark_pdf(BenchmarkTable::new(benchmark_rows()))
+    );
+}

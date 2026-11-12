@@ -1,6 +1,6 @@
 {
   "name": "@casoon/renderreport",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "Multi-page PDF reports from components and data, rendered by Typst as an embedded engine",
   "license": "MIT",
   "repository": {

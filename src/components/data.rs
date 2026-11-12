@@ -221,6 +221,20 @@ pub struct BenchmarkTable {
     #[serde(default)]
     pub title: Option<String>,
     pub rows: Vec<BenchmarkRow>,
+    /// Headers of the fixed rank/domain/score/accessibility/critical-issues
+    /// columns. Each defaults to German in the template ("Nr", "Domain",
+    /// "Score", "A11y", "Krit.") when not set — pass these explicitly for a
+    /// non-German report.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label_rank: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label_domain: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label_score: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label_accessibility: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label_critical_issues: Option<String>,
 }
 
 /// One caller-defined extra ranking column (e.g. a scored audit dimension).
@@ -262,11 +276,34 @@ impl BenchmarkTable {
         Self {
             title: Some("Website-Ranking".into()),
             rows,
+            label_rank: None,
+            label_domain: None,
+            label_score: None,
+            label_accessibility: None,
+            label_critical_issues: None,
         }
     }
 
     pub fn with_title(mut self, title: &str) -> Self {
         self.title = Some(title.into());
+        self
+    }
+
+    /// Sets the headers of the fixed columns — required for a non-German
+    /// report, since the template's own defaults are German.
+    pub fn with_labels(
+        mut self,
+        label_rank: impl Into<String>,
+        label_domain: impl Into<String>,
+        label_score: impl Into<String>,
+        label_accessibility: impl Into<String>,
+        label_critical_issues: impl Into<String>,
+    ) -> Self {
+        self.label_rank = Some(label_rank.into());
+        self.label_domain = Some(label_domain.into());
+        self.label_score = Some(label_score.into());
+        self.label_accessibility = Some(label_accessibility.into());
+        self.label_critical_issues = Some(label_critical_issues.into());
         self
     }
 }

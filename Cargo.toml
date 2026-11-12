@@ -1,6 +1,6 @@
 [package]
 name = "renderreport"
-version = "0.7.2"
+version = "0.7.3"
 edition = "2021"
 authors = ["Casoon <info@casoon.de>"]
 description = "Multi-page PDF reports from components and data, rendered by Typst as an embedded engine — no typst binary needed"

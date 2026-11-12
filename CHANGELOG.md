@@ -27,18 +27,30 @@ All notable changes to this project are documented in this file. The format foll
 - **CoverPage:** the field `score` is an `Option<u32>` (`CoverPage::new` still takes a plain score).
 - **Components:** the description of `audit-table` is general (it is a table, not only for audits); the id stays. The docs list the audit-specific components as a group, and `DominantIssueSpotlight` is deprecated in favour of `SpotlightCard`. `DiagnosisPanel` and `WrongRightBlock` stay without deprecation for now.
 - **Library:** `RenderOutput::Html`, an unused stub, is removed; `RenderOutput` keeps its single `Pdf` variant.
-- **Docs:** the project site uses the current shared theme (0.12.3) and ends with a link to the
-  quickstart.
 
 ### Fixed
 
 - **Components:** `chart.height` was ignored: vertical bar charts always used a 140pt plot area. A `height` other than the default `200pt` is now the height of the plot area; the default still renders as 140pt, so existing requests are unchanged.
 - **Components:** `section.subtitle`, named in the catalog description and used by two showcase examples, was not a field and never rendered. It is now an optional muted line under the heading; sections without it render as before.
-
 - **Components:** `section.content` was accepted but never rendered, so nested components vanished silently. A section is only the heading (the Rust field is kept for compatibility, auditmysite does not set it); `validate` now reports a non-empty `content` with "put its components after it in `components`", the field's schema description says so, and the docs and the agent skill follow. Rendering is unchanged.
 - **CLI:** `validate` rejected `{"type": "page-break", "data": {}}` and a missing `data` ("expected unit struct PageBreak", "has no `data`") although `render` accepts both. For a component without fields (`page-break`) `validate` now accepts `null`, `{}` and no `data`; the request schema marks `data` optional there. Other components and the render path are unchanged.
 - **Components:** `align` on a column of `table` / `audit-table` (`"left"`, `"center"`, `"right"`) was read but never reached the Typst table, so number columns stayed left-aligned. The template now builds the alignment per column, header and cells alike; a column without `align` stays left-aligned, so requests without it render as before. The showcase PDFs that set `align` (judge-analysis, analytics-monthly) are rebuilt. `benchmark-table`, `crosstab` and `pivot-table` have no `align` field.
 - **Docs:** the project table of the agentmeter showcase report was split 3/2 over a page break. The engine was not at fault (rows stay whole, the header repeats, no content is lost; a new test pins this for a 60-row table), the example filled the page too exactly. A shorter note and one merged key-value row let the table fit on the page; the PDF is rebuilt.
+
+## [0.7.3] - 2026-11-12
+
+### Added
+
+- **BenchmarkTable:** the headers of the fixed rank, domain, score, accessibility and
+  critical-issues columns can be set (`with_labels`); without them the German defaults stay.
+- **Releases:** the crate is published by the release workflow through crates.io Trusted
+  Publishing, after the GitHub release and an approval in the `crates-io` environment; no
+  registry token is stored.
+
+### Changed
+
+- **Docs:** the project site uses the current shared theme (0.12.12) and ends with a link to the
+  quickstart.
 
 ## [0.7.2] - 2026-10-26
 
