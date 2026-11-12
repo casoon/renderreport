@@ -17,12 +17,37 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
 
       # The showcase PDFs are committed fixtures (examples/regenerate.sh renders them with this
-      # checkout), so the site build needs no Rust toolchain.
+      # checkout). The playground needs the Wasm engine, which site/scripts/build-wasm.sh builds
+      # into site/public/playground/ (not committed).
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Read wasm-bindgen version from Cargo.lock
+        id: wbg
+        run: echo "version=$(awk '/^name = "wasm-bindgen"$/ {getline; gsub(/[^0-9.]/, ""); print; exit}' Cargo.lock)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache wasm-bindgen CLI
+        id: wbg-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/bin/wasm-bindgen
+          key: wasm-bindgen-cli-${{ steps.wbg.outputs.version }}
+
+      - name: Install wasm-bindgen CLI
+        if: steps.wbg-cache.outputs.cache-hit != 'true'
+        run: cargo install wasm-bindgen-cli --version "${{ steps.wbg.outputs.version }}" --locked
+
+      - name: Build playground engine
+        run: site/scripts/build-wasm.sh
 
       # Project repos have no package.json at the root, so the pnpm version is set here.
       - uses: pnpm/action-setup@v6

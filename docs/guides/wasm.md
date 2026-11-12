@@ -18,6 +18,16 @@ wasm-bindgen target/wasm32-unknown-unknown/release/renderreport.wasm --out-dir p
 `--no-default-features` leaves out `barcodes`, which a Worker rarely needs. Add it back with
 `--features wasm,barcodes` if your reports use the `barcode` component.
 
+To page images in the browser, add the `png` feature (`--features wasm,png`) for `render_page_png`. The
+module is large because Typst and the bundled fonts are inside it: about 28 MiB raw and 11 MiB
+gzip-compressed, so load it lazily and let the server compress it.
+
+## Playground
+
+The [playground](../../../playground/) on this site runs that build: edit a request, check it with `validate`
+and see the pages rendered by `render_page_png`. `site/scripts/build-wasm.sh` builds the module for it
+(the deploy workflow runs the script); the module loads only when you press Render.
+
 ## `render`
 
 Takes a [render request](../../reference/render-request/) as a JSON string and returns the PDF

@@ -1,0 +1,22 @@
+[
+  {"id": "section", "type": "section", "data": {"title": "Section title", "subtitle": "Optional subtitle", "level": 1}},
+  {"id": "textblock", "type": "textblock", "data": {"content": "A paragraph of running text. Replace it with your own."}},
+  {"id": "callout", "type": "callout", "data": {"variant": "tip", "title": "Tip", "content": "Short note that deserves attention."}},
+  {"id": "score-card", "type": "score-card", "data": {"title": "Accessibility", "score": 87, "description": "axe, 30 pages"}},
+  {"id": "metric-strip", "type": "metric-strip", "data": {"items": [{"label": "Revenue", "value": "1.84", "unit": "M EUR"}, {"label": "Orders", "value": "12,460"}, {"label": "Returns", "value": "4.7", "unit": "%"}]}},
+  {"id": "big-number", "type": "big-number", "data": {"value": "99.9 %", "label": "Uptime", "context": "last 90 days"}},
+  {"id": "progress-bar", "type": "progress-bar", "data": {"label": "Pages done", "value": 64}},
+  {"id": "chart", "type": "chart", "data": {"title": "Visits per week", "chart_type": "line", "series": [{"name": "Visits", "data": [{"label": "W1", "value": 120}, {"label": "W2", "value": 180}, {"label": "W3", "value": 160}, {"label": "W4", "value": 240}]}]}},
+  {"id": "audit-table", "type": "audit-table", "data": {"title": "Table", "columns": [{"header": "Name"}, {"header": "Value", "align": "right"}], "rows": [["First", "10"], ["Second", "24"]]}},
+  {"id": "key-value-list", "type": "key-value-list", "data": {"title": "Details", "items": [{"key": "Client", "value": "Example GmbH"}, {"key": "Period", "value": "Q3 2026"}]}},
+  {"id": "list", "type": "list", "data": {"title": "Next steps", "numbered": true, "items": [{"content": "First step"}, {"content": "Second step"}]}},
+  {"id": "finding", "type": "finding", "data": {"title": "Finding title", "severity": "medium", "description": "What was found.", "recommendation": "What to do about it."}},
+  {"id": "summary-box", "type": "summary-box", "data": {"title": "Status", "items": [{"label": "Schedule", "value": "On track", "status": "good"}, {"label": "Budget", "value": "94 % used", "status": "warning"}]}},
+  {"id": "timeline", "type": "timeline", "data": {"title": "Milestones", "items": [{"date": "2026-11-10", "title": "Beta", "status": "in-progress"}, {"date": "2027-01-20", "title": "Go-live", "status": "planned"}]}},
+  {"id": "pricing-card", "type": "pricing-card", "data": {"name": "Plus", "price": "199 EUR", "billing_period": "/month", "features": ["Feature one", "Feature two"], "highlighted": true}},
+  {"id": "feature-grid", "type": "feature-grid", "data": {"columns": 2, "items": [{"title": "Fast", "description": "Renders in milliseconds."}, {"title": "Accessible", "description": "PDF/UA-1 tagged."}]}},
+  {"id": "quote-block", "type": "quote-block", "data": {"quote": "A quote worth setting apart.", "author": "Someone Notable"}},
+  {"id": "cta-box", "type": "cta-box", "data": {"headline": "Ready to start?", "body": "One sentence that asks for the next step.", "action_label": "Get started"}},
+  {"id": "process-flow", "type": "process-flow", "data": {"title": "How it works", "steps": [{"label": "Collect", "description": "Gather the data"}, {"label": "Describe", "description": "Write the request"}, {"label": "Render", "description": "Get the PDF"}]}},
+  {"id": "divider", "type": "divider", "data": {}}
+]

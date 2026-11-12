@@ -1,0 +1,65 @@
+{
+  "template_id": "default",
+  "title": "Quarterly KPI Report",
+  "subtitle": "Q3 2026 — Online shop",
+  "metadata": { "date": "2026-10-05", "author": "Finance & Analytics", "lang": "en" },
+  "components": [
+    { "type": "section", "data": { "title": "Key figures", "level": 1 } },
+    {
+      "type": "metric-strip",
+      "data": {
+        "items": [
+          { "label": "Revenue", "value": "1.84", "unit": "M EUR" },
+          { "label": "Orders", "value": "12,460" },
+          { "label": "Conversion", "value": "3.1", "unit": "%" },
+          { "label": "Returns", "value": "4.7", "unit": "%" }
+        ]
+      }
+    },
+    {
+      "type": "chart",
+      "data": {
+        "title": "Revenue per month (k EUR)",
+        "chart_type": "bar",
+        "series": [
+          {
+            "name": "Revenue",
+            "data": [
+              { "label": "Jul", "value": 560 },
+              { "label": "Aug", "value": 590 },
+              { "label": "Sep", "value": 690 }
+            ]
+          }
+        ]
+      }
+    },
+    { "type": "section", "data": { "title": "Goals", "level": 1 } },
+    { "type": "progress-bar", "data": { "label": "Revenue target (2.0 M EUR)", "value": 92 } },
+    { "type": "progress-bar", "data": { "label": "New customers (3,000)", "value": 78 } },
+    {
+      "type": "audit-table",
+      "data": {
+        "title": "Channels",
+        "columns": [
+          { "header": "Channel" },
+          { "header": "Revenue (k EUR)", "align": "right" },
+          { "header": "Share", "align": "right" }
+        ],
+        "rows": [
+          ["Organic search", "720", "39 %"],
+          ["Newsletter", "510", "28 %"],
+          ["Paid ads", "430", "23 %"],
+          ["Direct", "180", "10 %"]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "info",
+        "title": "Note",
+        "content": "Figures are preliminary until the books for September are closed."
+      }
+    }
+  ]
+}

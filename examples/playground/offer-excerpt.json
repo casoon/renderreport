@@ -1,0 +1,66 @@
+{
+  "template_id": "default",
+  "title": "Offer: Website Care",
+  "subtitle": "For Example GmbH — valid until 30 November 2026",
+  "metadata": { "date": "2026-11-02", "author": "Studio North", "lang": "en" },
+  "components": [
+    { "type": "section", "data": { "title": "What you get", "level": 1 } },
+    {
+      "type": "feature-grid",
+      "data": {
+        "columns": 3,
+        "items": [
+          { "title": "Updates", "description": "Security and content updates every month." },
+          { "title": "Monitoring", "description": "Uptime and speed checks around the clock." },
+          { "title": "Support", "description": "Answers within one working day." }
+        ]
+      }
+    },
+    { "type": "section", "data": { "title": "Packages", "level": 1 } },
+    {
+      "type": "grid-component",
+      "data": {
+        "columns": 2,
+        "items": [
+          {
+            "content": {
+              "type": "pricing-card",
+              "data": {
+                "name": "Basic",
+                "price": "99 EUR",
+                "billing_period": "/month",
+                "description": "For small sites",
+                "features": ["Monthly updates", "Uptime monitoring", "E-mail support"]
+              }
+            }
+          },
+          {
+            "content": {
+              "type": "pricing-card",
+              "data": {
+                "name": "Plus",
+                "price": "199 EUR",
+                "billing_period": "/month",
+                "description": "For growing shops",
+                "features": ["Everything in Basic", "Speed reports", "Phone support", "2 hours of changes"],
+                "highlighted": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "quote-block",
+      "data": { "quote": "Since the care plan, our shop has not been down once.", "author": "M. Example, Example GmbH" }
+    },
+    {
+      "type": "cta-box",
+      "data": {
+        "headline": "Ready to start?",
+        "body": "Reply to this offer by 30 November and we begin in December.",
+        "action_label": "Accept offer"
+      }
+    }
+  ]
+}

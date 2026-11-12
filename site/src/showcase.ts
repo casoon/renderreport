@@ -104,6 +104,8 @@ const entries = [
   },
 ];
 
+const playgroundSlugs = ['health-check', 'health-check-themed'];
+
 export const examples: ShowcaseExample[] = entries.map(({ slug, title, file, lang, tags, description }) => ({
   slug,
   title,
@@ -111,5 +113,13 @@ export const examples: ShowcaseExample[] = entries.map(({ slug, title, file, lan
   file,
   tags,
   input: { code: source(file), lang },
-  output: { html: pdfViewer(slug, `${slug}.pdf, rendered by renderreport`), kind: 'panel' as const },
+  output: {
+    // The playground ships these two requests as examples (same file, same slug).
+    html:
+      pdfViewer(slug, `${slug}.pdf, rendered by renderreport`) +
+      (playgroundSlugs.includes(slug)
+        ? `\n<p style="margin:8px 0 0;font-size:14px"><a href="${url(`playground/?example=${slug}`)}">Open in the playground</a></p>`
+        : ''),
+    kind: 'panel' as const,
+  },
 }));
