@@ -1,0 +1,34 @@
+{
+  "site": "example-shop.test",
+  "period": "October 2026",
+  "author": "Web Team",
+  "pageviews": "55,870",
+  "visitors": "20,430",
+  "pages_per_visit": "2.9",
+  "bounce_rate": "38",
+  "weekly": [
+    { "label": "W40", "value": 12900 },
+    { "label": "W41", "value": 13480 },
+    { "label": "W42", "value": 14220 },
+    { "label": "W43", "value": 15270 }
+  ],
+  "top_pages": [
+    ["/", "15,010", "10,260"],
+    ["/shop", "11,730", "6,340"],
+    ["/shop/winter-jackets", "6,950", "4,310"],
+    ["/blog/care-guide", "3,120", "2,700"],
+    ["/shop/gloves", "2,880", "1,960"]
+  ],
+  "sources": [
+    ["Search", "9,170", "45 %"],
+    ["Direct", "4,690", "23 %"],
+    ["Newsletter", "3,880", "19 %"],
+    ["Other sites", "2,690", "13 %"]
+  ],
+  "campaigns": [
+    { "name": "winter-preview", "visitors": "3,260" },
+    { "name": "newsletter-10", "visitors": "2,740" },
+    { "name": "partner-banner", "visitors": "540" }
+  ],
+  "note": "The newsletter share rose from 16 % to 19 % after the winter preview mail on 14 October."
+}

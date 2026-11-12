@@ -16,6 +16,7 @@ const raw = import.meta.glob<string>(
     '../../../examples/playground/*.json',
     '../../../examples/requests/health-check.json',
     '../../../examples/requests/health-check-themed.json',
+    '../../../examples/showcase/*.json',
   ],
   { query: '?raw', import: 'default', eager: true },
 );
@@ -31,6 +32,8 @@ const examples = [
   { id: 'offer-excerpt', label: 'Offer / brochure excerpt', json: file('offer-excerpt') },
   { id: 'health-check', label: 'Audit: website health check', json: file('health-check', 'requests') },
   { id: 'health-check-themed', label: 'Audit with brand theme', json: file('health-check-themed', 'requests') },
+  { id: 'agentmeter-usage', label: 'Coding-agent usage', json: file('agentmeter-usage', 'showcase') },
+  { id: 'judge-analysis', label: 'Rust workspace analysis', json: file('judge-analysis', 'showcase') },
 ];
 
 const snippetIds = new Set(fragments.map((f) => f.id));

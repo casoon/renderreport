@@ -1,0 +1,135 @@
+{
+  "template_id": "default",
+  "title": "Rust workspace analysis",
+  "subtitle": "cargo judge on its own source tree · 1 crate, 54 authored files",
+  "metadata": { "author": "judge", "lang": "en" },
+  "components": [
+    {
+      "type": "callout",
+      "data": {
+        "variant": "info",
+        "title": "About this report",
+        "content": "The numbers are taken from the sample output in the judge repository (summary, health and map reports of judge run on itself), shortened by hand. judge does not write PDFs; this request was assembled from that output."
+      }
+    },
+    { "type": "section", "data": { "title": "Overview", "level": 1 } },
+    {
+      "type": "metric-strip",
+      "data": {
+        "items": [
+          { "label": "Findings", "value": "671" },
+          { "label": "Advisories", "value": "333" },
+          { "label": "Functions analysed", "value": "2,092" },
+          { "label": "Boundary rules", "value": "0", "unit": "checked" }
+        ]
+      }
+    },
+    {
+      "type": "audit-table",
+      "data": {
+        "title": "Evidence-backed findings by rule",
+        "columns": [
+          { "header": "Rule" },
+          { "header": "Count", "align": "right" },
+          { "header": "Representative location" }
+        ],
+        "rows": [
+          ["duplicate-code", "635", "src/rules/principle.rs:550"],
+          ["panic-in-lib", "22", "src/advisory/coverage.rs:336"],
+          ["suppression-debt", "11", "src/commands/combined.rs:178"],
+          ["swallowed-result", "2", "src/rules/slopsquat.rs:356"],
+          ["restating-comment", "1", "src/rules/complexity.rs:1457"]
+        ]
+      }
+    },
+    { "type": "section", "data": { "title": "Where the complexity is", "subtitle": "Production code, total cyclomatic complexity per file. Measured, not a verdict.", "level": 1 } },
+    {
+      "type": "chart",
+      "data": {
+        "title": "Top 8 files by total cyclomatic complexity",
+        "chart_type": "bar",
+        "series": [
+          {
+            "name": "Cyclomatic complexity",
+            "data": [
+              { "label": "principle.rs", "value": 365 },
+              { "label": "analysis_commands.rs", "value": 266 },
+              { "label": "slop.rs", "value": 221 },
+              { "label": "pattern.rs", "value": 189 },
+              { "label": "duplication.rs", "value": 181 },
+              { "label": "deps.rs", "value": 168 },
+              { "label": "boundaries.rs", "value": 165 },
+              { "label": "complexity.rs", "value": 144 }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "audit-table",
+      "data": {
+        "title": "Most complex functions",
+        "columns": [
+          { "header": "Complexity", "align": "right" },
+          { "header": "Function" },
+          { "header": "Location" }
+        ],
+        "rows": [
+          ["41", "run", "src/commands/health_command.rs:5"],
+          ["29", "Command::run", "src/commands/cli.rs:150"],
+          ["29", "binop_label", "src/rules/complexity.rs:731"],
+          ["27", "Command::json_artifact", "src/commands/cli.rs:115"],
+          ["25", "run_dead_code_deep", "src/commands/deep_commands.rs:34"]
+        ]
+      }
+    },
+    { "type": "section", "data": { "title": "Findings to review", "level": 1 } },
+    {
+      "type": "finding",
+      "data": {
+        "title": "duplicate-code: 635 findings in repeated token spans",
+        "severity": "medium",
+        "description": "The largest clone family has 5 members of 27 tokens in one file, the pattern heuristic builders in src/rules/principle.rs. A second has 3 members of 95 tokens across 3 files (attrs_have_cfg_test).",
+        "recommendation": "Run cargo judge dupes for the families, grouped and prioritised. The ranking is an inspection list, not an instruction to merge."
+      }
+    },
+    {
+      "type": "finding",
+      "data": {
+        "title": "panic-in-lib: 22 locations",
+        "severity": "medium",
+        "description": "Panicking calls in library code, for example Finding::at_span in src/finding.rs:422 and FindingGraph::into_findings in src/finding.rs:973 to 976.",
+        "recommendation": "Return an error, or document the invariant that makes the panic unreachable."
+      }
+    },
+    {
+      "type": "finding",
+      "data": {
+        "title": "swallowed-result: write_cache ignores two results",
+        "severity": "medium",
+        "description": "Two results are discarded in src/rules/slopsquat.rs, lines 356 and 359, both in write_cache.",
+        "recommendation": "Handle the error or state why a failed cache write is harmless."
+      }
+    },
+    {
+      "type": "finding",
+      "data": {
+        "title": "suppression-debt: 11 lint suppressions",
+        "severity": "low",
+        "description": "All 11 silence clippy::too_many_arguments, 8 of them in src/rules/dead_code.rs.",
+        "recommendation": "Bundle the arguments in a struct where the same group travels together."
+      }
+    },
+    {
+      "type": "list",
+      "data": {
+        "title": "Next steps from judge",
+        "items": [
+          { "content": "cargo judge dupes: clone families, grouped and prioritised" },
+          { "content": "cargo judge --details: every finding and location" },
+          { "content": "cargo judge --format json: full machine-readable report in .judge/judge.json" }
+        ]
+      }
+    }
+  ]
+}

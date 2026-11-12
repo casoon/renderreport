@@ -1,0 +1,33 @@
+{
+  "site": "example-shop.test",
+  "period": "September 2026",
+  "author": "Web Team",
+  "pageviews": "48,210",
+  "visitors": "17,940",
+  "pages_per_visit": "2.7",
+  "bounce_rate": "41",
+  "weekly": [
+    { "label": "W36", "value": 11200 },
+    { "label": "W37", "value": 12050 },
+    { "label": "W38", "value": 12310 },
+    { "label": "W39", "value": 12650 }
+  ],
+  "top_pages": [
+    ["/", "14,320", "9,870"],
+    ["/shop", "9,640", "5,120"],
+    ["/shop/winter-jackets", "4,180", "2,640"],
+    ["/blog/care-guide", "3,350", "2,910"],
+    ["/contact", "1,260", "1,090"]
+  ],
+  "sources": [
+    ["Search", "8,420", "47 %"],
+    ["Direct", "4,310", "24 %"],
+    ["Newsletter", "2,870", "16 %"],
+    ["Other sites", "2,340", "13 %"]
+  ],
+  "campaigns": [
+    { "name": "autumn-sale", "visitors": "2,140" },
+    { "name": "newsletter-09", "visitors": "1,980" },
+    { "name": "partner-banner", "visitors": "620" }
+  ]
+}
