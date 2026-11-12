@@ -23,6 +23,7 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Changed
 
+- **Docs:** renderreport is described as an engine for multi-page reports built from components, with data as input and no Typst to write; invoices, quotes and letters are left to typst-business-templates, PDF without Typst to lightweight-pdf, and single-page documents (certificate, flyer) are named as covered. The Cargo and npm descriptions no longer mention audits, the keyword `audit` is replaced by `reporting` and `json`, and the README feature list adds validation, template and data, reports from files, PNG/SVG and the playground.
 - **CoverPage:** the field `score` is an `Option<u32>` (`CoverPage::new` still takes a plain score).
 - **Components:** the description of `audit-table` is general (it is a table, not only for audits); the id stays. The docs list the audit-specific components as a group, and `DominantIssueSpotlight` is deprecated in favour of `SpotlightCard`. `DiagnosisPanel` and `WrongRightBlock` stay without deprecation for now.
 - **Library:** `RenderOutput::Html`, an unused stub, is removed; `RenderOutput` keeps its single `Pdf` variant.

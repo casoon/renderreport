@@ -8,9 +8,9 @@
 
 > ⚠️ **Early Development Stage** - This project is in active early development. APIs may change, and some features are still being implemented and optimized.
 
-Data-driven report generation with Typst as embedded render engine.
+Multi-page PDF reports from components and data, rendered by Typst as an embedded engine.
 
-Build professional PDF reports without learning Typst. Use components, themes, and template packs to create reports from structured data.
+The input is data (JSON or Rust structs), not Typst. A report is a list of components such as key figures, findings, tables, charts and running text; themes and template packs set how it looks. For invoices, quotes and letters with a fixed layout see [What it is for](#what-it-is-for).
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/casoon/renderreport/main/examples/terminal/render.svg" width="528" height="188" alt="Terminal: renderreport render health-check.json -o health-check.pdf prints Written 35217 bytes to health-check.pdf; renderreport list-components | tail -1 prints 80 component(s).">
@@ -22,11 +22,33 @@ Build professional PDF reports without learning Typst. Use components, themes, a
 
 - **80 components** — score cards, findings, tables, charts, timelines, pricing cards, barcodes
   and more, each with a Rust builder and a JSON form.
+- **Validation** — `renderreport validate` checks a JSON request without rendering and names each
+  problem with its path; `renderreport schema` prints the JSON Schema of a request or of one component.
+- **Template and data** — a request with `{{ }}` placeholders, `for` and `if` renders with a
+  different JSON or CSV data file on every run.
+- **Reports from files** — `renderreport from` builds a report from Markdown, CSV, Lighthouse,
+  SARIF or JUnit files.
 - **Theme tokens** — colours, fonts, spacing and page layout as named tokens, merged per request.
 - **Template packs** — page templates, components, themes and assets in a folder.
-- **Embedded Typst** — no Typst CLI; the engine compiles PDF/UA-1 tagged PDFs as a library.
+- **PDF, PNG and SVG** — whole report as PDF/UA-1 tagged PDF, or single pages as images.
+- **Embedded Typst** — no Typst CLI; the engine compiles the PDFs as a library.
 - **CLI, Rust and Wasm** — render from JSON on the command line, from Rust, or in a
   Cloudflare Worker.
+- **Playground** — edit a request and see the pages in the browser, at
+  [casoon.github.io/renderreport/playground](https://casoon.github.io/renderreport/playground/).
+
+## What it is for
+
+renderreport is for reports of several pages that are assembled from components: key figures,
+findings, tables, charts, running text. Examples are a usage report, a code analysis, a monthly
+traffic report or a status report. A single page such as a certificate, a school report or a flyer
+also works, since it uses the same components and page format; there is just one page of them.
+
+It is not for business documents with a fixed layout. Use
+[typst-business-templates](https://github.com/casoon/typst-business-templates) for invoices,
+quotes and letters, where you write the layout in Typst. Use
+[lightweight-pdf](https://github.com/casoon/lightweight-pdf) when the PDF must be small and start
+fast and Typst is too heavy; it writes PDFs without Typst.
 
 ## Quick Start
 
