@@ -108,3 +108,30 @@ fn cover_renders_the_indicator_strip_below_the_module_gauges() {
     );
     assert!(first.contains("UX Indicator") && first.contains("Journey Indicator"));
 }
+
+#[test]
+fn column_align_reaches_the_table_cells() {
+    let engine = Engine::new().expect("Engine::new failed");
+    let table = |align: Option<&str>| {
+        let mut count = TableColumn::new("Count");
+        if let Some(align) = align {
+            count = count.with_align(align);
+        }
+        let request = engine
+            .report("default")
+            .metadata("lang", "en")
+            .add_component(
+                AuditTable::new(vec![TableColumn::new("Name"), count])
+                    .add_row(vec!["alpha", "1"])
+                    .add_row(vec!["beta", "12345"]),
+            )
+            .build();
+        engine.render_typ(&request).expect("render_typ failed")
+    };
+    let plain = table(None);
+    let right = table(Some("right"));
+    assert!(right.contains("align: \"right\""), "align reaches the data");
+    assert!(plain.contains("align: (x, y) => col-aligns.at(x) + horizon"));
+    // The data dictionary is the only difference between the two sources.
+    assert_ne!(plain, right);
+}

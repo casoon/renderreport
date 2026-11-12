@@ -34,6 +34,7 @@ All notable changes to this project are documented in this file. The format foll
 
 - **Components:** `section.content` was accepted but never rendered, so nested components vanished silently. A section is only the heading (the Rust field is kept for compatibility, auditmysite does not set it); `validate` now reports a non-empty `content` with "put its components after it in `components`", the field's schema description says so, and the docs and the agent skill follow. Rendering is unchanged.
 - **CLI:** `validate` rejected `{"type": "page-break", "data": {}}` and a missing `data` ("expected unit struct PageBreak", "has no `data`") although `render` accepts both. For a component without fields (`page-break`) `validate` now accepts `null`, `{}` and no `data`; the request schema marks `data` optional there. Other components and the render path are unchanged.
+- **Components:** `align` on a column of `table` / `audit-table` (`"left"`, `"center"`, `"right"`) was read but never reached the Typst table, so number columns stayed left-aligned. The template now builds the alignment per column, header and cells alike; a column without `align` stays left-aligned, so requests without it render as before. The showcase PDFs that set `align` (judge-analysis, analytics-monthly) are rebuilt. `benchmark-table`, `crosstab` and `pivot-table` have no `align` field.
 
 ## [0.7.2] - 2026-10-26
 
