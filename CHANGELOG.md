@@ -6,12 +6,15 @@ All notable changes to this project are documented in this file. The format foll
 
 ## [Unreleased]
 
-## [0.7.3] - 2026-11-11
+## [0.7.3] - 2026-11-12
 
 ### Added
 
 - **BenchmarkTable:** the headers of the fixed rank, domain, score, accessibility and
   critical-issues columns can be set (`with_labels`); without them the German defaults stay.
+- **Releases:** the crate is published by the release workflow through crates.io Trusted
+  Publishing, after the GitHub release and an approval in the `crates-io` environment; no
+  registry token is stored.
 
 ### Changed
 
