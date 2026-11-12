@@ -9,12 +9,14 @@ All notable changes to this project are documented in this file. The format foll
 ### Added
 
 - **Templates:** a request can be a template bound to data at render time: `{{ path.to.value }}` placeholders in strings (a string that is only a placeholder keeps the JSON type; the filters `upper`, `lower`, `round` are available), `{"for": "x in list", "component": {…}}` and `{"if": "path", "component": {…}}` anywhere in an array, also nested in component data. It is a plain JSON-to-JSON step with its own small syntax (no new dependency), available as `render::bind`, as `--data <file.json|file.csv>` on `renderreport render` and `validate` (`validate` checks the resolved request) and as the Wasm function `render_with_data`; the request schema allows the `for`/`if` entries. Errors name the template location and the missing data path. See the new guide "Templates and data" and `examples/requests/monthly-report/`.
+- **Output:** PNG and SVG per page: `Engine::render_pages(&request, PageFormat::Png { ppi } | PageFormat::Svg)` returns one byte sequence per page, behind the new optional features `png` and `svg` (both part of `cli`, neither of `default`). `renderreport render` takes `--format pdf|png|svg` (also inferred from the `-o` extension), `--pages 1-3,5` and `--ppi` (default 144); several pages need `{n}` in the output path, e.g. `-o page-{n}.png`. With the `wasm` and `png` features the Wasm function `render_page_png(request_json, page_index, ppi)` is available. HTML output is not planned; see Changed.
 - **CLI:** `renderreport validate` checks a request without rendering it and reports each problem with its path, e.g. `components[0].data: score-card: score: invalid type`; unknown component types are reported too.
 - **CLI:** `renderreport schema [--component <id>]` prints the JSON Schema of a request or of one component's data.
 - **Library:** `validate::validate_request`, the Wasm function `validate` and, with the new `schema` feature (part of `cli`), the `schema` module.
 
 ### Changed
 
+- **Library:** `RenderOutput::Html`, an unused stub, is removed; `RenderOutput` keeps its single `Pdf` variant.
 - **Docs:** the project site uses the current shared theme (0.12.3) and ends with a link to the
   quickstart.
 

@@ -41,6 +41,8 @@ pub use engine::{Engine, ReportBuilder};
 pub use error::{Error, Result};
 pub use pack::{Pack, PackId, PackLoader, PackManifest};
 pub use patterns::{AuditPattern, BasePattern, ExecutivePattern, MarketingPattern};
+#[cfg(any(feature = "png", feature = "svg"))]
+pub use render::PageFormat;
 pub use render::{PageSetup, RenderOutput, RenderRequest};
 pub use theme::{Theme, ThemeTokens, TokenValue};
 

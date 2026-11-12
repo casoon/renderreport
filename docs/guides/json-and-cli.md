@@ -20,6 +20,20 @@ error with its cause, down to the Typst diagnostic, to stderr and exits with cod
 Error: failed to render PDF: Render error: Typst compilation failed: … dictionary does not contain key "callout_type"
 ```
 
+## Page images
+
+`--format png` or `--format svg` writes one image per page instead of a PDF, for previews and
+thumbnails. The format also follows from the extension of `-o`.
+
+```sh
+renderreport render report.json -o page-{n}.png            # every page, page-1.png, page-2.png, …
+renderreport render report.json -o cover.png --pages 1 --ppi 72
+renderreport render report.json -o page-{n}.svg --pages 2-3
+```
+
+More than one page needs `{n}` in the output path. See the [CLI reference](../../reference/cli/)
+for all options.
+
 ## Shape of the request
 
 ```json

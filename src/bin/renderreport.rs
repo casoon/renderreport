@@ -3,9 +3,9 @@ use std::path::PathBuf;
 use std::process;
 
 use anyhow::Context;
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 use renderreport::engine::EngineConfig;
-use renderreport::{ComponentCatalog, Engine, LayoutHint, RenderRequest};
+use renderreport::{ComponentCatalog, Engine, LayoutHint, PageFormat, RenderRequest};
 
 #[derive(Parser)]
 #[command(
@@ -18,6 +18,23 @@ struct Cli {
     command: Commands,
 }
 
+#[derive(Clone, Copy, PartialEq, ValueEnum)]
+enum OutputFormat {
+    Pdf,
+    Png,
+    Svg,
+}
+
+impl OutputFormat {
+    fn extension(self) -> &'static str {
+        match self {
+            OutputFormat::Pdf => "pdf",
+            OutputFormat::Png => "png",
+            OutputFormat::Svg => "svg",
+        }
+    }
+}
+
 #[derive(Subcommand)]
 enum Commands {
     /// Render a report from a JSON definition
@@ -25,13 +42,27 @@ enum Commands {
         /// Path to JSON input file (reads from stdin if omitted)
         input: Option<PathBuf>,
 
-        /// Output path [default: report.pdf, or report.typ with --typ]
+        /// Output path [default: report.pdf, or report.typ with --typ]; for
+        /// several PNG/SVG pages it must contain `{n}`, e.g. page-{n}.png
         #[arg(short, long)]
         output: Option<PathBuf>,
 
         /// Write the generated Typst source instead of compiling it to PDF
-        #[arg(long)]
+        #[arg(long, conflicts_with_all = ["format", "pages"])]
         typ: bool,
+
+        /// Output format [default: from the extension of --output, else pdf]
+        #[arg(long, value_enum)]
+        format: Option<OutputFormat>,
+
+        /// Pages to write with --format png or svg, e.g. `1`, `1-3`, `2,4`
+        /// [default: all]
+        #[arg(long, value_name = "SPEC")]
+        pages: Option<String>,
+
+        /// Resolution of PNG pages in pixels per inch
+        #[arg(long, default_value_t = 144, value_parser = clap::value_parser!(u32).range(1..=2400))]
+        ppi: u32,
 
         /// Directory to search for the pack named by the request's `pack_id`
         /// (repeatable; searched before the default `./packs`)
@@ -198,6 +229,71 @@ fn apply_data(json: String, data: Option<PathBuf>) -> anyhow::Result<String> {
     Ok(bound.to_string())
 }
 
+/// 1-based page numbers from a spec such as `1`, `1-3` or `2,4`.
+fn parse_pages(spec: &str) -> anyhow::Result<Vec<usize>> {
+    let number = |text: &str| -> anyhow::Result<usize> {
+        match text.trim().parse::<usize>() {
+            Ok(n) if n >= 1 => Ok(n),
+            _ => anyhow::bail!("invalid --pages `{spec}`: `{text}` is not a page number"),
+        }
+    };
+    let mut pages = Vec::new();
+    for part in spec.split(',') {
+        match part.split_once('-') {
+            Some((first, last)) => {
+                let (first, last) = (number(first)?, number(last)?);
+                if first > last {
+                    anyhow::bail!("invalid --pages `{spec}`: `{part}` is a descending range");
+                }
+                pages.extend(first..=last);
+            }
+            None => pages.push(number(part)?),
+        }
+    }
+    Ok(pages)
+}
+
+/// Writes the selected pages (all without `pages`): a single page to `output`
+/// directly, several pages to `output` with `{n}` replaced by the page number.
+fn write_pages(
+    rendered: Vec<Vec<u8>>,
+    pages: Option<Vec<usize>>,
+    output: Option<PathBuf>,
+    format: OutputFormat,
+) -> anyhow::Result<()> {
+    let pages = pages.unwrap_or_else(|| (1..=rendered.len()).collect());
+    if let Some(&missing) = pages.iter().find(|&&n| n > rendered.len()) {
+        anyhow::bail!(
+            "page {missing} does not exist, the document has {} page(s)",
+            rendered.len()
+        );
+    }
+    let ext = format.extension();
+    let output = output.unwrap_or_else(|| {
+        PathBuf::from(if pages.len() == 1 {
+            format!("report.{ext}")
+        } else {
+            format!("report-{{n}}.{ext}")
+        })
+    });
+    let template = output.to_string_lossy();
+    if pages.len() > 1 && !template.contains("{n}") {
+        anyhow::bail!(
+            "{} pages selected but the output path `{template}` has no `{{n}}` to number them, \
+             e.g. `page-{{n}}.{ext}`; select one page with --pages or add `{{n}}`",
+            pages.len()
+        );
+    }
+    for n in pages {
+        let path = PathBuf::from(template.replace("{n}", &n.to_string()));
+        let bytes = &rendered[n - 1];
+        std::fs::write(&path, bytes)
+            .with_context(|| format!("failed to write output file {}", path.display()))?;
+        eprintln!("Written {} bytes to {}", bytes.len(), path.display());
+    }
+    Ok(())
+}
+
 fn run(cli: Cli) -> anyhow::Result<()> {
     match cli.command {
         Commands::Schema { component } => {
@@ -254,9 +350,25 @@ fn run(cli: Cli) -> anyhow::Result<()> {
             input,
             output,
             typ,
+            format,
+            pages,
+            ppi,
             pack_paths,
             data,
         } => {
+            let format = format
+                .or_else(|| {
+                    let ext = output.as_ref()?.extension()?.to_str()?.to_ascii_lowercase();
+                    OutputFormat::value_variants()
+                        .iter()
+                        .copied()
+                        .find(|f| f.extension() == ext)
+                })
+                .unwrap_or(OutputFormat::Pdf);
+            if pages.is_some() && format == OutputFormat::Pdf && !typ {
+                anyhow::bail!("--pages needs --format png or svg");
+            }
+            let pages = pages.as_deref().map(parse_pages).transpose()?;
             let json = apply_data(read_input(input)?, data)?;
 
             let request: RenderRequest =
@@ -270,6 +382,16 @@ fn run(cli: Cli) -> anyhow::Result<()> {
                 engine
                     .load_pack(&pack_id.0)
                     .with_context(|| format!("failed to load pack {pack_id}"))?;
+            }
+            if format != OutputFormat::Pdf && !typ {
+                let page_format = match format {
+                    OutputFormat::Png => PageFormat::Png { ppi },
+                    _ => PageFormat::Svg,
+                };
+                let rendered = engine
+                    .render_pages(&request, page_format)
+                    .with_context(|| format!("failed to render {} pages", format.extension()))?;
+                return write_pages(rendered, pages, output, format);
             }
             let (bytes, default_output) = if typ {
                 let source = engine

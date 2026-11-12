@@ -140,6 +140,27 @@ impl Engine {
         Ok(RenderOutput::Pdf(pdf_bytes))
     }
 
+    /// Render a report to one image per page (PNG or SVG), in page order.
+    #[cfg(any(feature = "png", feature = "svg"))]
+    pub fn render_pages(
+        &self,
+        request: &RenderRequest,
+        format: crate::render::PageFormat,
+    ) -> Result<Vec<Vec<u8>>> {
+        use crate::render::typst_compile;
+
+        let request = &normalized(request);
+        let theme = self.resolve_theme(request)?;
+        let source = self.generate_typst_source(request, &theme)?;
+        typst_compile::compile_pages_with_files(
+            &source,
+            &self.font_cache,
+            request,
+            self.pack_assets(request)?,
+            format,
+        )
+    }
+
     /// Render a report to its intermediate Typst source.
     ///
     /// Returns the full `.typ` source that would be compiled by [`Self::render`] /
@@ -603,13 +624,24 @@ impl Engine {
     fn compile_typst(&self, source: &str, request: &RenderRequest) -> Result<Vec<u8>> {
         use crate::render::typst_compile;
 
-        // Pack assets are reachable from Typst under their path in `assets/`.
-        let pack_assets = self
+        typst_compile::compile_with_files(
+            source,
+            &self.font_cache,
+            request,
+            self.pack_assets(request)?,
+        )
+    }
+
+    /// Pack assets are reachable from Typst under their path in `assets/`.
+    fn pack_assets<'a>(
+        &'a self,
+        request: &RenderRequest,
+    ) -> Result<impl Iterator<Item = (&'a str, &'a [u8])>> {
+        Ok(self
             .request_pack(request)?
             .into_iter()
             .flat_map(|pack| &pack.assets)
-            .map(|(name, bytes)| (name.as_str(), bytes.as_slice()));
-        typst_compile::compile_with_files(source, &self.font_cache, request, pack_assets)
+            .map(|(name, bytes)| (name.as_str(), bytes.as_slice())))
     }
 }
 

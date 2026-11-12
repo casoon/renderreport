@@ -58,6 +58,16 @@ The full API is on [docs.rs/renderreport](https://docs.rs/renderreport).
 
 <ApiEntry
   kind="fn"
+  name="Engine::render_pages"
+  signature="pub fn render_pages(&self, request: &RenderRequest, format: PageFormat) -> Result<Vec<Vec<u8>>>"
+>
+  Renders a request to one image per page, in page order. `PageFormat::Png { ppi }` (feature
+  `png`) and `PageFormat::Svg` (feature `svg`) are available when the matching feature is
+  enabled; the `cli` feature enables both, `default` neither. The PDF path is not affected.
+</ApiEntry>
+
+<ApiEntry
+  kind="fn"
   name="Engine::render_typ"
   signature="pub fn render_typ(&self, request: &RenderRequest) -> Result<String>"
 >
