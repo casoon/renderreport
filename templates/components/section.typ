@@ -31,6 +31,10 @@
   // is not visible in the rendered output.
   block(width: 100%, breakable: false, below: 0pt)[
     #heading-block
+    #if data.at("subtitle", default: none) != none {
+      v(2pt)
+      text(size: 9.5pt, fill: color-text-muted)[#data.subtitle]
+    }
     #v(spacing-4)
     #box(height: 2em, width: 0pt)[]
   ]

@@ -23,6 +23,9 @@ pub struct Section {
     /// Heading level (1-6)
     #[serde(default = "default_level")]
     pub level: u8,
+    /// Muted line under the heading. Optional.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub subtitle: Option<String>,
     /// Not rendered: a section is only the heading, put its components after
     /// it in `components`. `validate` reports a non-empty value.
     #[serde(default)]
@@ -38,6 +41,7 @@ impl Section {
         Self {
             title: title.into(),
             level: 1,
+            subtitle: None,
             content: Vec::new(),
         }
     }

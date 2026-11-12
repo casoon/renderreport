@@ -32,6 +32,9 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Fixed
 
+- **Components:** `chart.height` was ignored: vertical bar charts always used a 140pt plot area. A `height` other than the default `200pt` is now the height of the plot area; the default still renders as 140pt, so existing requests are unchanged.
+- **Components:** `section.subtitle`, named in the catalog description and used by two showcase examples, was not a field and never rendered. It is now an optional muted line under the heading; sections without it render as before.
+
 - **Components:** `section.content` was accepted but never rendered, so nested components vanished silently. A section is only the heading (the Rust field is kept for compatibility, auditmysite does not set it); `validate` now reports a non-empty `content` with "put its components after it in `components`", the field's schema description says so, and the docs and the agent skill follow. Rendering is unchanged.
 - **CLI:** `validate` rejected `{"type": "page-break", "data": {}}` and a missing `data` ("expected unit struct PageBreak", "has no `data`") although `render` accepts both. For a component without fields (`page-break`) `validate` now accepts `null`, `{}` and no `data`; the request schema marks `data` optional there. Other components and the render path are unchanged.
 - **Components:** `align` on a column of `table` / `audit-table` (`"left"`, `"center"`, `"right"`) was read but never reached the Typst table, so number columns stayed left-aligned. The template now builds the alignment per column, header and cells alike; a column without `align` stays left-aligned, so requests without it render as before. The showcase PDFs that set `align` (judge-analysis, analytics-monthly) are rebuilt. `benchmark-table`, `crosstab` and `pivot-table` have no `align` field.

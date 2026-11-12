@@ -165,3 +165,18 @@ fn column_align_reaches_the_table_cells() {
     // The data dictionary is the only difference between the two sources.
     assert_ne!(plain, right);
 }
+
+#[test]
+fn section_subtitle_is_rendered_under_the_heading() {
+    let engine = Engine::new().expect("Engine::new failed");
+    let mut section = Section::new("Alpha Section").with_level(1);
+    section.subtitle = Some("Sub Line Zqx".into());
+    let request = engine
+        .report("default")
+        .title("Doc")
+        .add_component(section)
+        .add_component(Callout::info("Body."))
+        .build();
+    let pdf = engine.render_pdf(&request).expect("render_pdf failed");
+    assert!(page_texts(&pdf).iter().any(|t| t.contains("Sub Line Zqx")));
+}

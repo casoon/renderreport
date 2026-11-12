@@ -51,7 +51,8 @@ pub struct Chart {
     /// Chart width
     #[serde(default = "default_chart_width")]
     pub width: String,
-    /// Chart height
+    /// Chart height. Vertical bar charts use it as the height of the plot
+    /// area (the default `200pt` renders as 140pt, as before).
     #[serde(default = "default_chart_height")]
     pub height: String,
     /// Render a bar chart as horizontal rows instead of vertical columns.
