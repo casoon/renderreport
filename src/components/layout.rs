@@ -126,7 +126,7 @@ pub struct CoverPage {
     /// A–F grade column when present).
     #[serde(default)]
     pub band_phrase: String,
-    /// Localized section labels. Empty → template falls back to a German default.
+    /// Localized section labels. Empty → the default text for `metadata.lang` (English if unset).
     #[serde(default)]
     pub score_label: String,
     #[serde(default)]

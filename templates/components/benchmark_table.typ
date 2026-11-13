@@ -1,7 +1,7 @@
 // Benchmark Table Component
 // Ranking table for website comparison. The fixed columns are rank/domain/
 // score/accessibility/critical issues, headed by the caller's label_* fields
-// (German defaults: Nr/Domain/Score/A11y/Krit.) — every extra scored-dimension column (SEO, Security, ...)
+// (defaults per `metadata.lang`, see i18n.typ) — every extra scored-dimension column (SEO, Security, ...)
 // is caller-defined via BenchmarkRow.extra_columns, not hardcoded here. The
 // header list is the union of labels seen across all rows, in first-seen
 // order, so a new caller-side dimension needs no change in this template.
@@ -33,12 +33,12 @@
     #grid(
       columns: col-widths,
       gutter: spacing-2,
-      [#data.at("label_rank", default: "Nr")],
-      [#data.at("label_domain", default: "Domain")],
-      [#data.at("label_score", default: "Score")],
-      [#data.at("label_accessibility", default: "A11y")],
+      [#data.at("label_rank", default: tr("benchmark.rank"))],
+      [#data.at("label_domain", default: tr("benchmark.domain"))],
+      [#data.at("label_score", default: tr("benchmark.score"))],
+      [#data.at("label_accessibility", default: tr("benchmark.accessibility"))],
       ..extra-headers.map(h => [#h]),
-      [#data.at("label_critical_issues", default: "Krit.")],
+      [#data.at("label_critical_issues", default: tr("benchmark.critical"))],
     )
   ]
 

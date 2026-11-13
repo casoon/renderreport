@@ -273,11 +273,32 @@ fn test_benchmark_table_default_headers_unchanged() {
     keys.sort_unstable();
     assert_eq!(keys, ["rows", "title"]);
 
-    let explicit_german =
-        BenchmarkTable::new(benchmark_rows()).with_labels("Nr", "Domain", "Score", "A11y", "Krit.");
+    // No label set: the default texts follow `metadata.lang`, English if unset.
+    let explicit_english = BenchmarkTable::new(benchmark_rows())
+        .with_labels("No.", "Domain", "Score", "A11y", "Crit.");
     assert_eq!(
         render_benchmark_pdf(table),
-        render_benchmark_pdf(explicit_german)
+        render_benchmark_pdf(explicit_english)
+    );
+}
+
+#[test]
+fn test_benchmark_table_german_defaults_with_lang_de() {
+    let engine = renderreport::Engine::new().unwrap();
+    let render = |table: BenchmarkTable, lang: Option<&str>| {
+        let mut builder = engine.report("default").title("Benchmark");
+        if let Some(lang) = lang {
+            builder = builder.metadata("lang", lang);
+        }
+        engine
+            .render_pdf(&builder.add_component(table).build())
+            .unwrap()
+    };
+    let german =
+        BenchmarkTable::new(benchmark_rows()).with_labels("Nr", "Domain", "Score", "A11y", "Krit.");
+    assert_eq!(
+        render(BenchmarkTable::new(benchmark_rows()), Some("de")),
+        render(german, Some("de"))
     );
 }
 

@@ -180,3 +180,21 @@ fn section_subtitle_is_rendered_under_the_heading() {
     let pdf = engine.render_pdf(&request).expect("render_pdf failed");
     assert!(page_texts(&pdf).iter().any(|t| t.contains("Sub Line Zqx")));
 }
+
+#[test]
+fn default_texts_follow_metadata_lang() {
+    let engine = Engine::new().expect("Engine::new failed");
+    let texts = |lang: Option<&str>| {
+        let mut builder = engine.report("default").title("Doc");
+        if let Some(lang) = lang {
+            builder = builder.metadata("lang", lang);
+        }
+        let request = builder
+            .add_component(CoverPage::new("Doc", "example.com", 88, "B+"))
+            .build();
+        page_texts(&engine.render_pdf(&request).expect("render_pdf failed")).join(" ")
+    };
+    assert!(texts(None).contains("OVERALL SCORE"));
+    assert!(texts(Some("de")).contains("GESAMTSCORE"));
+    assert!(texts(Some("xx")).contains("OVERALL SCORE"));
+}
