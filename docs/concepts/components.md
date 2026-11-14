@@ -75,7 +75,7 @@ place to look first when a report is about an audit:
 | `device-preview` | Desktop and mobile screenshots side by side |
 | `cover-page` | With `score`, the cover shows the headline score, the findings count and module gauges; without `score` it is a plain cover (title, subtitle, date, brand or logo, optional `domain` line) |
 
-Default texts of these components are German unless the request sets the label fields.
+Default texts of these components (cover labels, severity names, table headers, the spotlight labels) follow `metadata.lang`: German for `de`, English otherwise. A label field in the request always wins. Only the first two letters of the language code are used for this, and `lang` must be a plain two-letter code such as `de` or `en`.
 
 The [component catalog](../../../showcase/component-catalog/) renders every component with sample
 data. The table below is the output of `renderreport list-components --markdown` for 0.7.0.

@@ -8,8 +8,8 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Changed
 
+- **Breaking, default texts:** the built-in texts of `cover-page`, `severity-overview`, `benchmark-table` and `dominant-issue-spotlight` come from a language table and follow `metadata.lang` (`de` or English, English when `lang` is unset or unknown). They were fixed German before. A label in the request still wins, so requests that set their labels or `lang: "de"` render as before. `BenchmarkTable::new` no longer sets the title "Website-Ranking" (use `with_title`). See the components page.
 - **Pages:** the project site uses the current shared theme (0.12.14).
-
 
 ## [0.7.4] - 2026-11-12
 

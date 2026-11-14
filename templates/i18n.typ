@@ -1,0 +1,46 @@
+// Default texts per language. A label set in the request always wins; the
+// table is consulted only where a component has no label. Unknown languages
+// fall back to English.
+#let report-strings = (
+  en: (
+    "cover.score": "OVERALL SCORE",
+    "cover.findings": "FINDINGS",
+    "cover.modules": "MODULES AT A GLANCE",
+    "cover.critical": "critical",
+    "cover.no-critical": "0 critical",
+    "severity.critical": "Critical",
+    "severity.serious": "Serious",
+    "severity.moderate": "Moderate",
+    "severity.minor": "Minor",
+    "severity.total": "violations in total",
+    "spotlight.user-impact": "User impact",
+    "spotlight.recommendation": "Recommendation",
+    "spotlight.share": "% share",
+    "benchmark.rank": "No.",
+    "benchmark.domain": "Domain",
+    "benchmark.score": "Score",
+    "benchmark.accessibility": "A11y",
+    "benchmark.critical": "Crit.",
+  ),
+  de: (
+    "cover.score": "GESAMTSCORE",
+    "cover.findings": "BEFUNDE",
+    "cover.modules": "MODULE IM ÜBERBLICK",
+    "cover.critical": "kritisch",
+    "cover.no-critical": "0 kritisch",
+    "severity.critical": "Kritisch",
+    "severity.serious": "Schwerwiegend",
+    "severity.moderate": "Moderat",
+    "severity.minor": "Gering",
+    "severity.total": "Verstöße insgesamt",
+    "spotlight.user-impact": "Nutzer-Wirkung",
+    "spotlight.recommendation": "Empfehlung",
+    "spotlight.share": "% Anteil",
+    "benchmark.rank": "Nr",
+    "benchmark.domain": "Domain",
+    "benchmark.score": "Score",
+    "benchmark.accessibility": "A11y",
+    "benchmark.critical": "Krit.",
+  ),
+)
+#let tr(key) = report-strings.at(report-lang, default: report-strings.en).at(key)

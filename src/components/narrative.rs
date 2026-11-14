@@ -983,12 +983,12 @@ pub struct DominantIssueSpotlight {
     pub eyebrow: Option<String>,
     #[serde(default)]
     pub affected_count: Option<u32>,
-    /// Label for the "user impact" field. Defaults to German ("Nutzer-Wirkung")
-    /// in the template when not set — pass this explicitly for non-German reports.
+    /// Label for the "user impact" field. Defaults to the text for `metadata.lang`
+    /// ("User impact" / "Nutzer-Wirkung") when not set.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label_user_impact: Option<String>,
-    /// Label for the "recommendation" field. Defaults to German ("Empfehlung")
-    /// in the template when not set.
+    /// Label for the "recommendation" field. Defaults to the text for `metadata.lang`
+    /// ("Recommendation" / "Empfehlung") when not set.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label_recommendation: Option<String>,
     /// Suffix appended after `affected_count` (e.g. "% Anteil" / "% share").

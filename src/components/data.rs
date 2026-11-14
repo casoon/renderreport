@@ -274,7 +274,7 @@ pub struct BenchmarkRow {
 impl BenchmarkTable {
     pub fn new(rows: Vec<BenchmarkRow>) -> Self {
         Self {
-            title: Some("Website-Ranking".into()),
+            title: None,
             rows,
             label_rank: None,
             label_domain: None,

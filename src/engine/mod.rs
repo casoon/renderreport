@@ -272,6 +272,12 @@ impl Engine {
         source.push_str(include_str!("../../templates/theme_helpers.typ"));
         source.push_str("\n\n");
 
+        // Default texts per language (`tr("key")` in the component templates)
+        source.push_str("// Default Texts\n");
+        source.push_str(&format!("#let report-lang = \"{}\"\n", short_lang(request)));
+        source.push_str(include_str!("../../templates/i18n.typ"));
+        source.push_str("\n\n");
+
         // Inject metadata as Typst variables (needed by header/footer)
         source.push_str("// Report Metadata\n");
         // Reports that use the `cover-page` component as their front page
@@ -828,6 +834,23 @@ impl std::fmt::Debug for Engine {
             .field("packs", &self.packs.keys().collect::<Vec<_>>())
             .field("default_theme", &self.default_theme.id)
             .finish()
+    }
+}
+
+/// Language for the default texts: the first two letters of `metadata.lang`
+/// (`de-DE` → `de`), English when absent. Unknown languages fall back to
+/// English inside the template.
+fn short_lang(request: &RenderRequest) -> String {
+    let lang = request
+        .metadata
+        .get("lang")
+        .map(|s| s.as_str())
+        .unwrap_or("en");
+    let short: String = lang.chars().take(2).flat_map(char::to_lowercase).collect();
+    if short.chars().all(|c| c.is_ascii_lowercase()) && short.len() == 2 {
+        short
+    } else {
+        "en".into()
     }
 }
 

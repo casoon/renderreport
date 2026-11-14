@@ -56,9 +56,9 @@
 
   // ── Score card: score + condition | findings ──────────────────
   let condition = if data.band_phrase != "" { data.band_phrase } else { data.grade }
-  let score-label = if data.at("score_label", default: "") != "" { data.score_label } else { "GESAMTSCORE" }
-  let findings-label = if data.at("findings_label", default: "") != "" { data.findings_label } else { "BEFUNDE" }
-  let modules-label = if data.at("modules_label", default: "") != "" { data.modules_label } else { "MODULE IM ÜBERBLICK" }
+  let score-label = if data.at("score_label", default: "") != "" { data.score_label } else { tr("cover.score") }
+  let findings-label = if data.at("findings_label", default: "") != "" { data.findings_label } else { tr("cover.findings") }
+  let modules-label = if data.at("modules_label", default: "") != "" { data.modules_label } else { tr("cover.modules") }
   if has-score {
     block(
       width: 100%,
@@ -98,14 +98,14 @@
               fill: color-bad-soft,
               radius: 999pt,
               inset: (x: 8pt, y: 4pt),
-              text(size: font-size-xs, weight: "bold", fill: color-bad)[#data.critical_issues #{if data.at("label_critical", default: "") != "" { data.label_critical } else { "kritisch" }}]
+              text(size: font-size-xs, weight: "bold", fill: color-bad)[#data.critical_issues #{if data.at("label_critical", default: "") != "" { data.label_critical } else { tr("cover.critical") }}]
             )
           ] else [
             #box(
               fill: color-ok-soft,
               radius: 999pt,
               inset: (x: 8pt, y: 4pt),
-              text(size: font-size-xs, weight: "bold", fill: color-ok)[#{if data.at("label_no_critical", default: "") != "" { data.label_no_critical } else { "0 kritisch" }}]
+              text(size: font-size-xs, weight: "bold", fill: color-ok)[#{if data.at("label_no_critical", default: "") != "" { data.label_no_critical } else { tr("cover.no-critical") }}]
             )
           ]
         ],
