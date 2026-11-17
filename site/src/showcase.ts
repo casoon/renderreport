@@ -30,6 +30,7 @@ const pdfs: Record<string, string> = {
   'component-catalog': 'examples/output/component_catalog.pdf',
   'agentmeter-usage': 'examples/showcase/agentmeter-usage.pdf',
   'judge-analysis': 'examples/showcase/judge-analysis.pdf',
+  'barrierlab-a11y': 'examples/showcase/barrierlab-a11y.pdf',
   'analytics-monthly': 'examples/showcase/analytics-monthly/october.pdf',
 };
 
@@ -122,6 +123,15 @@ const entries = [
     tags: ['CLI', 'JSON', 'tables', 'chart', 'findings'],
     description:
       'The sample output of judge run on its own source tree, as a report for developers: findings by rule, complexity per file, the most complex functions and findings to review.',
+  },
+  {
+    slug: 'barrierlab-a11y',
+    title: 'Accessibility check from source',
+    file: 'examples/showcase/barrierlab-a11y.json',
+    lang: 'json',
+    tags: ['CLI', 'JSON', 'accessibility', 'findings', 'tables'],
+    description:
+      'The --json output of barrierlab on its own example page as a report: failed checks with a recommendation each, findings to review and the manual checks no tool can do. A second audit tool next to auditmysite.',
   },
   {
     slug: 'analytics-monthly',
