@@ -12,6 +12,9 @@ concurrency:
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
+  # Full debuginfo makes compiling and linking the many test/example binaries
+  # (each pulls in typst) the slowest part of CI; line tables keep backtraces readable.
+  CARGO_PROFILE_DEV_DEBUG: line-tables-only
 
 jobs:
   test:
@@ -39,9 +42,6 @@ jobs:
 
       - name: Run tests
         run: cargo test --all-features --verbose
-
-      - name: Build examples
-        run: cargo build --examples --verbose
 
   catalog:
     name: Component Catalog
@@ -96,22 +96,23 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
-      checks: write
     steps:
       - uses: actions/checkout@v7
 
-      - name: Run security audit
-        uses: rustsec/audit-check@v2
+      - name: Install cargo-audit
+        uses: taiki-e/install-action@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # RUSTSEC-2026-0194 / -0195 (quick-xml DoS via untrusted-XML namespace/
-          # attribute handling): reached transitively through typst-library's own
-          # deps (hayagriva/citationberg for bibliography CSL, syntect/plist for
-          # syntax-highlight themes), pinned by their semver ranges — `cargo
-          # update -p quick-xml` has no compatible fix to move to yet. Both are
-          # DoS-only (no memory-corruption/RCE) and the exploitable path is
-          # attacker-controlled XML fed to those parsers; renderreport only feeds
-          # them typst's own bundled, non-user-controlled resource files, so
-          # there's no reachable attacker input here. Revisit and drop this once
-          # typst-library bumps past a quick-xml >=0.41 requirement.
-          ignore: RUSTSEC-2026-0194,RUSTSEC-2026-0195
+          tool: cargo-audit
+
+      # RUSTSEC-2026-0194 / -0195 (quick-xml DoS via untrusted-XML namespace/
+      # attribute handling): reached transitively through typst-library's own
+      # deps (hayagriva/citationberg for bibliography CSL, syntect/plist for
+      # syntax-highlight themes), pinned by their semver ranges — `cargo
+      # update -p quick-xml` has no compatible fix to move to yet. Both are
+      # DoS-only (no memory-corruption/RCE) and the exploitable path is
+      # attacker-controlled XML fed to those parsers; renderreport only feeds
+      # them typst's own bundled, non-user-controlled resource files, so
+      # there's no reachable attacker input here. Revisit and drop this once
+      # typst-library bumps past a quick-xml >=0.41 requirement.
+      - name: Run security audit
+        run: cargo audit --ignore RUSTSEC-2026-0194 --ignore RUSTSEC-2026-0195
