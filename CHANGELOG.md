@@ -6,6 +6,12 @@ All notable changes to this project are documented in this file. The format foll
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-11-18
+
+### Fixed
+
+- **npm:** the package version follows the crate again: 0.8.1 reached crates.io but not npm, because `npm/renderreport/package.json` still said 0.8.0 and npm refuses to publish a version twice. A test now fails when the two versions differ.
+
 ## [0.8.1] - 2026-11-18
 
 ### Added
