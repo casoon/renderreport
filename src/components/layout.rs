@@ -570,6 +570,58 @@ impl Component for PageBreak {
 }
 
 component_catalog! {
+    id: "soft-page-break",
+    data: SoftPageBreak,
+    template: include_str!("../../templates/components/soft_page_break.typ"),
+    description: "Page break that only fires when less than a fraction of the page height is left",
+    category: ComponentCategory::Layout,
+    layout_hint: LayoutHint::Breakable,
+}
+
+/// Page break for chapter openers that should neither leave a nearly empty
+/// page behind nor start a heading at the very bottom of one. The next
+/// component starts a new page only when less than `room` of the page height
+/// is left on the current one; with enough room it simply follows. At the top
+/// of a page it does nothing, like `PageBreak`.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+pub struct SoftPageBreak {
+    /// Fraction of the page height (0.0 to 1.0) that must still be free for
+    /// the next component to stay on this page. `0.4` starts a new page when
+    /// less than 40 % of the page height remains.
+    #[serde(default = "default_soft_break_room")]
+    pub room: f64,
+}
+
+fn default_soft_break_room() -> f64 {
+    0.4
+}
+
+impl SoftPageBreak {
+    /// Start a new page unless at least `room` of the page height is left.
+    pub fn needs(room: f64) -> Self {
+        Self {
+            room: room.clamp(0.0, 1.0),
+        }
+    }
+}
+
+impl Default for SoftPageBreak {
+    fn default() -> Self {
+        Self::needs(default_soft_break_room())
+    }
+}
+
+impl Component for SoftPageBreak {
+    fn component_id(&self) -> &'static str {
+        "soft-page-break"
+    }
+    fn to_data(&self) -> serde_json::Value {
+        serde_json::to_value(self).unwrap_or_default()
+    }
+}
+
+component_catalog! {
     id: "table-of-contents",
     data: TableOfContents,
     template: include_str!("../../templates/components/table_of_contents.typ"),

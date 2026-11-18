@@ -6,6 +6,12 @@ All notable changes to this project are documented in this file. The format foll
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-11-18
+
+### Added
+
+- **Components:** `soft-page-break` (Rust: `SoftPageBreak::needs(room)`) starts a new page only when less than `room` of the page height is left (default `0.4`); with enough room the next component follows on the same page, separated by a gap of 40 pt. For chapter openers that otherwise leave a nearly empty page behind. A plain `page-break` is unchanged.
+
 ## [0.8.0] - 2026-11-14
 
 ### Changed

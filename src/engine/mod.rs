@@ -628,7 +628,7 @@ impl Engine {
             let is_structural = matches!(
                 layout_hint,
                 LayoutHint::AlwaysNewPage | LayoutHint::KeepWithNext
-            ) || component_type == "page-break";
+            ) || matches!(component_type, "page-break" | "soft-page-break");
             if is_structural {
                 content.push_str(&format!("#{}({})\n\n", fn_name, data_lit));
             } else {

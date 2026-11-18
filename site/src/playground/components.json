@@ -315,6 +315,11 @@
   "description": "Vertical side label aligned alongside content"
  },
  {
+  "id": "soft-page-break",
+  "category": "Layout",
+  "description": "Page break that only fires when less than a fraction of the page height is left"
+ },
+ {
   "id": "sparkline",
   "category": "Metrics & KPIs",
   "description": "Compact inline sparkline trend chart"
