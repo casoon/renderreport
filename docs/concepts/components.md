@@ -12,7 +12,7 @@ A component is a Rust struct with a builder, a Typst function and an id. In a re
 
 | Category | Components | Examples |
 | --- | --- | --- |
-| Layout | 9 | `section`, `cover-page`, `grid-component`, `table-of-contents`, `page-break` |
+| Layout | 10 | `section`, `cover-page`, `grid-component`, `table-of-contents`, `page-break` |
 | Text & Editorial | 15 | `textblock`, `callout`, `quote-block`, `label` |
 | Metrics & KPIs | 16 | `score-card`, `gauge`, `big-number`, `progress-bar` |
 | Data & Comparison | 9 | `audit-table` (also `table`), `crosstab`, `pivot-table`, `chart` |
@@ -174,6 +174,7 @@ for sparklines and gauges.
 | `section-header-split` | Layout | KeepWithNext | Section header with title on left and metadata on right |
 | `severity-overview` | Metrics & KPIs | KeepTogether | Severity distribution overview with count badges |
 | `side-label` | Text & Editorial | KeepTogether | Vertical side label aligned alongside content |
+| `soft-page-break` | Layout | Breakable | Page break that only fires when less than a fraction of the page height is left |
 | `sparkline` | Metrics & KPIs | KeepTogether | Compact inline sparkline trend chart |
 | `spotlight-card` | Narrative & Storytelling | KeepTogether | Spotlight card with colored severity stripe and body |
 | `stat` | Metrics & KPIs | KeepTogether | Single statistic display with value and label |

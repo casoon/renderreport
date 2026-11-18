@@ -39,6 +39,8 @@ fn main() -> renderreport::Result<()> {
         .add_component(TableOfContents::new().with_title("Contents").with_depth(2))
         // @id: page-break
         .add_component(PageBreak::new())
+        // @id: soft-page-break (a no-op here: the page after the break is empty)
+        .add_component(SoftPageBreak::needs(0.4))
 
         // ── 1. Layout ────────────────────────────────────────────────────────
         .add_component(Section::new("1. Layout").with_level(1)) // @id: section

@@ -9,7 +9,8 @@ pub use super::editorial::{
 };
 pub use super::infographics::DevicePreview;
 pub use super::layout::{
-    Columns, Divider, FlowGroup, Grid, GridItem, PageBreak, SectionHeaderSplit, TableOfContents,
+    Columns, Divider, FlowGroup, Grid, GridItem, PageBreak, SectionHeaderSplit, SoftPageBreak,
+    TableOfContents,
 };
 pub use super::marketing::{BenefitStrip, PricingCard, UseCaseCard};
 pub use super::media::{LogoStrip, Watermark};
