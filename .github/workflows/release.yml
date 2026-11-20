@@ -32,6 +32,13 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    # Thin LTO instead of the fat LTO in Cargo.toml: measured locally, the release
+    # build takes ~43% less time for a ~7% larger binary with no measurable render
+    # slowdown. Set here only, so `cargo install` keeps the Cargo.toml profile.
+    # cross forwards CARGO_* variables into its container.
+    env:
+      CARGO_PROFILE_RELEASE_LTO: thin
+
     permissions:
       contents: read
       id-token: write
