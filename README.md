@@ -124,6 +124,10 @@ quick start:
 
 Contributing: [CONTRIBUTING.md](CONTRIBUTING.md). Changes: [CHANGELOG.md](CHANGELOG.md).
 
+## Author
+
+Built and maintained by [Jörn Seidel](https://www.casoon.de/joern-seidel/) ([CASOON](https://www.casoon.de/)). Background and design decisions are described in an article on Insights (in German): [PDF-Berichte programmatisch erzeugen: Warum der renderreport-Ansatz funktioniert](https://insights.casoon.de/artikel/pdf-berichte-programmatisch-renderreport-typst/).
+
 ## License
 
 MIT
